@@ -1,0 +1,5 @@
+.git/
+.idea/
+slocLoader.sln.DotSettings.user
+slocLoader/bin/
+slocLoader/obj/
