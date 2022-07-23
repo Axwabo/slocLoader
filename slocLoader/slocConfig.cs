@@ -28,6 +28,11 @@ namespace slocLoader {
             new PositionByRoomType("example", new MapPointByRoomType(RoomType.Unknown, Vector3.up, new SerializedRotation(0, 30)))
         };
 
+        [Description("A list of objects to be automatically spawned at specific locations.")]
+        public List<StaticAssetPosition> AutoSpawnByLocation { get; set; } = new() {
+            new StaticAssetPosition("example", new StaticMapPoint(0, 1000, 5))
+        };
+
     }
 
 }

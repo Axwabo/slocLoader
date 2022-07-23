@@ -1,8 +1,12 @@
+
+
 # slocLoader
 
 A plugin that allows for the loading of objects contained within **sloc** files in SCP: Secret Laboratory.
 
 ![Logo](https://github.com/Axwabo/slocLoader/blob/main/logo%20small.png?raw=true)
+
+[Watch the tutorial](https://youtu.be/0ssdcpPzO4U)
 
 # MapEditorReborn
 
@@ -54,42 +58,55 @@ command outputs.
 
 Make sure the **enable_auto_spawn** property in the plugin config is set to true.
 
-View the list of room names and
-types [here](https://github.com/Axwabo/SCPSL-Helpers/blob/main/Axwabo.Helpers/Config/ConfigHelper.cs) (line 65)
+View the list of room names and types [here](https://github.com/Axwabo/SCPSL-Helpers/blob/main/Axwabo.Helpers/Config/ConfigHelper.cs) (line 65)
 
-In the plugin config, add an item to the **auto_spawn_by_room_name** or **auto_spawn_by_room_type** list. There are
-examples provider for ease of use.
+In the plugin config, add an item to the **auto_spawn_by_room_name**, **auto_spawn_by_room_type** or **auto_spawn_by_location** list. There are examples provider for ease of use.
 
 Room name template:
 
 ```
 asset_name: example
-  location:
-    room_name: HCZ_106
-    position_offset:
-      x: 0
-      y: 0
-      z: 0
-    rotation_offset:
-      x: 0
-      y: 0
-      z: 0
+point:
+  room_name: HCZ_106
+  position_offset:
+    x: 0
+    y: 0
+    z: 0
+  rotation_offset:
+    x: 0
+    y: 0
+    z: 0
 ```
 
 RoomType template:
 
 ```
 asset_name: example
-  location:
-    type: LczClassDSpawn
-    position_offset:
-      x: 0
-      y: 0
-      z: 0
-    rotation_offset:
-      x: 0
-      y: 0
-      z: 0
+point:
+  type: LczClassDSpawn
+  position_offset:
+    x: 0
+    y: 0
+    z: 0
+  rotation_offset:
+    x: 0
+    y: 0
+    z: 0
+```
+
+StaticPosition template:
+
+```
+asset_name: example
+point:
+  position:
+    x: 10
+    y: 0
+    z: 50
+  rotation:
+    x: 0
+    y: 90
+    z: 0
 ```
 
 All assets that have been loaded by the AutomaticObjectLoader will be spawned in the room specified.

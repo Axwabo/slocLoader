@@ -36,7 +36,7 @@
         <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\assemblies\Assembly-CSharp.dll</HintPath>
         </Reference>
-        <Reference Include="Axwabo.Helpers, Version=1.4.2.0, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="Axwabo.Helpers, Version=1.5.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\assemblies\Axwabo.Helpers.dll</HintPath>
         </Reference>
         <Reference Include="CommandSystem.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -62,8 +62,10 @@
     <ItemGroup>
         <Compile Include="API.cs" />
         <Compile Include="AutoObjectLoader\AutomaticObjectLoader.cs" />
+        <Compile Include="AutoObjectLoader\IAssetLocation.cs" />
         <Compile Include="AutoObjectLoader\PositionByRoomName.cs" />
         <Compile Include="AutoObjectLoader\PositionByRoomType.cs" />
+        <Compile Include="AutoObjectLoader\StaticAssetPosition.cs" />
         <Compile Include="Commands\DestroyCommand.cs" />
         <Compile Include="Commands\ReloadCommand.cs" />
         <Compile Include="Commands\SpawnCommand.cs" />
