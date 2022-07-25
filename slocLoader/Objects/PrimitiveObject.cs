@@ -7,7 +7,7 @@ namespace slocLoader.Objects {
     public class PrimitiveObject : slocGameObject {
 
         public PrimitiveObject(int instanceId, ObjectType type) : base(instanceId) {
-            if (type == ObjectType.None || type == ObjectType.Light)
+            if (type is ObjectType.None or ObjectType.Light)
                 throw new ArgumentException("Invalid primitive type", nameof(type));
             Type = type;
         }

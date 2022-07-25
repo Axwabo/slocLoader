@@ -16,10 +16,11 @@ namespace slocLoader {
         private static PrimitiveObjectToy _primitivePrefab;
         private static LightSourceToy _lightPrefab;
 
-        public static readonly IObjectReader DefaultReader = new Ver1Reader();
+        public static readonly IObjectReader DefaultReader = new Ver2Reader();
 
         private static readonly Dictionary<int, IObjectReader> VersionReaders = new() {
             {1, new Ver1Reader()},
+            {2, new Ver2Reader()}
         };
 
         public static event Action PrefabsLoaded;
@@ -58,7 +59,17 @@ namespace slocLoader {
             };
             go.AddComponent<NetworkIdentity>();
             go.AddComponent<slocSpawnedObject>();
-            spawnedAmount = objects.Count(o => o.SpawnObject(go, throwOnError: false) != null);
+            spawnedAmount = 0;
+            var createdInstances = new Dictionary<int, GameObject>();
+            foreach (var o in objects) {
+                Log.Debug(o.Type + ": " + o.Transform.Scale);
+                var gameObject = o.SpawnObject(o.HasParent && createdInstances.TryGetValue(o.ParentId, out var parentInstance) ? parentInstance : go, throwOnError: false);
+                if (gameObject == null)
+                    continue;
+                spawnedAmount++;
+                createdInstances[o.InstanceId] = gameObject;
+            }
+
             NetworkServer.Spawn(go);
             return go;
         }
@@ -96,8 +107,12 @@ namespace slocLoader {
 
         public static GameObject SpawnObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
             var o = CreateObject(obj, parent, positionOffset, rotationOffset, throwOnError);
-            if (o == null && throwOnError)
-                throw new ArgumentOutOfRangeException(nameof(obj.Type), obj.Type, "Unknown object type");
+            if (o == null) {
+                if (throwOnError)
+                    throw new ArgumentOutOfRangeException(nameof(obj.Type), obj.Type, "Unknown object type");
+                return null;
+            }
+
             NetworkServer.Spawn(o.gameObject);
             return o;
         }
@@ -109,10 +124,10 @@ namespace slocLoader {
                         throw new NullReferenceException("Primitive prefab is not set! Make sure to spawn objects after the map is generated.");
                     var toy = UnityEngine.Object.Instantiate(_primitivePrefab, positionOffset, rotationOffset);
                     toy.SetAbsoluteTransformFrom(parent);
-                    toy.SetLocalTransform(obj.Transform);
+                    toy.SetLocalTransform(obj.Transform, out var scale);
+                    toy.NetworkScale = scale;
                     toy.NetworkPrimitiveType = primitive.Type.ToPrimitiveType();
                     toy.MaterialColor = primitive.MaterialColor;
-                    toy.NetworkScale = toy.transform.localScale;
                     return toy.gameObject;
                 }
                 case LightObject light: {
@@ -120,18 +135,19 @@ namespace slocLoader {
                         throw new NullReferenceException("Light prefab is not set! Make sure to spawn objects after the map is generated.");
                     var toy = UnityEngine.Object.Instantiate(_lightPrefab, positionOffset, rotationOffset);
                     toy.SetAbsoluteTransformFrom(parent);
-                    toy.SetLocalTransform(obj.Transform);
+                    toy.SetLocalTransform(obj.Transform, out var scale);
                     toy.NetworkLightColor = light.LightColor;
                     toy.NetworkLightShadows = light.Shadows;
                     toy.NetworkLightRange = light.Range;
                     toy.NetworkLightIntensity = light.Intensity;
+                    toy.NetworkScale = scale;
                     return toy.gameObject;
                 }
                 case EmptyObject _: {
                     var emptyObject = new GameObject("Empty");
                     emptyObject.AddComponent<NetworkIdentity>();
                     emptyObject.SetAbsoluteTransformFrom(parent);
-                    emptyObject.SetLocalTransform(obj.Transform);
+                    emptyObject.SetLocalTransform(obj.Transform, out _);
                     return emptyObject;
                 }
                 default:
@@ -181,31 +197,36 @@ namespace slocLoader {
         };
 
         public static void SetAbsoluteTransformFrom(this Component component, GameObject parent) {
+            if (component != null)
+                SetAbsoluteTransformFrom(component.gameObject, parent);
+        }
+
+        public static void SetLocalTransform(this Component component, slocTransform transform, out Vector3 scale) {
+            if (component != null)
+                SetLocalTransform(component.gameObject, transform, out scale);
+            else
+                scale = Vector3.one;
+        }
+
+        public static void SetAbsoluteTransformFrom(this GameObject o, GameObject parent) {
             if (parent != null)
-                component.transform.SetParent(parent.transform, false);
+                o.transform.SetParent(parent.transform, false);
         }
 
-        public static void SetLocalTransform(this Component component, slocTransform transform) {
-            if (component == null)
+        public static void SetLocalTransform(this GameObject o, slocTransform transform, out Vector3 scale) {
+            if (o == null) {
+                scale = Vector3.one;
                 return;
-            var t = component.transform;
-            t.localPosition = transform.Position;
-            t.localScale = transform.Scale;
-            t.localRotation = transform.Rotation;
-        }
+            }
 
-        public static void SetAbsoluteTransformFrom(this GameObject component, GameObject parent) {
-            if (parent != null)
-                component.transform.SetParent(parent.transform, false);
-        }
-
-        public static void SetLocalTransform(this GameObject component, slocTransform transform) {
-            if (component == null)
-                return;
-            var t = component.transform;
-            t.localPosition = transform.Position;
+            var t = o.transform;
+            var parent = t.parent;
+            t.SetParent(null, false);
             t.localScale = transform.Scale;
+            t.parent = parent;
+            t.localPosition = transform.Position;
             t.localRotation = transform.Rotation;
+            scale = t.localScale;
         }
 
         internal static void LoadPrefabs() {
@@ -216,13 +237,13 @@ namespace slocLoader {
                     _lightPrefab = light;
             }
 
-            if (_primitivePrefab != null && _lightPrefab != null) {
-                try {
-                    PrefabsLoaded?.Invoke();
-                } catch (Exception e) {
-                    Log.Error(e);
-                    Log.Debug($"methods that may cause this issue:\n{PrefabsLoaded?.GetInvocationList().Select(x => x.Method.DeclaringType?.FullName + "::" + x.Method.Name)}");
-                }
+            if (_primitivePrefab == null || _lightPrefab == null)
+                return;
+            try {
+                PrefabsLoaded?.Invoke();
+            } catch (Exception e) {
+                Log.Error(e);
+                Log.Debug($"Methods that may cause this issue:\n{string.Join("\n", PrefabsLoaded?.GetInvocationList().Select(x => $"{x.Method.DeclaringType?.FullName}::{x.Method.Name}") ?? Enumerable.Empty<string>())}");
             }
         }
 

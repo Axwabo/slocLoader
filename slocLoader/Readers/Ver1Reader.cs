@@ -18,12 +18,12 @@ namespace slocLoader.Readers {
             };
         }
 
-        private static slocGameObject ReadPrimitive(BinaryReader stream, ObjectType type) => new PrimitiveObject(0, type) {
+        public static slocGameObject ReadPrimitive(BinaryReader stream, ObjectType type) => new PrimitiveObject(0, type) {
             Transform = stream.ReadTransform(),
             MaterialColor = stream.ReadColor()
         };
 
-        private static slocGameObject ReadLight(BinaryReader stream) => new LightObject(0) {
+        public static slocGameObject ReadLight(BinaryReader stream) => new LightObject(0) {
             Transform = stream.ReadTransform(),
             LightColor = stream.ReadColor(),
             Shadows = stream.ReadBoolean(),
