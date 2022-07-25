@@ -9,8 +9,6 @@ namespace slocLoader.Objects {
         public Vector3 Scale;
         public Quaternion Rotation;
 
-        public override string ToString() => $"{Position};{Scale};{Rotation}";
-
         public void WriteTo(BinaryWriter writer) {
             writer.Write(Position.x);
             writer.Write(Position.y);
@@ -23,6 +21,12 @@ namespace slocLoader.Objects {
             writer.Write(Rotation.z);
             writer.Write(Rotation.w);
         }
+
+        public static implicit operator slocTransform(Transform transform) => new slocTransform {
+            Position = transform.localPosition,
+            Scale = transform.localScale,
+            Rotation = transform.localRotation
+        };
 
     }
 

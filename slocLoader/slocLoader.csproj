@@ -69,6 +69,8 @@
         <Compile Include="Commands\DestroyCommand.cs" />
         <Compile Include="Commands\ReloadCommand.cs" />
         <Compile Include="Commands\SpawnCommand.cs" />
+        <Compile Include="Objects\EmptyObject.cs" />
+        <Compile Include="Readers\Ver2Reader.cs" />
         <Compile Include="slocConfig.cs" />
         <Compile Include="Objects\LightObject.cs" />
         <Compile Include="Objects\ObjectType.cs" />

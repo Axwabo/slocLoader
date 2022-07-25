@@ -3,7 +3,7 @@ using slocLoader.Objects;
 
 namespace slocLoader.Readers {
 
-    public class Ver1Reader : IObjectReader {
+    public class Ver2Reader : IObjectReader {
 
         public slocGameObject Read(BinaryReader stream) {
             var objectType = (ObjectType) stream.ReadByte();
@@ -14,21 +14,29 @@ namespace slocLoader.Readers {
                 ObjectType.Plane => ReadPrimitive(stream, objectType),
                 ObjectType.Capsule => ReadPrimitive(stream, objectType),
                 ObjectType.Light => ReadLight(stream),
+                ObjectType.Empty => ReadEmpty(stream),
                 _ => null
             };
         }
 
-        private static slocGameObject ReadPrimitive(BinaryReader stream, ObjectType type) => new PrimitiveObject(0, type) {
+        private static slocGameObject ReadPrimitive(BinaryReader stream, ObjectType type) => new PrimitiveObject(stream.ReadInt32(), type) {
+            ParentId = stream.ReadInt32(),
             Transform = stream.ReadTransform(),
             MaterialColor = stream.ReadColor()
         };
 
-        private static slocGameObject ReadLight(BinaryReader stream) => new LightObject(0) {
+        private static slocGameObject ReadLight(BinaryReader stream) => new LightObject(stream.ReadInt32()) {
+            ParentId = stream.ReadInt32(),
             Transform = stream.ReadTransform(),
             LightColor = stream.ReadColor(),
             Shadows = stream.ReadBoolean(),
             Range = stream.ReadSingle(),
             Intensity = stream.ReadSingle(),
+        };
+
+        private static slocGameObject ReadEmpty(BinaryReader stream) => new EmptyObject(stream.ReadInt32()) {
+            ParentId = stream.ReadInt32(),
+            Transform = stream.ReadTransform()
         };
 
     }

@@ -36,7 +36,7 @@ namespace slocLoader {
             var count = binaryReader.ReadInt32();
             for (var i = 0; i < count; i++) {
                 var obj = ReadObject(binaryReader, version, reader);
-                if (!obj.IsEmpty)
+                if (obj is {IsValid: true})
                     objects.Add(obj);
             }
 
@@ -77,7 +77,16 @@ namespace slocLoader {
                 }
             };
             go.AddComponent<NetworkIdentity>();
-            createdAmount = objects.Count(o => o.CreateObject(go, throwOnError: false) != null);
+            createdAmount = 0;
+            var createdInstances = new Dictionary<int, GameObject>();
+            foreach (var o in objects) {
+                var gameObject = o.CreateObject(o.HasParent && createdInstances.TryGetValue(o.ParentId, out var parentInstance) ? parentInstance : go, throwOnError: false);
+                if (gameObject == null)
+                    continue;
+                createdInstances[o.InstanceId] = gameObject;
+                createdAmount++;
+            }
+
             return go;
         }
 
@@ -85,7 +94,7 @@ namespace slocLoader {
 
         public static GameObject CreateObjectsFromFile(string path, out int spawnedAmount, Vector3 position, Quaternion rotation = default) => CreateObjects(ReadObjectsFromFile(path), out spawnedAmount, position, rotation);
 
-        public static AdminToyBase SpawnObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
+        public static GameObject SpawnObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
             var o = CreateObject(obj, parent, positionOffset, rotationOffset, throwOnError);
             if (o == null && throwOnError)
                 throw new ArgumentOutOfRangeException(nameof(obj.Type), obj.Type, "Unknown object type");
@@ -93,7 +102,7 @@ namespace slocLoader {
             return o;
         }
 
-        public static AdminToyBase CreateObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
+        public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
             switch (obj) {
                 case PrimitiveObject primitive: {
                     if (_primitivePrefab == null)
@@ -104,7 +113,7 @@ namespace slocLoader {
                     toy.NetworkPrimitiveType = primitive.Type.ToPrimitiveType();
                     toy.MaterialColor = primitive.MaterialColor;
                     toy.NetworkScale = toy.transform.localScale;
-                    return toy;
+                    return toy.gameObject;
                 }
                 case LightObject light: {
                     if (_primitivePrefab == null)
@@ -116,7 +125,14 @@ namespace slocLoader {
                     toy.NetworkLightShadows = light.Shadows;
                     toy.NetworkLightRange = light.Range;
                     toy.NetworkLightIntensity = light.Intensity;
-                    return toy;
+                    return toy.gameObject;
+                }
+                case EmptyObject _: {
+                    var emptyObject = new GameObject("Empty");
+                    emptyObject.AddComponent<NetworkIdentity>();
+                    emptyObject.SetAbsoluteTransformFrom(parent);
+                    emptyObject.SetLocalTransform(obj.Transform);
+                    return emptyObject;
                 }
                 default:
                     if (throwOnError)
@@ -131,8 +147,9 @@ namespace slocLoader {
                 or ObjectType.Cylinder
                 or ObjectType.Plane
                 or ObjectType.Capsule
-                or ObjectType.Quad => new PrimitiveObject(type),
-            ObjectType.Light => new LightObject(),
+                or ObjectType.Quad => new PrimitiveObject(0, type),
+            ObjectType.Light => new LightObject(0),
+            ObjectType.Empty => new EmptyObject(0),
             _ => null
         };
 
@@ -141,12 +158,11 @@ namespace slocLoader {
             return objectReader.Read(stream);
         }
 
-        public static slocTransform ReadTransform(this BinaryReader reader) =>
-            new() {
-                Position = reader.ReadVector(),
-                Scale = reader.ReadVector(),
-                Rotation = reader.ReadQuaternion()
-            };
+        public static slocTransform ReadTransform(this BinaryReader reader) => new() {
+            Position = reader.ReadVector(),
+            Scale = reader.ReadVector(),
+            Rotation = reader.ReadQuaternion()
+        };
 
         public static Vector3 ReadVector(this BinaryReader reader) => new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
@@ -170,6 +186,20 @@ namespace slocLoader {
         }
 
         public static void SetLocalTransform(this Component component, slocTransform transform) {
+            if (component == null)
+                return;
+            var t = component.transform;
+            t.localPosition = transform.Position;
+            t.localScale = transform.Scale;
+            t.localRotation = transform.Rotation;
+        }
+
+        public static void SetAbsoluteTransformFrom(this GameObject component, GameObject parent) {
+            if (parent != null)
+                component.transform.SetParent(parent.transform, false);
+        }
+
+        public static void SetLocalTransform(this GameObject component, slocTransform transform) {
             if (component == null)
                 return;
             var t = component.transform;

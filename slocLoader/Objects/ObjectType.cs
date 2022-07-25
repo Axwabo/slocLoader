@@ -9,7 +9,8 @@
         Capsule = 4,
         Cylinder = 5,
         Plane = 6,
-        Quad = 7
+        Quad = 7,
+        Empty = 8
 
     }
 
