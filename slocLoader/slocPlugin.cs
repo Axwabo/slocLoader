@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Exiled.API.Features;
+using HarmonyLib;
 using MapGeneration;
 using slocLoader.AutoObjectLoader;
 
@@ -14,8 +15,17 @@ namespace slocLoader {
         public override Version Version { get; } = new(1, 1, 0);
         public override Version RequiredExiledVersion { get; } = new(5, 2, 0);
 
+        private Harmony _harmony;
+
         public override void OnEnabled() {
-            base.OnEnabled();
+            _harmony = new Harmony("Axwabo.slocLoader");
+            try {
+                _harmony.PatchAll();
+            } catch (Exception e) {
+                Log.Error(e);
+                return;
+            }
+
             API.UnsetPrefabs();
             if (Config.AutoLoad)
                 API.PrefabsLoaded += AutomaticObjectLoader.LoadObjects;
@@ -26,6 +36,7 @@ namespace slocLoader {
 
             Exiled.Events.Handlers.Map.Generated += API.LoadPrefabs;
             API.PrefabsLoaded += SpawnDefault;
+            base.OnEnabled();
         }
 
         public override void OnDisabled() {

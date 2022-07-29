@@ -62,13 +62,34 @@ namespace slocLoader {
             spawnedAmount = 0;
             var createdInstances = new Dictionary<int, GameObject>();
             foreach (var o in objects) {
-                Log.Debug(o.Type + ": " + o.Transform.Scale);
-                var gameObject = o.SpawnObject(o.HasParent && createdInstances.TryGetValue(o.ParentId, out var parentInstance) ? parentInstance : go, throwOnError: false);
+                var parent = o.HasParent && createdInstances.TryGetValue(o.ParentId, out var parentInstance) ? parentInstance : go;
+                var gameObject = o.SpawnObject(parent, throwOnError: false);
+                Log.Debug(o.Type + " -> " + parent.name + " | " + gameObject.transform.lossyScale);
                 if (gameObject == null)
                     continue;
                 spawnedAmount++;
                 createdInstances[o.InstanceId] = gameObject;
             }
+
+            /*foreach (var entry in createdInstances.ToList()) {
+                var pair = entry.Value;
+                var sloc = pair.Key;
+                var o = pair.Value;
+                var parent = sloc.HasParent && createdInstances.TryGetValue(sloc.ParentId, out var parentInstance) ? parentInstance.Value : go;
+                o.SetAbsoluteTransformFrom(parent);
+                Log.Debug(sloc.Type + " " + sloc.Transform.Scale + " " + parent.transform.lossyScale + " " + parent.transform.localScale);
+                // o.transform.localScale = Divide(sloc.Transform.Scale, parent.transform.localScale);
+            }
+
+            foreach (var entry in createdInstances.ToList()) {
+                var pair = entry.Value;
+                var sloc = pair.Key;
+                var o = pair.Value;
+                var parent = sloc.HasParent && createdInstances.TryGetValue(sloc.ParentId, out var parentInstance) ? parentInstance.Value : go;
+                o.SetAbsoluteTransformFrom(parent);
+                Log.Debug(sloc.Type + " " + sloc.Transform.Scale + " " + parent.transform.lossyScale + " " + parent.transform.localScale);
+                // o.transform.localScale = Divide(sloc.Transform.Scale, parent.transform.localScale);
+            }*/
 
             NetworkServer.Spawn(go);
             return go;
@@ -89,13 +110,23 @@ namespace slocLoader {
             };
             go.AddComponent<NetworkIdentity>();
             createdAmount = 0;
-            var createdInstances = new Dictionary<int, GameObject>();
+            var createdInstances = new Dictionary<int, KeyValuePair<slocGameObject, GameObject>>();
             foreach (var o in objects) {
-                var gameObject = o.CreateObject(o.HasParent && createdInstances.TryGetValue(o.ParentId, out var parentInstance) ? parentInstance : go, throwOnError: false);
+                var gameObject = o.CreateObject(null, throwOnError: false);
                 if (gameObject == null)
                     continue;
-                createdInstances[o.InstanceId] = gameObject;
                 createdAmount++;
+                createdInstances[o.InstanceId] = new(o, gameObject);
+            }
+
+            foreach (var entry in createdInstances.ToList()) {
+                var pair = entry.Value;
+                var sloc = pair.Key;
+                var o = pair.Value;
+                var parent = sloc.HasParent && createdInstances.TryGetValue(sloc.ParentId, out var parentInstance) ? parentInstance.Value : go;
+                o.SetAbsoluteTransformFrom(parent);
+                Log.Debug(sloc.Transform.Scale + " " + parent.transform.lossyScale + " " + parent.transform.localScale);
+                o.transform.localScale = Divide(sloc.Transform.Scale, parent.transform.localScale);
             }
 
             return go;
@@ -128,7 +159,9 @@ namespace slocLoader {
                     toy.NetworkScale = scale;
                     toy.NetworkPrimitiveType = primitive.Type.ToPrimitiveType();
                     toy.MaterialColor = primitive.MaterialColor;
-                    return toy.gameObject;
+                    var o = toy.gameObject;
+                    o.AddComponent<UseLossyScale>();
+                    return o;
                 }
                 case LightObject light: {
                     if (_primitivePrefab == null)
@@ -221,12 +254,16 @@ namespace slocLoader {
 
             var t = o.transform;
             var parent = t.parent;
-            t.SetParent(null, false);
-            t.localScale = transform.Scale;
-            t.parent = parent;
+            // t.SetParent(null, false);
+            t.localScale = transform.Scale; //Divide(transform.Scale, parent == null ? Vector3.one : parent.transform.lossyScale);
+            // t.parent = parent;
             t.localPosition = transform.Position;
             t.localRotation = transform.Rotation;
             scale = t.localScale;
+        }
+
+        public static Vector3 Divide(Vector3 a, Vector3 b) {
+            return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
         }
 
         internal static void LoadPrefabs() {
@@ -251,6 +288,8 @@ namespace slocLoader {
             _primitivePrefab = null;
             _lightPrefab = null;
         }
+
+        public static bool ShouldUseLossyScale(this AdminToyBase toy) => toy.TryGetComponent(out UseLossyScale _);
 
     }
 
