@@ -13,26 +13,30 @@ namespace slocLoader {
 
     public static class API {
 
+        public const uint slocVersion = 2;
+
         private static PrimitiveObjectToy _primitivePrefab;
         private static LightSourceToy _lightPrefab;
 
         public static readonly IObjectReader DefaultReader = new Ver2Reader();
 
-        private static readonly Dictionary<int, IObjectReader> VersionReaders = new() {
+        private static readonly Dictionary<uint, IObjectReader> VersionReaders = new() {
             {1, new Ver1Reader()},
             {2, new Ver2Reader()}
         };
 
         public static event Action PrefabsLoaded;
 
-        public static bool TryGetReader(int version, out IObjectReader reader) => VersionReaders.TryGetValue(version, out reader);
+        public static bool TryGetReader(uint version, out IObjectReader reader) => VersionReaders.TryGetValue(version, out reader);
 
-        public static IObjectReader GetReader(int version) => TryGetReader(version, out var reader) ? reader : DefaultReader;
+        public static IObjectReader GetReader(uint version) => TryGetReader(version, out var reader) ? reader : DefaultReader;
 
         public static List<slocGameObject> ReadObjects(Stream stream, bool autoClose = true) {
             var objects = new List<slocGameObject>();
             var binaryReader = new BinaryReader(stream);
-            var version = binaryReader.ReadInt32();
+            var version = binaryReader.ReadUInt32();
+            if (!VersionReaders.ContainsKey(version))
+                Log.Warn($"Unknown sloc version: {version}\nAttempting to read it using the default reader.");
             var reader = GetReader(version);
             var count = binaryReader.ReadInt32();
             for (var i = 0; i < count; i++) {
@@ -64,32 +68,11 @@ namespace slocLoader {
             foreach (var o in objects) {
                 var parent = o.HasParent && createdInstances.TryGetValue(o.ParentId, out var parentInstance) ? parentInstance : go;
                 var gameObject = o.SpawnObject(parent, throwOnError: false);
-                Log.Debug(o.Type + " -> " + parent.name + " | " + gameObject.transform.lossyScale);
                 if (gameObject == null)
                     continue;
                 spawnedAmount++;
                 createdInstances[o.InstanceId] = gameObject;
             }
-
-            /*foreach (var entry in createdInstances.ToList()) {
-                var pair = entry.Value;
-                var sloc = pair.Key;
-                var o = pair.Value;
-                var parent = sloc.HasParent && createdInstances.TryGetValue(sloc.ParentId, out var parentInstance) ? parentInstance.Value : go;
-                o.SetAbsoluteTransformFrom(parent);
-                Log.Debug(sloc.Type + " " + sloc.Transform.Scale + " " + parent.transform.lossyScale + " " + parent.transform.localScale);
-                // o.transform.localScale = Divide(sloc.Transform.Scale, parent.transform.localScale);
-            }
-
-            foreach (var entry in createdInstances.ToList()) {
-                var pair = entry.Value;
-                var sloc = pair.Key;
-                var o = pair.Value;
-                var parent = sloc.HasParent && createdInstances.TryGetValue(sloc.ParentId, out var parentInstance) ? parentInstance.Value : go;
-                o.SetAbsoluteTransformFrom(parent);
-                Log.Debug(sloc.Type + " " + sloc.Transform.Scale + " " + parent.transform.lossyScale + " " + parent.transform.localScale);
-                // o.transform.localScale = Divide(sloc.Transform.Scale, parent.transform.localScale);
-            }*/
 
             NetworkServer.Spawn(go);
             return go;
@@ -110,23 +93,14 @@ namespace slocLoader {
             };
             go.AddComponent<NetworkIdentity>();
             createdAmount = 0;
-            var createdInstances = new Dictionary<int, KeyValuePair<slocGameObject, GameObject>>();
+            var createdInstances = new Dictionary<int, GameObject>();
             foreach (var o in objects) {
-                var gameObject = o.CreateObject(null, throwOnError: false);
+                var parent = o.HasParent && createdInstances.TryGetValue(o.ParentId, out var parentInstance) ? parentInstance : go;
+                var gameObject = o.CreateObject(parent, throwOnError: false);
                 if (gameObject == null)
                     continue;
                 createdAmount++;
-                createdInstances[o.InstanceId] = new(o, gameObject);
-            }
-
-            foreach (var entry in createdInstances.ToList()) {
-                var pair = entry.Value;
-                var sloc = pair.Key;
-                var o = pair.Value;
-                var parent = sloc.HasParent && createdInstances.TryGetValue(sloc.ParentId, out var parentInstance) ? parentInstance.Value : go;
-                o.SetAbsoluteTransformFrom(parent);
-                Log.Debug(sloc.Transform.Scale + " " + parent.transform.lossyScale + " " + parent.transform.localScale);
-                o.transform.localScale = Divide(sloc.Transform.Scale, parent.transform.localScale);
+                createdInstances[o.InstanceId] = gameObject;
             }
 
             return go;
@@ -149,43 +123,42 @@ namespace slocLoader {
         }
 
         public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
+            var transform = obj.Transform;
             switch (obj) {
                 case PrimitiveObject primitive: {
                     if (_primitivePrefab == null)
                         throw new NullReferenceException("Primitive prefab is not set! Make sure to spawn objects after the map is generated.");
                     var toy = UnityEngine.Object.Instantiate(_primitivePrefab, positionOffset, rotationOffset);
                     toy.SetAbsoluteTransformFrom(parent);
-                    toy.SetLocalTransform(obj.Transform, out var scale);
-                    toy.NetworkScale = scale;
+                    toy.SetLocalTransform(transform);
+                    toy.NetworkScale = transform.Scale;
                     toy.NetworkPrimitiveType = primitive.Type.ToPrimitiveType();
                     toy.MaterialColor = primitive.MaterialColor;
-                    var o = toy.gameObject;
-                    o.AddComponent<UseLossyScale>();
-                    return o;
+                    return toy.gameObject;
                 }
                 case LightObject light: {
                     if (_primitivePrefab == null)
                         throw new NullReferenceException("Light prefab is not set! Make sure to spawn objects after the map is generated.");
                     var toy = UnityEngine.Object.Instantiate(_lightPrefab, positionOffset, rotationOffset);
                     toy.SetAbsoluteTransformFrom(parent);
-                    toy.SetLocalTransform(obj.Transform, out var scale);
+                    toy.SetLocalTransform(transform);
                     toy.NetworkLightColor = light.LightColor;
                     toy.NetworkLightShadows = light.Shadows;
                     toy.NetworkLightRange = light.Range;
                     toy.NetworkLightIntensity = light.Intensity;
-                    toy.NetworkScale = scale;
+                    toy.NetworkScale = transform.Scale;
                     return toy.gameObject;
                 }
                 case EmptyObject _: {
                     var emptyObject = new GameObject("Empty");
                     emptyObject.AddComponent<NetworkIdentity>();
                     emptyObject.SetAbsoluteTransformFrom(parent);
-                    emptyObject.SetLocalTransform(obj.Transform, out _);
+                    emptyObject.SetLocalTransform(transform);
                     return emptyObject;
                 }
                 default:
                     if (throwOnError)
-                        throw new ArgumentOutOfRangeException(nameof(obj.Type), obj.Type, "Unknown object type");
+                        throw new IndexOutOfRangeException($"Unknown object type {obj.Type}");
                     return null;
             }
         }
@@ -202,7 +175,7 @@ namespace slocLoader {
             _ => null
         };
 
-        public static slocGameObject ReadObject(this BinaryReader stream, int version = 0, IObjectReader objectReader = null) {
+        public static slocGameObject ReadObject(this BinaryReader stream, uint version = 0, IObjectReader objectReader = null) {
             objectReader ??= GetReader(version);
             return objectReader.Read(stream);
         }
@@ -234,11 +207,9 @@ namespace slocLoader {
                 SetAbsoluteTransformFrom(component.gameObject, parent);
         }
 
-        public static void SetLocalTransform(this Component component, slocTransform transform, out Vector3 scale) {
+        public static void SetLocalTransform(this Component component, slocTransform transform) {
             if (component != null)
-                SetLocalTransform(component.gameObject, transform, out scale);
-            else
-                scale = Vector3.one;
+                SetLocalTransform(component.gameObject, transform);
         }
 
         public static void SetAbsoluteTransformFrom(this GameObject o, GameObject parent) {
@@ -246,24 +217,14 @@ namespace slocLoader {
                 o.transform.SetParent(parent.transform, false);
         }
 
-        public static void SetLocalTransform(this GameObject o, slocTransform transform, out Vector3 scale) {
-            if (o == null) {
-                scale = Vector3.one;
+        public static void SetLocalTransform(this GameObject o, slocTransform transform) {
+            if (o == null)
                 return;
-            }
 
             var t = o.transform;
-            var parent = t.parent;
-            // t.SetParent(null, false);
-            t.localScale = transform.Scale; //Divide(transform.Scale, parent == null ? Vector3.one : parent.transform.lossyScale);
-            // t.parent = parent;
+            t.localScale = transform.Scale;
             t.localPosition = transform.Position;
             t.localRotation = transform.Rotation;
-            scale = t.localScale;
-        }
-
-        public static Vector3 Divide(Vector3 a, Vector3 b) {
-            return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
         }
 
         internal static void LoadPrefabs() {
@@ -289,7 +250,7 @@ namespace slocLoader {
             _lightPrefab = null;
         }
 
-        public static bool ShouldUseLossyScale(this AdminToyBase toy) => toy.TryGetComponent(out UseLossyScale _);
+        public static IEnumerable<GameObject> WithAllChildren(this GameObject o) => o.GetComponentsInChildren<Transform>().Select(e => e.gameObject);
 
     }
 

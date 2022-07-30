@@ -73,7 +73,6 @@
         <Compile Include="Commands\DestroyCommand.cs" />
         <Compile Include="Commands\ReloadCommand.cs" />
         <Compile Include="Commands\SpawnCommand.cs" />
-        <Compile Include="UseLossyScale.cs" />
         <Compile Include="Objects\EmptyObject.cs" />
         <Compile Include="Readers\Ver2Reader.cs" />
         <Compile Include="slocConfig.cs" />

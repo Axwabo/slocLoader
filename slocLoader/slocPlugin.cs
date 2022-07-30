@@ -12,7 +12,7 @@ namespace slocLoader {
         public override string Name => "slocLoader";
         public override string Prefix => "sloc";
         public override string Author => "Axwabo";
-        public override Version Version { get; } = new(1, 1, 0);
+        public override Version Version { get; } = new(2, 0, 0);
         public override Version RequiredExiledVersion { get; } = new(5, 2, 0);
 
         private Harmony _harmony;
@@ -21,9 +21,9 @@ namespace slocLoader {
             _harmony = new Harmony("Axwabo.slocLoader");
             try {
                 _harmony.PatchAll();
+                Log.Info("Patching succeeded.");
             } catch (Exception e) {
-                Log.Error(e);
-                return;
+                Log.Error("Patching failed! Nested object scaling will behave weirdly!\n" + e);
             }
 
             API.UnsetPrefabs();
