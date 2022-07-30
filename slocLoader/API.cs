@@ -13,6 +13,8 @@ namespace slocLoader {
 
     public static class API {
 
+        public const float ColorDivisionMultiplier = 1f / 255f;
+
         public const uint slocVersion = 2;
 
         private static PrimitiveObjectToy _primitivePrefab;
@@ -38,9 +40,9 @@ namespace slocLoader {
             if (!VersionReaders.ContainsKey(version))
                 Log.Warn($"Unknown sloc version: {version}\nAttempting to read it using the default reader.");
             var reader = GetReader(version);
-            var count = binaryReader.ReadInt32();
-            for (var i = 0; i < count; i++) {
-                var obj = ReadObject(binaryReader, version, reader);
+            var header = reader.ReadHeader(binaryReader);
+            for (var i = 0; i < header.ObjectCount; i++) {
+                var obj = ReadObject(binaryReader, version, reader, header.Attributes);
                 if (obj is {IsValid: true})
                     objects.Add(obj);
             }
@@ -175,9 +177,9 @@ namespace slocLoader {
             _ => null
         };
 
-        public static slocGameObject ReadObject(this BinaryReader stream, uint version = 0, IObjectReader objectReader = null) {
+        public static slocGameObject ReadObject(this BinaryReader stream, uint version = 0, IObjectReader objectReader = null, slocAttributes attributes = slocAttributes.None) {
             objectReader ??= GetReader(version);
-            return objectReader.Read(stream);
+            return objectReader.Read(stream, attributes);
         }
 
         public static slocTransform ReadTransform(this BinaryReader reader) => new() {
@@ -191,6 +193,15 @@ namespace slocLoader {
         public static Quaternion ReadQuaternion(this BinaryReader reader) => new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
         public static Color ReadColor(this BinaryReader reader) => new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+
+        public static Color ReadLossyColor(this BinaryReader reader) {
+            var color = reader.ReadInt32();
+            var red = (color >> 24) & 0xFF;
+            var green = (color >> 16) & 0xFF;
+            var blue = (color >> 8) & 0xFF;
+            var alpha = color & 0xFF;
+            return new(red * ColorDivisionMultiplier, green * ColorDivisionMultiplier, blue * ColorDivisionMultiplier, alpha * ColorDivisionMultiplier);
+        }
 
         public static PrimitiveType ToPrimitiveType(this ObjectType type) => type switch {
             ObjectType.Cube => PrimitiveType.Cube,
@@ -251,6 +262,8 @@ namespace slocLoader {
         }
 
         public static IEnumerable<GameObject> WithAllChildren(this GameObject o) => o.GetComponentsInChildren<Transform>().Select(e => e.gameObject);
+
+        public static bool HasFlagFast(this slocAttributes attributes, slocAttributes flag) => (attributes & flag) == flag;
 
     }
 

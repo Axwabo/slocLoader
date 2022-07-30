@@ -74,7 +74,9 @@
         <Compile Include="Commands\ReloadCommand.cs" />
         <Compile Include="Commands\SpawnCommand.cs" />
         <Compile Include="Objects\EmptyObject.cs" />
+        <Compile Include="Readers\slocHeader.cs" />
         <Compile Include="Readers\Ver2Reader.cs" />
+        <Compile Include="slocAttributes.cs" />
         <Compile Include="slocConfig.cs" />
         <Compile Include="Objects\LightObject.cs" />
         <Compile Include="Objects\ObjectType.cs" />
