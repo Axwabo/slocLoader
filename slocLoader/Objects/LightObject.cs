@@ -5,7 +5,7 @@ namespace slocLoader.Objects {
 
     public class LightObject : slocGameObject {
 
-        public LightObject() => Type = ObjectType.Light;
+        public LightObject(int instanceId) : base(instanceId) => Type = ObjectType.Light;
 
         public Color LightColor = Color.white;
 

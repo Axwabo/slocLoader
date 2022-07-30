@@ -6,13 +6,13 @@ namespace slocLoader.Objects {
 
     public class PrimitiveObject : slocGameObject {
 
-        public PrimitiveObject(ObjectType type) {
-            if (type is ObjectType.None || type is ObjectType.Light)
-                throw new ArgumentException("PrimitiveObject cannot be of type None or Light");
+        public PrimitiveObject(int instanceId, ObjectType type) : base(instanceId) {
+            if (type is ObjectType.None or ObjectType.Light)
+                throw new ArgumentException("Invalid primitive type", nameof(type));
             Type = type;
         }
 
-        public Color MaterialColor = Color.gray;
+        public Color MaterialColor;
 
         public override void WriteTo(BinaryWriter writer) {
             base.WriteTo(writer);
