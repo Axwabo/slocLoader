@@ -7,7 +7,7 @@ namespace slocLoader.Readers {
 
         public slocHeader ReadHeader(BinaryReader stream) => new slocHeader(stream.ReadInt32());
 
-        public slocGameObject Read(BinaryReader stream, slocAttributes attributes) {
+        public slocGameObject Read(BinaryReader stream, slocHeader header) {
             var objectType = (ObjectType) stream.ReadByte();
             return objectType switch {
                 ObjectType.Cube => ReadPrimitive(stream, objectType),

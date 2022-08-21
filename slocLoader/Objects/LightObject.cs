@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using slocLoader.Readers;
 using UnityEngine;
 
 namespace slocLoader.Objects {
@@ -15,12 +16,17 @@ namespace slocLoader.Objects {
 
         public float Intensity = 1;
 
-        public override void WriteTo(BinaryWriter writer) {
-            base.WriteTo(writer);
-            writer.Write(LightColor.r);
-            writer.Write(LightColor.g);
-            writer.Write(LightColor.b);
-            writer.Write(LightColor.a);
+        public override void WriteTo(BinaryWriter writer, slocHeader header) {
+            base.WriteTo(writer, header);
+            if (header.Attributes.HasFlagFast(slocAttributes.LossyColors))
+                writer.Write(LightColor.ToLossyColor());
+            else {
+                writer.Write(LightColor.r);
+                writer.Write(LightColor.g);
+                writer.Write(LightColor.b);
+                writer.Write(LightColor.a);
+            }
+
             writer.Write(Shadows);
             writer.Write(Range);
             writer.Write(Intensity);

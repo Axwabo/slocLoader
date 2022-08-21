@@ -7,7 +7,7 @@ namespace slocLoader.Readers {
 
         slocHeader ReadHeader(BinaryReader stream);
         
-        slocGameObject Read(BinaryReader stream, slocAttributes attributes);
+        slocGameObject Read(BinaryReader stream, slocHeader header);
 
     }
 

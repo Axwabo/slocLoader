@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using slocLoader.Readers;
 using UnityEngine;
 
 namespace slocLoader.Objects {
@@ -12,14 +13,37 @@ namespace slocLoader.Objects {
             Type = type;
         }
 
-        public Color MaterialColor;
+        public Color MaterialColor = Color.gray;
+        private ColliderCreationMode _colliderMode = ColliderCreationMode.Both;
 
-        public override void WriteTo(BinaryWriter writer) {
-            base.WriteTo(writer);
+        public ColliderCreationMode ColliderMode {
+            get => _colliderMode;
+            set => _colliderMode = value == ColliderCreationMode.Unset ? _colliderMode : value;
+        }
+
+        public override void WriteTo(BinaryWriter writer, slocHeader header) {
+            base.WriteTo(writer, header);
+            if (header.Attributes.HasFlagFast(slocAttributes.LossyColors)) {
+                writer.Write(MaterialColor.ToLossyColor());
+                return;
+            }
+
             writer.Write(MaterialColor.r);
             writer.Write(MaterialColor.g);
             writer.Write(MaterialColor.b);
             writer.Write(MaterialColor.a);
+            if (!header.Attributes.HasFlagFast(slocAttributes.ForcedColliderMode))
+                writer.Write((byte) ColliderMode);
+        }
+
+        public enum ColliderCreationMode : byte {
+
+            Unset = 0,
+            None = 1,
+            ClientOnly = 2,
+            ServerOnly = 3,
+            Both = 4
+
         }
 
     }

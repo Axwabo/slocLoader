@@ -15,16 +15,17 @@ namespace slocLoader {
 
         public const float ColorDivisionMultiplier = 1f / 255f;
 
-        public const uint slocVersion = 2;
+        public const uint slocVersion = 3;
 
-        private static PrimitiveObjectToy _primitivePrefab;
-        private static LightSourceToy _lightPrefab;
+        public static PrimitiveObjectToy PrimitivePrefab { get; private set; }
+        public static LightSourceToy LightPrefab { get; private set; }
 
-        public static readonly IObjectReader DefaultReader = new Ver2Reader();
+        public static readonly IObjectReader DefaultReader = new Ver3Reader();
 
         private static readonly Dictionary<uint, IObjectReader> VersionReaders = new() {
             {1, new Ver1Reader()},
-            {2, new Ver2Reader()}
+            {2, new Ver2Reader()},
+            {3, new Ver3Reader()}
         };
 
         public static event Action PrefabsLoaded;
@@ -42,7 +43,7 @@ namespace slocLoader {
             var reader = GetReader(version);
             var header = reader.ReadHeader(binaryReader);
             for (var i = 0; i < header.ObjectCount; i++) {
-                var obj = ReadObject(binaryReader, version, reader, header.Attributes);
+                var obj = ReadObject(binaryReader, header, version, reader);
                 if (obj is {IsValid: true})
                     objects.Add(obj);
             }
@@ -60,7 +61,7 @@ namespace slocLoader {
             var go = new GameObject {
                 transform = {
                     position = position,
-                    rotation = rotation,
+                    rotation = rotation
                 }
             };
             go.AddComponent<NetworkIdentity>();
@@ -76,7 +77,6 @@ namespace slocLoader {
                 createdInstances[o.InstanceId] = gameObject;
             }
 
-            NetworkServer.Spawn(go);
             return go;
         }
 
@@ -113,35 +113,47 @@ namespace slocLoader {
         public static GameObject CreateObjectsFromFile(string path, out int spawnedAmount, Vector3 position, Quaternion rotation = default) => CreateObjects(ReadObjectsFromFile(path), out spawnedAmount, position, rotation);
 
         public static GameObject SpawnObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
-            var o = CreateObject(obj, parent, positionOffset, rotationOffset, throwOnError);
+            var o = CreateObject(obj, parent, positionOffset, rotationOffset, throwOnError, false);
             if (o == null) {
                 if (throwOnError)
                     throw new ArgumentOutOfRangeException(nameof(obj.Type), obj.Type, "Unknown object type");
                 return null;
             }
 
-            NetworkServer.Spawn(o.gameObject);
+            if (obj is not PrimitiveObject primitiveObject || !o.TryGetComponent(out PrimitiveObjectToy toy))
+                return o;
+            var colliderMode = primitiveObject.ColliderMode;
+            toy.NetworkScale = colliderMode is PrimitiveObject.ColliderCreationMode.ServerOnly or PrimitiveObject.ColliderCreationMode.None ? Vector3.zero : obj.Transform.Scale;
+            Log.Debug(toy.NetworkScale);
+            toy.NetworkPrimitiveType = primitiveObject.Type.ToPrimitiveType();
+            NetworkServer.Spawn(o);
             return o;
         }
 
-        public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
+        public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true, bool setPrimitiveType = true) {
             var transform = obj.Transform;
             switch (obj) {
                 case PrimitiveObject primitive: {
-                    if (_primitivePrefab == null)
+                    if (PrimitivePrefab == null)
                         throw new NullReferenceException("Primitive prefab is not set! Make sure to spawn objects after the map is generated.");
-                    var toy = UnityEngine.Object.Instantiate(_primitivePrefab, positionOffset, rotationOffset);
+                    var toy = UnityEngine.Object.Instantiate(PrimitivePrefab, positionOffset, rotationOffset);
+                    var colliderMode = primitive.ColliderMode;
+                    toy.NetworkScale = colliderMode is PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.Both ? transform.Scale : Vector3.zero;
+                    var primitiveType = primitive.Type.ToPrimitiveType();
+                    var o = toy.gameObject;
+                    if (colliderMode is PrimitiveObject.ColliderCreationMode.ServerOnly or PrimitiveObject.ColliderCreationMode.Both)
+                        o.AddProperCollider(primitiveType);
+                    if (setPrimitiveType)
+                        toy.NetworkPrimitiveType = setPrimitiveType ? primitiveType : (primitiveType == PrimitiveType.Sphere ? PrimitiveType.Cube : PrimitiveType.Sphere);
                     toy.SetAbsoluteTransformFrom(parent);
                     toy.SetLocalTransform(transform);
-                    toy.NetworkScale = transform.Scale;
-                    toy.NetworkPrimitiveType = primitive.Type.ToPrimitiveType();
                     toy.MaterialColor = primitive.MaterialColor;
-                    return toy.gameObject;
+                    return o;
                 }
                 case LightObject light: {
-                    if (_primitivePrefab == null)
+                    if (PrimitivePrefab == null)
                         throw new NullReferenceException("Light prefab is not set! Make sure to spawn objects after the map is generated.");
-                    var toy = UnityEngine.Object.Instantiate(_lightPrefab, positionOffset, rotationOffset);
+                    var toy = UnityEngine.Object.Instantiate(LightPrefab, positionOffset, rotationOffset);
                     toy.SetAbsoluteTransformFrom(parent);
                     toy.SetLocalTransform(transform);
                     toy.NetworkLightColor = light.LightColor;
@@ -151,7 +163,7 @@ namespace slocLoader {
                     toy.NetworkScale = transform.Scale;
                     return toy.gameObject;
                 }
-                case EmptyObject _: {
+                case EmptyObject: {
                     var emptyObject = new GameObject("Empty");
                     emptyObject.AddComponent<NetworkIdentity>();
                     emptyObject.SetAbsoluteTransformFrom(parent);
@@ -177,9 +189,9 @@ namespace slocLoader {
             _ => null
         };
 
-        public static slocGameObject ReadObject(this BinaryReader stream, uint version = 0, IObjectReader objectReader = null, slocAttributes attributes = slocAttributes.None) {
+        public static slocGameObject ReadObject(this BinaryReader stream, slocHeader header, uint version = 0, IObjectReader objectReader = null) {
             objectReader ??= GetReader(version);
-            return objectReader.Read(stream, attributes);
+            return objectReader.Read(stream, header);
         }
 
         public static slocTransform ReadTransform(this BinaryReader reader) => new() {
@@ -241,12 +253,12 @@ namespace slocLoader {
         internal static void LoadPrefabs() {
             foreach (var prefab in NetworkClient.prefabs.Values) {
                 if (prefab.TryGetComponent(out PrimitiveObjectToy primitive))
-                    _primitivePrefab = primitive;
+                    PrimitivePrefab = primitive;
                 if (prefab.TryGetComponent(out LightSourceToy light))
-                    _lightPrefab = light;
+                    LightPrefab = light;
             }
 
-            if (_primitivePrefab == null || _lightPrefab == null)
+            if (PrimitivePrefab == null || LightPrefab == null)
                 return;
             try {
                 PrefabsLoaded?.Invoke();
@@ -257,13 +269,28 @@ namespace slocLoader {
         }
 
         internal static void UnsetPrefabs() {
-            _primitivePrefab = null;
-            _lightPrefab = null;
+            PrimitivePrefab = null;
+            LightPrefab = null;
         }
 
         public static IEnumerable<GameObject> WithAllChildren(this GameObject o) => o.GetComponentsInChildren<Transform>().Select(e => e.gameObject);
 
         public static bool HasFlagFast(this slocAttributes attributes, slocAttributes flag) => (attributes & flag) == flag;
+
+        public static int ToRgbRange(this float f) => Mathf.FloorToInt(Mathf.Clamp01(f) * 255f);
+
+        public static int ToLossyColor(this Color color) => color.r.ToRgbRange() << 24 | color.g.ToRgbRange() << 16 | color.b.ToRgbRange() << 8 | color.a.ToRgbRange();
+
+        public static Collider AddProperCollider(this GameObject o, PrimitiveType type) {
+            return type switch {
+                PrimitiveType.Cube => o.AddComponent<BoxCollider>(),
+                PrimitiveType.Sphere => o.AddComponent<SphereCollider>(),
+                PrimitiveType.Capsule or PrimitiveType.Cylinder => o.AddComponent<CapsuleCollider>(),
+                PrimitiveType.Plane => o.AddComponent<BoxCollider>(),
+                PrimitiveType.Quad => o.AddComponent<BoxCollider>(),
+                _ => null
+            };
+        }
 
     }
 

@@ -61,6 +61,9 @@
         <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\assemblies\UnityEngine.CoreModule.dll</HintPath>
         </Reference>
+        <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\..\assemblies\UnityEngine.PhysicsModule.dll</HintPath>
+        </Reference>
     </ItemGroup>
     <ItemGroup>
         <Compile Include="AdminToyPatch.cs" />
@@ -76,6 +79,7 @@
         <Compile Include="Objects\EmptyObject.cs" />
         <Compile Include="Readers\slocHeader.cs" />
         <Compile Include="Readers\Ver2Reader.cs" />
+        <Compile Include="Readers\Ver3Reader.cs" />
         <Compile Include="slocAttributes.cs" />
         <Compile Include="slocConfig.cs" />
         <Compile Include="Objects\LightObject.cs" />
