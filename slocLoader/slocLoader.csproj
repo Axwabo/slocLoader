@@ -33,25 +33,25 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="0Harmony, Version=2.0.4.0, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\assemblies\0Harmony.dll</HintPath>
         </Reference>
         <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\assemblies\Assembly-CSharp.dll</HintPath>
         </Reference>
-        <Reference Include="Axwabo.Helpers, Version=1.5.0.0, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="Axwabo.Helpers">
           <HintPath>..\..\assemblies\Axwabo.Helpers.dll</HintPath>
         </Reference>
         <Reference Include="CommandSystem.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\assemblies\CommandSystem.Core.dll</HintPath>
         </Reference>
-        <Reference Include="Exiled.API, Version=5.2.2.0, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="Exiled.API, Version=5.3.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\assemblies\Exiled.API.dll</HintPath>
         </Reference>
-        <Reference Include="Exiled.Events, Version=5.2.2.0, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="Exiled.Events, Version=5.3.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\assemblies\Exiled.Events.dll</HintPath>
         </Reference>
-        <Reference Include="Exiled.Permissions, Version=5.2.2.0, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="Exiled.Permissions, Version=5.3.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\assemblies\Exiled.Permissions.dll</HintPath>
         </Reference>
         <Reference Include="Mirror, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">

@@ -1,4 +1,5 @@
-﻿using slocLoader.Objects;
+﻿using System.IO;
+using slocLoader.Objects;
 
 namespace slocLoader.Readers {
 
@@ -20,6 +21,13 @@ namespace slocLoader.Readers {
             ObjectCount = objectCount;
             Attributes = (slocAttributes) attributes;
             DefaultColliderMode = defaultColliderMode;
+        }
+
+        public void WriteTo(BinaryWriter writer) {
+            writer.Write(ObjectCount);
+            writer.Write((byte) Attributes);
+            if (Attributes.HasFlagFast(slocAttributes.ForcedColliderMode))
+                writer.Write((byte) DefaultColliderMode);
         }
 
     }

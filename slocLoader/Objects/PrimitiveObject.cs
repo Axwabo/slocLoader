@@ -18,7 +18,7 @@ namespace slocLoader.Objects {
 
         public ColliderCreationMode ColliderMode {
             get => _colliderMode;
-            set => _colliderMode = value == ColliderCreationMode.Unset ? _colliderMode : value;
+            set => _colliderMode = value is ColliderCreationMode.Unset ? _colliderMode : value;
         }
 
         public override void WriteTo(BinaryWriter writer, slocHeader header) {
@@ -42,7 +42,8 @@ namespace slocLoader.Objects {
             None = 1,
             ClientOnly = 2,
             ServerOnly = 3,
-            Both = 4
+            Both = 4,
+            Trigger = 5
 
         }
 

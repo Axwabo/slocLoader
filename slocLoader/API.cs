@@ -94,6 +94,7 @@ namespace slocLoader {
                 }
             };
             go.AddComponent<NetworkIdentity>();
+            NetworkServer.Spawn(go);
             createdAmount = 0;
             var createdInstances = new Dictionary<int, GameObject>();
             foreach (var o in objects) {
@@ -113,59 +114,53 @@ namespace slocLoader {
         public static GameObject CreateObjectsFromFile(string path, out int spawnedAmount, Vector3 position, Quaternion rotation = default) => CreateObjects(ReadObjectsFromFile(path), out spawnedAmount, position, rotation);
 
         public static GameObject SpawnObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
-            var o = CreateObject(obj, parent, positionOffset, rotationOffset, throwOnError, false);
+            var o = CreateObject(obj, parent, positionOffset, rotationOffset, throwOnError);
             if (o == null) {
                 if (throwOnError)
                     throw new ArgumentOutOfRangeException(nameof(obj.Type), obj.Type, "Unknown object type");
                 return null;
             }
 
-            if (obj is not PrimitiveObject primitiveObject || !o.TryGetComponent(out PrimitiveObjectToy toy))
-                return o;
-            var colliderMode = primitiveObject.ColliderMode;
-            toy.NetworkScale = colliderMode is PrimitiveObject.ColliderCreationMode.ServerOnly or PrimitiveObject.ColliderCreationMode.None ? Vector3.zero : obj.Transform.Scale;
-            Log.Debug(toy.NetworkScale);
-            toy.NetworkPrimitiveType = primitiveObject.Type.ToPrimitiveType();
             NetworkServer.Spawn(o);
             return o;
         }
 
-        public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true, bool setPrimitiveType = true) {
+        public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
             var transform = obj.Transform;
             switch (obj) {
                 case PrimitiveObject primitive: {
                     if (PrimitivePrefab == null)
-                        throw new NullReferenceException("Primitive prefab is not set! Make sure to spawn objects after the map is generated.");
+                        throw new NullReferenceException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
                     var toy = UnityEngine.Object.Instantiate(PrimitivePrefab, positionOffset, rotationOffset);
                     var colliderMode = primitive.ColliderMode;
-                    toy.NetworkScale = colliderMode is PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.Both ? transform.Scale : Vector3.zero;
                     var primitiveType = primitive.Type.ToPrimitiveType();
+                    var clientCollider = colliderMode is PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.Both;
                     var o = toy.gameObject;
-                    if (colliderMode is PrimitiveObject.ColliderCreationMode.ServerOnly or PrimitiveObject.ColliderCreationMode.Both)
-                        o.AddProperCollider(primitiveType);
-                    if (setPrimitiveType)
-                        toy.NetworkPrimitiveType = setPrimitiveType ? primitiveType : (primitiveType == PrimitiveType.Sphere ? PrimitiveType.Cube : PrimitiveType.Sphere);
+                    if (colliderMode is not PrimitiveObject.ColliderCreationMode.None or PrimitiveObject.ColliderCreationMode.ClientOnly)
+                        o.AddProperCollider(primitiveType, colliderMode is PrimitiveObject.ColliderCreationMode.Trigger);
+                    toy.PrimitiveType = primitiveType;
                     toy.SetAbsoluteTransformFrom(parent);
-                    toy.SetLocalTransform(transform);
+                    toy.SetLocalTransform(transform, clientCollider); // TODO: clients that joined later will have all colliders set regardless of collider mode
+                    toy.Scale = toy.transform.localScale;
+                    AdminToyPatch.DesiredScale[toy.GetInstanceID()] = transform.Scale;
                     toy.MaterialColor = primitive.MaterialColor;
                     return o;
                 }
                 case LightObject light: {
-                    if (PrimitivePrefab == null)
-                        throw new NullReferenceException("Light prefab is not set! Make sure to spawn objects after the map is generated.");
+                    if (LightPrefab == null)
+                        throw new NullReferenceException("Light prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
                     var toy = UnityEngine.Object.Instantiate(LightPrefab, positionOffset, rotationOffset);
                     toy.SetAbsoluteTransformFrom(parent);
                     toy.SetLocalTransform(transform);
-                    toy.NetworkLightColor = light.LightColor;
-                    toy.NetworkLightShadows = light.Shadows;
-                    toy.NetworkLightRange = light.Range;
-                    toy.NetworkLightIntensity = light.Intensity;
-                    toy.NetworkScale = transform.Scale;
+                    toy.LightColor = light.LightColor;
+                    toy.LightShadows = light.Shadows;
+                    toy.LightRange = light.Range;
+                    toy.LightIntensity = light.Intensity;
+                    toy.Scale = transform.Scale;
                     return toy.gameObject;
                 }
                 case EmptyObject: {
                     var emptyObject = new GameObject("Empty");
-                    emptyObject.AddComponent<NetworkIdentity>();
                     emptyObject.SetAbsoluteTransformFrom(parent);
                     emptyObject.SetLocalTransform(transform);
                     return emptyObject;
@@ -230,9 +225,9 @@ namespace slocLoader {
                 SetAbsoluteTransformFrom(component.gameObject, parent);
         }
 
-        public static void SetLocalTransform(this Component component, slocTransform transform) {
+        public static void SetLocalTransform(this Component component, slocTransform transform, bool zeroScale = false) {
             if (component != null)
-                SetLocalTransform(component.gameObject, transform);
+                SetLocalTransform(component.gameObject, transform, zeroScale);
         }
 
         public static void SetAbsoluteTransformFrom(this GameObject o, GameObject parent) {
@@ -240,12 +235,11 @@ namespace slocLoader {
                 o.transform.SetParent(parent.transform, false);
         }
 
-        public static void SetLocalTransform(this GameObject o, slocTransform transform) {
+        public static void SetLocalTransform(this GameObject o, slocTransform transform, bool zeroScale = false) {
             if (o == null)
                 return;
-
             var t = o.transform;
-            t.localScale = transform.Scale;
+            t.localScale = zeroScale ? Vector3.zero : transform.Scale;
             t.localPosition = transform.Position;
             t.localRotation = transform.Rotation;
         }
@@ -281,8 +275,8 @@ namespace slocLoader {
 
         public static int ToLossyColor(this Color color) => color.r.ToRgbRange() << 24 | color.g.ToRgbRange() << 16 | color.b.ToRgbRange() << 8 | color.a.ToRgbRange();
 
-        public static Collider AddProperCollider(this GameObject o, PrimitiveType type) {
-            return type switch {
+        public static Collider AddProperCollider(this GameObject o, PrimitiveType type, bool isTrigger) {
+            Collider collider = type switch {
                 PrimitiveType.Cube => o.AddComponent<BoxCollider>(),
                 PrimitiveType.Sphere => o.AddComponent<SphereCollider>(),
                 PrimitiveType.Capsule or PrimitiveType.Cylinder => o.AddComponent<CapsuleCollider>(),
@@ -290,6 +284,9 @@ namespace slocLoader {
                 PrimitiveType.Quad => o.AddComponent<BoxCollider>(),
                 _ => null
             };
+            if (collider && isTrigger)
+                collider.isTrigger = true;
+            return collider;
         }
 
     }
