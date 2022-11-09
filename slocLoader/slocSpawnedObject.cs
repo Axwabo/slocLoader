@@ -5,7 +5,7 @@ using UnityEngine;
 namespace slocLoader {
 
     [DisallowMultipleComponent]
-    public class slocSpawnedObject : MonoBehaviour {
+    public sealed class slocSpawnedObject : MonoBehaviour {
 
         [NonSerialized] public NetworkIdentity networkIdentity;
 

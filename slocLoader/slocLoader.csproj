@@ -39,6 +39,9 @@
         <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\assemblies\Assembly-CSharp.dll</HintPath>
         </Reference>
+        <Reference Include="Assembly-CSharp-firstpass">
+          <HintPath>..\..\assemblies\Assembly-CSharp-firstpass.dll</HintPath>
+        </Reference>
         <Reference Include="Axwabo.Helpers">
           <HintPath>..\..\assemblies\Axwabo.Helpers.dll</HintPath>
         </Reference>
@@ -76,7 +79,9 @@
         <Compile Include="Commands\DestroyCommand.cs" />
         <Compile Include="Commands\ReloadCommand.cs" />
         <Compile Include="Commands\SpawnCommand.cs" />
+        <Compile Include="NetworkServerPatch.cs" />
         <Compile Include="Objects\EmptyObject.cs" />
+        <Compile Include="PrimitiveToyPatch.cs" />
         <Compile Include="Readers\slocHeader.cs" />
         <Compile Include="Readers\Ver2Reader.cs" />
         <Compile Include="Readers\Ver3Reader.cs" />

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace slocLoader.Objects {
 
-    public class PrimitiveObject : slocGameObject {
+    public sealed class PrimitiveObject : slocGameObject {
 
         public PrimitiveObject(int instanceId, ObjectType type) : base(instanceId) {
             if (type is ObjectType.None or ObjectType.Light)
@@ -23,7 +23,7 @@ namespace slocLoader.Objects {
 
         public override void WriteTo(BinaryWriter writer, slocHeader header) {
             base.WriteTo(writer, header);
-            if (header.Attributes.HasFlagFast(slocAttributes.LossyColors)) {
+            if (header.HasAttribute(slocAttributes.LossyColors)) {
                 writer.Write(MaterialColor.ToLossyColor());
                 return;
             }
@@ -32,18 +32,19 @@ namespace slocLoader.Objects {
             writer.Write(MaterialColor.g);
             writer.Write(MaterialColor.b);
             writer.Write(MaterialColor.a);
-            if (!header.Attributes.HasFlagFast(slocAttributes.ForcedColliderMode))
+            if (!header.HasAttribute(slocAttributes.ForcedColliderMode))
                 writer.Write((byte) ColliderMode);
         }
 
         public enum ColliderCreationMode : byte {
 
             Unset = 0,
-            None = 1,
+            NoCollider = 1,
             ClientOnly = 2,
             ServerOnly = 3,
             Both = 4,
-            Trigger = 5
+            Trigger = 5,
+            ServerOnlyTrigger = 6
 
         }
 

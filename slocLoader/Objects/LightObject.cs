@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace slocLoader.Objects {
 
-    public class LightObject : slocGameObject {
+    public sealed class LightObject : slocGameObject {
 
         public LightObject(int instanceId) : base(instanceId) => Type = ObjectType.Light;
 
@@ -18,7 +18,7 @@ namespace slocLoader.Objects {
 
         public override void WriteTo(BinaryWriter writer, slocHeader header) {
             base.WriteTo(writer, header);
-            if (header.Attributes.HasFlagFast(slocAttributes.LossyColors))
+            if (header.HasAttribute(slocAttributes.LossyColors))
                 writer.Write(LightColor.ToLossyColor());
             else {
                 writer.Write(LightColor.r);

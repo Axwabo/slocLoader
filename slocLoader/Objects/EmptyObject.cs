@@ -1,6 +1,6 @@
 ﻿namespace slocLoader.Objects {
 
-    public class EmptyObject : slocGameObject {
+    public sealed class EmptyObject : slocGameObject {
 
         public EmptyObject(int instanceId) : base(instanceId) => Type = ObjectType.Empty;
 

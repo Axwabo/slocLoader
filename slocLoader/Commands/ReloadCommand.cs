@@ -5,7 +5,7 @@ using slocLoader.AutoObjectLoader;
 namespace slocLoader.Commands {
 
     [CommandHandler(typeof(GameConsoleCommandHandler))]
-    public class ReloadCommand : ICommand {
+    public sealed class ReloadCommand : ICommand {
 
         public string Command => "sl_reload";
         public string[] Aliases { get; } = {"sl_rl"};

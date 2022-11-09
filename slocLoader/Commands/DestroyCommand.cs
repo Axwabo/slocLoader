@@ -7,7 +7,7 @@ namespace slocLoader.Commands {
 
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     [CommandHandler(typeof(GameConsoleCommandHandler))]
-    public class DestroyCommand : ICommand, IUsageProvider {
+    public sealed class DestroyCommand : ICommand, IUsageProvider {
 
         public string[] Usage { get; } = {"sl_destroy <netID>"};
 

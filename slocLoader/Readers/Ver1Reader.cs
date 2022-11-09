@@ -3,9 +3,9 @@ using slocLoader.Objects;
 
 namespace slocLoader.Readers {
 
-    public class Ver1Reader : IObjectReader {
+    public sealed class Ver1Reader : IObjectReader {
 
-        public slocHeader ReadHeader(BinaryReader stream) => new slocHeader(stream.ReadInt32());
+        public slocHeader ReadHeader(BinaryReader stream) => new(stream.ReadObjectCount());
 
         public slocGameObject Read(BinaryReader stream, slocHeader header) {
             var objectType = (ObjectType) stream.ReadByte();

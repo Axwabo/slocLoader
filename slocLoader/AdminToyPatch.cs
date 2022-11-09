@@ -22,6 +22,7 @@ namespace slocLoader {
             var id = generator.Local<int>();
             var value = generator.Local<Vector3>();
             var setScale = generator.DefineLabel();
+            /*
             list.InsertRange(list.FindCode(OpCodes.Ret), new[] {
                 Ldfld(typeof(AdminToyPatch), nameof(DesiredScale)),
                 This,
@@ -41,6 +42,7 @@ namespace slocLoader {
                 Call<Dictionary<int, Vector3>>("Remove", new[] {typeof(int)}),
                 Pop
             });
+            */
             foreach (var codeInstruction in list)
                 yield return codeInstruction;
             ListPool<CodeInstruction>.Shared.Return(list);
