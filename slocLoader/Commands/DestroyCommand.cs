@@ -17,8 +17,8 @@ namespace slocLoader.Commands {
 
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response) {
-            if (!sender.CheckPermission("sloc.spawn")) {
-                response = "You don't have permission to do that (sloc.spawn)!";
+            if (!sender.CheckPermission("sloc.destroy")) {
+                response = "You don't have permission to do that (sloc.destroy)!";
                 return false;
             }
 

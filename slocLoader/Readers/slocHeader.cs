@@ -26,7 +26,7 @@ namespace slocLoader.Readers {
         public void WriteTo(BinaryWriter writer) {
             writer.Write(ObjectCount);
             writer.Write((byte) Attributes);
-            if (Attributes.HasFlagFast(slocAttributes.ForcedColliderMode))
+            if (Attributes.HasFlagFast(slocAttributes.DefaultColliderMode))
                 writer.Write((byte) DefaultColliderMode);
         }
 

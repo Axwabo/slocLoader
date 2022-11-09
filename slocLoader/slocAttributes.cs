@@ -7,7 +7,7 @@ namespace slocLoader {
 
         None = 0,
         LossyColors = 1,
-        ForcedColliderMode = 2,
+        DefaultColliderMode = 2,
 
     }
 

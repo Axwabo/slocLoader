@@ -14,17 +14,16 @@ namespace slocLoader.Objects {
         }
 
         public Color MaterialColor = Color.gray;
-        private ColliderCreationMode _colliderMode = ColliderCreationMode.Both;
 
-        public ColliderCreationMode ColliderMode {
-            get => _colliderMode;
-            set => _colliderMode = value is ColliderCreationMode.Unset ? _colliderMode : value;
-        }
+        public ColliderCreationMode ColliderMode { get; set; } = ColliderCreationMode.Both;
+
+        public ColliderCreationMode GetNonUnsetColliderMode() => ColliderMode is ColliderCreationMode.Unset ? ColliderCreationMode.Both : ColliderMode;
 
         public override void WriteTo(BinaryWriter writer, slocHeader header) {
             base.WriteTo(writer, header);
             if (header.HasAttribute(slocAttributes.LossyColors)) {
                 writer.Write(MaterialColor.ToLossyColor());
+                writer.Write((byte) ColliderMode);
                 return;
             }
 
@@ -32,8 +31,7 @@ namespace slocLoader.Objects {
             writer.Write(MaterialColor.g);
             writer.Write(MaterialColor.b);
             writer.Write(MaterialColor.a);
-            if (!header.HasAttribute(slocAttributes.ForcedColliderMode))
-                writer.Write((byte) ColliderMode);
+            writer.Write((byte) ColliderMode);
         }
 
         public enum ColliderCreationMode : byte {

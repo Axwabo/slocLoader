@@ -79,6 +79,7 @@
         <Compile Include="Commands\DestroyCommand.cs" />
         <Compile Include="Commands\ReloadCommand.cs" />
         <Compile Include="Commands\SpawnCommand.cs" />
+        <Compile Include="DoNotSpawn.cs" />
         <Compile Include="NetworkServerPatch.cs" />
         <Compile Include="Objects\EmptyObject.cs" />
         <Compile Include="PrimitiveToyPatch.cs" />

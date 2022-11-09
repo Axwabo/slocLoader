@@ -14,7 +14,7 @@ namespace slocLoader {
 
     public static class API {
 
-        public const uint slocVersion = 3;
+        public const ushort slocVersion = 3;
 
         public const float ColorDivisionMultiplier = 1f / 255f;
 
@@ -105,52 +105,6 @@ namespace slocLoader {
 
         #region Create
 
-        public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
-            var transform = obj.Transform;
-            switch (obj) {
-                case PrimitiveObject primitive: {
-                    if (PrimitivePrefab == null)
-                        throw new NullReferenceException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
-                    var toy = UnityEngine.Object.Instantiate(PrimitivePrefab, positionOffset, rotationOffset);
-                    var colliderMode = primitive.ColliderMode;
-                    var primitiveType = primitive.Type.ToPrimitiveType();
-                    var o = toy.gameObject;
-                    if (colliderMode is not PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly)
-                        o.AddProperCollider(primitiveType, colliderMode is PrimitiveObject.ColliderCreationMode.Trigger);
-                    toy.PrimitiveType = primitiveType;
-                    toy.SetAbsoluteTransformFrom(parent);
-                    toy.SetLocalTransform(transform); // TODO: clients that joined later will have all colliders set regardless of collider mode
-                    toy.Scale = transform.Scale;
-                    // slocPlugin.SetDesiredScale(clientSideCollider, toy, transform.Scale);
-                    toy.MaterialColor = primitive.MaterialColor;
-                    return o;
-                }
-                case LightObject light: {
-                    if (LightPrefab == null)
-                        throw new NullReferenceException("Light prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
-                    var toy = UnityEngine.Object.Instantiate(LightPrefab, positionOffset, rotationOffset);
-                    toy.SetAbsoluteTransformFrom(parent);
-                    toy.SetLocalTransform(transform);
-                    toy.LightColor = light.LightColor;
-                    toy.LightShadows = light.Shadows;
-                    toy.LightRange = light.Range;
-                    toy.LightIntensity = light.Intensity;
-                    toy.Scale = transform.Scale;
-                    return toy.gameObject;
-                }
-                case EmptyObject: {
-                    var emptyObject = new GameObject("Empty");
-                    emptyObject.SetAbsoluteTransformFrom(parent);
-                    emptyObject.SetLocalTransform(transform);
-                    return emptyObject;
-                }
-                default:
-                    if (throwOnError)
-                        throw new IndexOutOfRangeException($"Unknown object type {obj.Type}");
-                    return null;
-            }
-        }
-
         public static slocGameObject CreateDefaultObject(this ObjectType type) => type switch {
             ObjectType.Cube
                 or ObjectType.Sphere
@@ -162,6 +116,57 @@ namespace slocLoader {
             ObjectType.Empty => new EmptyObject(0),
             _ => null
         };
+
+        public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
+            var transform = obj.Transform;
+            return obj switch {
+                PrimitiveObject primitive => CreatePrimitive(parent, positionOffset, rotationOffset, primitive, transform),
+                LightObject light => CreateLight(parent, positionOffset, rotationOffset, transform, light),
+                EmptyObject => CreateEmpty(parent, transform),
+                _ => throwOnError ? throw new IndexOutOfRangeException($"Unknown object type {obj.Type}") : null
+            };
+        }
+
+        private static GameObject CreatePrimitive(GameObject parent, Vector3 positionOffset, Quaternion rotationOffset, PrimitiveObject primitive, slocTransform transform) {
+            if (PrimitivePrefab == null)
+                throw new NullReferenceException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+            var toy = UnityEngine.Object.Instantiate(PrimitivePrefab, positionOffset, rotationOffset);
+            var colliderMode = primitive.GetNonUnsetColliderMode();
+            var primitiveType = primitive.Type.ToPrimitiveType();
+            var o = toy.gameObject;
+            if (colliderMode is PrimitiveObject.ColliderCreationMode.ServerOnlyTrigger)
+                o.AddComponent<DoNotSpawn>();
+            if (colliderMode is not PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly)
+                o.AddProperCollider(primitiveType, colliderMode is PrimitiveObject.ColliderCreationMode.Trigger);
+            toy.PrimitiveType = primitiveType;
+            toy.SetAbsoluteTransformFrom(parent);
+            toy.SetLocalTransform(transform); // TODO: clients that joined later will have all colliders set regardless of collider mode
+            toy.Scale = transform.Scale;
+            // slocPlugin.SetDesiredScale(clientSideCollider, toy, transform.Scale);
+            toy.MaterialColor = primitive.MaterialColor;
+            return o;
+        }
+
+        private static GameObject CreateLight(GameObject parent, Vector3 positionOffset, Quaternion rotationOffset, slocTransform transform, LightObject light) {
+            if (LightPrefab == null)
+                throw new NullReferenceException("Light prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+            var toy = UnityEngine.Object.Instantiate(LightPrefab, positionOffset, rotationOffset);
+            toy.SetAbsoluteTransformFrom(parent);
+            toy.SetLocalTransform(transform);
+            toy.LightColor = light.LightColor;
+            toy.LightShadows = light.Shadows;
+            toy.LightRange = light.Range;
+            toy.LightIntensity = light.Intensity;
+            toy.Scale = transform.Scale;
+            return toy.gameObject;
+        }
+
+        private static GameObject CreateEmpty(GameObject parent, slocTransform transform) {
+            var emptyObject = new GameObject("Empty");
+            emptyObject.SetAbsoluteTransformFrom(parent);
+            emptyObject.SetLocalTransform(transform);
+            return emptyObject;
+        }
 
         public static GameObject CreateObjects(IEnumerable<slocGameObject> objects, Vector3 position, Quaternion rotation = default) => CreateObjects(objects, out _, position, rotation);
 
@@ -235,7 +240,8 @@ namespace slocLoader {
                 return null;
             }
 
-            NetworkServer.Spawn(o);
+            if (!o.TryGetComponent(out DoNotSpawn _))
+                NetworkServer.Spawn(o);
             return o;
         }
 
