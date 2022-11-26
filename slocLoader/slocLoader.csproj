@@ -79,10 +79,7 @@
         <Compile Include="Commands\DestroyCommand.cs" />
         <Compile Include="Commands\ReloadCommand.cs" />
         <Compile Include="Commands\SpawnCommand.cs" />
-        <Compile Include="DoNotSpawn.cs" />
-        <Compile Include="NetworkServerPatch.cs" />
         <Compile Include="Objects\EmptyObject.cs" />
-        <Compile Include="PrimitiveToyPatch.cs" />
         <Compile Include="Readers\slocHeader.cs" />
         <Compile Include="Readers\Ver2Reader.cs" />
         <Compile Include="Readers\Ver3Reader.cs" />
@@ -97,7 +94,7 @@
         <Compile Include="Readers\Ver1Reader.cs" />
         <Compile Include="slocPlugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="slocSpawnedObject.cs" />
+        <Compile Include="slocObjectData.cs" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

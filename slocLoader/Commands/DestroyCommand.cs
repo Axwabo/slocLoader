@@ -32,7 +32,7 @@ namespace slocLoader.Commands {
                 return false;
             }
 
-            if (!NetworkIdentity.spawned.TryGetValue(id, out var obj) || !obj.TryGetComponent(out slocSpawnedObject o)) {
+            if (!NetworkIdentity.spawned.TryGetValue(id, out var obj) || !obj.TryGetComponent(out slocObjectData o)) {
                 response = "That is not a valid sloc netID!";
                 return false;
             }

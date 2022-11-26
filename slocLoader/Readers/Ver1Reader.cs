@@ -21,12 +21,9 @@ namespace slocLoader.Readers {
         }
 
         public static slocGameObject ReadPrimitive(BinaryReader stream, ObjectType type) {
-            var instanceId = stream.ReadInt32();
-            var parentId = stream.ReadInt32();
             var transform = stream.ReadTransform();
             var materialColor = stream.ReadColor();
-            return new PrimitiveObject(instanceId, type) {
-                ParentId = parentId,
+            return new PrimitiveObject(0, type) {
                 Transform = transform,
                 MaterialColor = materialColor
             };

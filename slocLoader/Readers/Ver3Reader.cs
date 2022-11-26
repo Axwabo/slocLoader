@@ -9,11 +9,12 @@ namespace slocLoader.Readers {
         public slocHeader ReadHeader(BinaryReader stream) {
             var count = stream.ReadObjectCount();
             var attributes = (slocAttributes) stream.ReadByte();
+            var colliderCreationMode = attributes.HasFlagFast(slocAttributes.DefaultColliderMode)
+                ? (PrimitiveObject.ColliderCreationMode) stream.ReadByte()
+                : PrimitiveObject.ColliderCreationMode.Unset;
             return new slocHeader(count,
                 attributes,
-                attributes.HasFlagFast(slocAttributes.DefaultColliderMode)
-                    ? (PrimitiveObject.ColliderCreationMode) stream.ReadByte()
-                    : PrimitiveObject.ColliderCreationMode.Unset
+                colliderCreationMode
             );
         }
 

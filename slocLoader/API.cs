@@ -72,9 +72,10 @@ namespace slocLoader {
         private static ushort ReadVersionSafe(BufferedStream buffered, BinaryReader binaryReader) {
             var newVersion = binaryReader.ReadUInt16();
             var oldVersion = binaryReader.ReadUInt16();
-            if (oldVersion is not 0)
+            if (oldVersion is 0)
                 return (ushort) (newVersion | ((uint) oldVersion << 16));
-            buffered.Set("_readPos", buffered.Get<int>("_readPos") - sizeof(ushort)); // rewind the buffer by two bytes, so the whole stream won't be malformed data
+            var newPos = buffered.Get<int>("_readPos") - sizeof(ushort);
+            buffered.Set("_readPos", newPos); // rewind the buffer by two bytes, so the whole stream won't be malformed data
             return newVersion;
         }
 
@@ -134,13 +135,16 @@ namespace slocLoader {
             var colliderMode = primitive.GetNonUnsetColliderMode();
             var primitiveType = primitive.Type.ToPrimitiveType();
             var o = toy.gameObject;
-            if (colliderMode is PrimitiveObject.ColliderCreationMode.ServerOnlyTrigger)
-                o.AddComponent<DoNotSpawn>();
+            var sloc = o.AddComponent<slocObjectData>();
+            if (colliderMode is PrimitiveObject.ColliderCreationMode.ServerOnlyTrigger or PrimitiveObject.ColliderCreationMode.ServerOnlyNonSpawned)
+                sloc.ShouldBeSpawnedOnClient = false;
             if (colliderMode is not PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly)
                 o.AddProperCollider(primitiveType, colliderMode is PrimitiveObject.ColliderCreationMode.Trigger);
+            else
+                sloc.ShouldBeSpawnedOnClient = false;
             toy.PrimitiveType = primitiveType;
             toy.SetAbsoluteTransformFrom(parent);
-            toy.SetLocalTransform(transform); // TODO: clients that joined later will have all colliders set regardless of collider mode
+            toy.SetLocalTransform(transform);
             toy.Scale = transform.Scale;
             // slocPlugin.SetDesiredScale(clientSideCollider, toy, transform.Scale);
             toy.MaterialColor = primitive.MaterialColor;
@@ -211,7 +215,7 @@ namespace slocLoader {
                 }
             };
             go.AddComponent<NetworkIdentity>();
-            go.AddComponent<slocSpawnedObject>();
+            go.AddComponent<slocObjectData>();
             spawnedAmount = 0;
             var createdInstances = new Dictionary<int, GameObject>();
             foreach (var o in objects) {
@@ -240,7 +244,7 @@ namespace slocLoader {
                 return null;
             }
 
-            if (!o.TryGetComponent(out DoNotSpawn _))
+            if (!o.TryGetComponent(out slocObjectData data) || data.ShouldBeSpawnedOnClient)
                 NetworkServer.Spawn(o);
             return o;
         }

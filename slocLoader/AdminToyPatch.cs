@@ -13,8 +13,7 @@ namespace slocLoader {
     [HarmonyPatch(typeof(AdminToyBase), "UpdatePositionServer")]
     public static class AdminToyPatch {
 
-        public static readonly Dictionary<int, Vector3> DesiredScale = new();
-
+        // TODO: how to spawn objects without a collider: set scale to negative (i'm stupid)
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator) {
             var list = ListPool<CodeInstruction>.Shared.Rent(instructions);
             var scaleIndex = list.FindIndex(i => i.operand is MethodInfo {Name: "get_localScale"});
