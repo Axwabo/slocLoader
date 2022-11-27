@@ -12,13 +12,11 @@ namespace slocLoader {
 
         public uint netId => networkIdentity.netId;
 
-        public bool HasColliderOnClient { get; internal set; } = true;
+        public bool HasColliderOnClient { get; set; } = true;
 
-        public bool ShouldBeSpawnedOnClient { get; internal set; } = true;
+        public bool ShouldBeSpawnedOnClient { get; set; } = true;
 
-        private void Awake() {
-            networkIdentity = GetComponent<NetworkIdentity>();
-        }
+        private void Awake() => networkIdentity = GetComponent<NetworkIdentity>();
 
     }
 

@@ -39,11 +39,12 @@ namespace slocLoader.Objects {
             Unset = 0,
             NoCollider = 1,
             ClientOnly = 2,
-            ServerOnlySpawned = 3,
+            ServerOnly = 3,
             Both = 4,
             Trigger = 5,
-            ServerOnlyTrigger = 6,
-            ServerOnlyNonSpawned = 7
+            NonSpawnedTrigger = 6,
+            ServerOnlyNonSpawned = 7,
+            NoColliderNonSpawned = 8
 
         }
 

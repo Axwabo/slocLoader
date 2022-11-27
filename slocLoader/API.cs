@@ -130,30 +130,28 @@ namespace slocLoader {
 
         private static GameObject CreatePrimitive(GameObject parent, Vector3 positionOffset, Quaternion rotationOffset, PrimitiveObject primitive, slocTransform transform) {
             if (PrimitivePrefab == null)
-                throw new NullReferenceException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+                throw new InvalidOperationException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
             var toy = UnityEngine.Object.Instantiate(PrimitivePrefab, positionOffset, rotationOffset);
             var colliderMode = primitive.GetNonUnsetColliderMode();
             var primitiveType = primitive.Type.ToPrimitiveType();
             var o = toy.gameObject;
             var sloc = o.AddComponent<slocObjectData>();
-            if (colliderMode is PrimitiveObject.ColliderCreationMode.ServerOnlyTrigger or PrimitiveObject.ColliderCreationMode.ServerOnlyNonSpawned)
+            sloc.HasColliderOnClient = colliderMode is PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.Both;
+            if (colliderMode is PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger or PrimitiveObject.ColliderCreationMode.ServerOnlyNonSpawned or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned)
                 sloc.ShouldBeSpawnedOnClient = false;
             if (colliderMode is not PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly)
                 o.AddProperCollider(primitiveType, colliderMode is PrimitiveObject.ColliderCreationMode.Trigger);
-            else
-                sloc.ShouldBeSpawnedOnClient = false;
             toy.PrimitiveType = primitiveType;
             toy.SetAbsoluteTransformFrom(parent);
             toy.SetLocalTransform(transform);
             toy.Scale = transform.Scale;
-            // slocPlugin.SetDesiredScale(clientSideCollider, toy, transform.Scale);
             toy.MaterialColor = primitive.MaterialColor;
             return o;
         }
 
         private static GameObject CreateLight(GameObject parent, Vector3 positionOffset, Quaternion rotationOffset, slocTransform transform, LightObject light) {
             if (LightPrefab == null)
-                throw new NullReferenceException("Light prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+                throw new InvalidOperationException("Light prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
             var toy = UnityEngine.Object.Instantiate(LightPrefab, positionOffset, rotationOffset);
             toy.SetAbsoluteTransformFrom(parent);
             toy.SetLocalTransform(transform);
@@ -182,7 +180,6 @@ namespace slocLoader {
                 }
             };
             go.AddComponent<NetworkIdentity>();
-            NetworkServer.Spawn(go);
             createdAmount = 0;
             var createdInstances = new Dictionary<int, GameObject>();
             foreach (var o in objects) {

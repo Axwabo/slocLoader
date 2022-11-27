@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using System.Reflection.Emit;
 using AdminToys;
 using Axwabo.Helpers.Harmony;
-using Axwabo.Helpers.Pools;
 using HarmonyLib;
 using UnityEngine;
 using static Axwabo.Helpers.Harmony.InstructionHelper;
@@ -13,38 +11,40 @@ namespace slocLoader {
     [HarmonyPatch(typeof(AdminToyBase), "UpdatePositionServer")]
     public static class AdminToyPatch {
 
-        // TODO: how to spawn objects without a collider: set scale to negative (i'm stupid)
+        // we're optimizing the method by storing the transform in a local variable, so it doesn't take more Unity calls than needed
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator) {
-            var list = ListPool<CodeInstruction>.Shared.Rent(instructions);
-            var scaleIndex = list.FindIndex(i => i.operand is MethodInfo {Name: "get_localScale"});
-            list[scaleIndex] = Get<Transform>(nameof(Transform.lossyScale));
-            var id = generator.Local<int>();
-            var value = generator.Local<Vector3>();
-            var setScale = generator.DefineLabel();
-            /*
-            list.InsertRange(list.FindCode(OpCodes.Ret), new[] {
-                Ldfld(typeof(AdminToyPatch), nameof(DesiredScale)),
+            var transform = generator.Local<Transform>();
+            var list = new[] {
                 This,
-                Call<Object>(nameof(Object.GetInstanceID)),
-                Duplicate,
-                id.Set(),
-                value.LoadAddress(),
-                Call<Dictionary<int, Vector3>>("TryGetValue"),
-                setScale.True(),
-                Return,
-                This.WithLabels(setScale),
                 Get<Component>(nameof(Component.transform)),
-                value.Load(),
-                Set<Transform>(nameof(Transform.localScale)),
-                Ldfld(typeof(AdminToyPatch), nameof(DesiredScale)),
-                id.Load(),
-                Call<Dictionary<int, Vector3>>("Remove", new[] {typeof(int)}),
-                Pop
-            });
-            */
+                transform.Set(),
+                This,
+                transform.Load(),
+                Get<Transform>(nameof(Transform.position)),
+                Set<AdminToyBase>(nameof(AdminToyBase.NetworkPosition)),
+                This,
+                transform.Load(),
+                Get<Transform>(nameof(Transform.rotation)),
+                New<LowPrecisionQuaternion>(new[] {typeof(Quaternion)}),
+                Set<AdminToyBase>(nameof(AdminToyBase.NetworkRotation)),
+                This,
+                transform.Load(),
+                Call(typeof(AdminToyPatch), nameof(GetScale)),
+                Set<AdminToyBase>(nameof(AdminToyBase.NetworkScale)),
+                Return
+            };
             foreach (var codeInstruction in list)
                 yield return codeInstruction;
-            ListPool<CodeInstruction>.Shared.Return(list);
+        }
+
+        public static Vector3 GetScale(Transform transform) {
+            var scale = transform.lossyScale;
+            var absoluteScale = new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
+            return !transform.TryGetComponent(out slocObjectData data)
+                ? scale
+                : data.HasColliderOnClient
+                    ? absoluteScale
+                    : -absoluteScale;
         }
 
     }

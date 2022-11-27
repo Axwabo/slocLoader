@@ -50,7 +50,11 @@ namespace slocLoader {
 
         private void SpawnDefault() {
             if (Config.EnableAutoSpawn)
-                AutomaticObjectLoader.SpawnObjects(Config.AutoSpawnByRoomName.Cast<IAssetLocation>().Concat(Config.AutoSpawnByRoomType.Cast<IAssetLocation>()).Concat(Config.AutoSpawnByLocation.Cast<IAssetLocation>()));
+                AutomaticObjectLoader.SpawnObjects(
+                    Config.AutoSpawnByRoomName.Cast<IAssetLocation>()
+                        .Concat(Config.AutoSpawnByRoomType.Cast<IAssetLocation>())
+                        .Concat(Config.AutoSpawnByLocation.Cast<IAssetLocation>())
+                );
         }
 
     }
