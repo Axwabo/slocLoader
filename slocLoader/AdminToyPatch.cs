@@ -29,7 +29,7 @@ namespace slocLoader {
                 Set<AdminToyBase>(nameof(AdminToyBase.NetworkRotation)),
                 This,
                 transform.Load(),
-                Call(typeof(AdminToyPatch), nameof(GetScale)),
+                Call(typeof(AdminToyPatch), nameof(GetScaleFromTransform)),
                 Set<AdminToyBase>(nameof(AdminToyBase.NetworkScale)),
                 Return
             };
@@ -37,14 +37,16 @@ namespace slocLoader {
                 yield return codeInstruction;
         }
 
-        public static Vector3 GetScale(Transform transform) {
+        public static Vector3 GetScaleFromTransform(Transform transform) {
             var scale = transform.lossyScale;
-            var absoluteScale = new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
             return !transform.TryGetComponent(out slocObjectData data)
                 ? scale
-                : data.HasColliderOnClient
-                    ? absoluteScale
-                    : -absoluteScale;
+                : GetScale(scale, data.HasColliderOnClient);
+        }
+
+        public static Vector3 GetScale(Vector3 original, bool positive) {
+            var absoluteScale = new Vector3(Mathf.Abs(original.x), Mathf.Abs(original.y), Mathf.Abs(original.z));
+            return positive ? original : -absoluteScale;
         }
 
     }

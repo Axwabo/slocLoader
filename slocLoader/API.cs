@@ -144,7 +144,7 @@ namespace slocLoader {
             toy.PrimitiveType = primitiveType;
             toy.SetAbsoluteTransformFrom(parent);
             toy.SetLocalTransform(transform);
-            toy.Scale = transform.Scale;
+            toy.Scale = AdminToyPatch.GetScale(transform.Scale, sloc.HasColliderOnClient);
             toy.MaterialColor = primitive.MaterialColor;
             return o;
         }
@@ -213,6 +213,7 @@ namespace slocLoader {
             };
             go.AddComponent<NetworkIdentity>();
             go.AddComponent<slocObjectData>();
+            NetworkServer.Spawn(go);
             spawnedAmount = 0;
             var createdInstances = new Dictionary<int, GameObject>();
             foreach (var o in objects) {
