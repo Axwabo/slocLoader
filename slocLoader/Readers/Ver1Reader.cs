@@ -3,9 +3,11 @@ using slocLoader.Objects;
 
 namespace slocLoader.Readers {
 
-    public class Ver1Reader : IObjectReader {
+    public sealed class Ver1Reader : IObjectReader {
 
-        public slocGameObject Read(BinaryReader stream) {
+        public slocHeader ReadHeader(BinaryReader stream) => new(stream.ReadObjectCount());
+
+        public slocGameObject Read(BinaryReader stream, slocHeader header) {
             var objectType = (ObjectType) stream.ReadByte();
             return objectType switch {
                 ObjectType.Cube => ReadPrimitive(stream, objectType),
@@ -18,18 +20,29 @@ namespace slocLoader.Readers {
             };
         }
 
-        public static slocGameObject ReadPrimitive(BinaryReader stream, ObjectType type) => new PrimitiveObject(0, type) {
-            Transform = stream.ReadTransform(),
-            MaterialColor = stream.ReadColor()
-        };
+        public static slocGameObject ReadPrimitive(BinaryReader stream, ObjectType type) {
+            var transform = stream.ReadTransform();
+            var materialColor = stream.ReadColor();
+            return new PrimitiveObject(0, type) {
+                Transform = transform,
+                MaterialColor = materialColor
+            };
+        }
 
-        public static slocGameObject ReadLight(BinaryReader stream) => new LightObject(0) {
-            Transform = stream.ReadTransform(),
-            LightColor = stream.ReadColor(),
-            Shadows = stream.ReadBoolean(),
-            Range = stream.ReadSingle(),
-            Intensity = stream.ReadSingle(),
-        };
+        public static slocGameObject ReadLight(BinaryReader stream) {
+            var transform = stream.ReadTransform();
+            var lightColor = stream.ReadColor();
+            var shadows = stream.ReadBoolean();
+            var range = stream.ReadSingle();
+            var intensity = stream.ReadSingle();
+            return new LightObject(0) {
+                Transform = transform,
+                LightColor = lightColor,
+                Shadows = shadows,
+                Range = range,
+                Intensity = intensity,
+            };
+        }
 
     }
 

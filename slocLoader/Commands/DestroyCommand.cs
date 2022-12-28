@@ -7,7 +7,7 @@ namespace slocLoader.Commands {
 
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     [CommandHandler(typeof(GameConsoleCommandHandler))]
-    public class DestroyCommand : ICommand, IUsageProvider {
+    public sealed class DestroyCommand : ICommand, IUsageProvider {
 
         public string[] Usage { get; } = {"sl_destroy <netID>"};
 
@@ -17,8 +17,8 @@ namespace slocLoader.Commands {
 
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response) {
-            if (!sender.CheckPermission("sloc.spawn")) {
-                response = "You don't have permission to do that (sloc.spawn)!";
+            if (!sender.CheckPermission("sloc.destroy")) {
+                response = "You don't have permission to do that (sloc.destroy)!";
                 return false;
             }
 
@@ -32,7 +32,7 @@ namespace slocLoader.Commands {
                 return false;
             }
 
-            if (!NetworkIdentity.spawned.TryGetValue(id, out var obj) || !obj.TryGetComponent(out slocSpawnedObject o)) {
+            if (!NetworkIdentity.spawned.TryGetValue(id, out var obj) || !obj.TryGetComponent(out slocObjectData o)) {
                 response = "That is not a valid sloc netID!";
                 return false;
             }

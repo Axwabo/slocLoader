@@ -9,7 +9,7 @@ using UnityEngine;
 namespace slocLoader.Commands {
 
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
-    public class SpawnCommand : ICommand, IUsageProvider {
+    public sealed class SpawnCommand : ICommand, IUsageProvider {
 
         public string[] Usage { get; } = {"sl_spawn <name>"};
 

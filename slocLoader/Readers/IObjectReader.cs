@@ -5,7 +5,9 @@ namespace slocLoader.Readers {
 
     public interface IObjectReader {
 
-        slocGameObject Read(BinaryReader stream);
+        slocHeader ReadHeader(BinaryReader stream);
+        
+        slocGameObject Read(BinaryReader stream, slocHeader header);
 
     }
 

@@ -33,12 +33,25 @@ it's not meant to be interpreted as text. It is a sequence of **int**egers and *
 
 # Setup
 
-[EXILED](https://github.com/Exiled-Team/EXILED/) and [Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/) **are
-required**
+[Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/) **is required** as a dependency.
+
+## For EXILED
+
+Note: EXILED is in non-public beta at this time; use NWAPI.
 
 1. Download the **slocLoader.dll** file from the [latest release](https://github.com/Axwabo/slocLoader/releases/latest)
 2. Place the DLL into the **EXILED Plugins** folder (Windows: %appdata%\EXILED\Plugins)
 3. Restart your server
+
+## For Northwood Plugin API
+
+Note: slocLoader is being ported to NWAPI. Release coming soon.
+
+1. Download the **slocLoader-nw.dll** file from the [latest release](https://github.com/Axwabo/slocLoader/releases/latest)
+2. Place the DLL into the **NW Plugins** folder (Windows: %appdata%\SCP Secret Laboratory\PluginAPI\plugins\port)
+3. Download the latest [Harmony](https://github.com/pardeike/Harmony/releases) release (**Harmony.x.x.x.x.zip**, not the source code)
+4. From the zip file, put the **net4.8\0Harmony.dll** into the **NW Dependencies** folder (Windows: %appdata%\SCP Secret Laboratory\PluginAPI\plugins\port\dependencies)
+5. Restart your server
 
 # Adding objects
 
