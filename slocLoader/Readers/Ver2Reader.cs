@@ -15,7 +15,7 @@ namespace slocLoader.Readers {
                 ObjectType.Cylinder => ReadPrimitive(stream, objectType),
                 ObjectType.Plane => ReadPrimitive(stream, objectType),
                 ObjectType.Capsule => ReadPrimitive(stream, objectType),
-                ObjectType.Light => Ver1Reader.ReadLight(stream),
+                ObjectType.Light => ReadLight(stream),
                 ObjectType.Empty => ReadEmpty(stream),
                 _ => null
             };
@@ -30,6 +30,24 @@ namespace slocLoader.Readers {
                 ParentId = parentId,
                 Transform = transform,
                 MaterialColor = materialColor
+            };
+        }
+
+        public static slocGameObject ReadLight(BinaryReader stream) {
+            var instanceId = stream.ReadInt32();
+            var parentId = stream.ReadInt32();
+            var transform = stream.ReadTransform();
+            var lightColor = stream.ReadColor();
+            var shadows = stream.ReadBoolean();
+            var range = stream.ReadSingle();
+            var intensity = stream.ReadSingle();
+            return new LightObject(instanceId) {
+                ParentId = parentId,
+                Transform = transform,
+                LightColor = lightColor,
+                Shadows = shadows,
+                Range = range,
+                Intensity = intensity,
             };
         }
 

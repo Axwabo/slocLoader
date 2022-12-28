@@ -30,15 +30,12 @@ namespace slocLoader.Readers {
         }
 
         public static slocGameObject ReadLight(BinaryReader stream) {
-            var instanceId = stream.ReadInt32();
-            var parentId = stream.ReadInt32();
             var transform = stream.ReadTransform();
             var lightColor = stream.ReadColor();
             var shadows = stream.ReadBoolean();
             var range = stream.ReadSingle();
             var intensity = stream.ReadSingle();
-            return new LightObject(instanceId) {
-                ParentId = parentId,
+            return new LightObject(0) {
                 Transform = transform,
                 LightColor = lightColor,
                 Shadows = shadows,
