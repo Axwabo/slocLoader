@@ -12,8 +12,8 @@ namespace slocLoader {
         public override string Name => "slocLoader";
         public override string Prefix => "sloc";
         public override string Author => "Axwabo";
-        public override Version Version { get; } = new(2, 0, 0);
-        public override Version RequiredExiledVersion { get; } = new(5, 2, 0);
+        public override Version Version { get; } = new(3, 0, 0);
+        public override Version RequiredExiledVersion { get; } = new(5, 3, 0);
 
         private Harmony _harmony;
 
