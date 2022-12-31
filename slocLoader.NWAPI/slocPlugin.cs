@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Linq;
-using Exiled.API.Features;
 using HarmonyLib;
 using MapGeneration;
+using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
 using slocLoader.AutoObjectLoader;
 
 namespace slocLoader {
 
-    public class slocPlugin : Plugin<Config> {
+    public sealed class slocPlugin {
 
-        public override string Name => "slocLoader";
-        public override string Prefix => "sloc";
-        public override string Author => "Axwabo";
-        public override Version Version { get; } = new(3, 0, 0);
-        public override Version RequiredExiledVersion { get; } = new(5, 3, 0);
+        internal static slocPlugin Instance;
 
         private Harmony _harmony;
 
-        public override void OnEnabled() {
+        [PluginConfig("config.yml")]
+        public slocConfig Config = new();
+
+        [PluginEntryPoint("slocLoader", "3.0.0", "A plugin that loads sloc files.", "Axwabo")]
+        public void OnEnabled() {
+            Instance = this;
             _harmony = new Harmony("Axwabo.slocLoader");
             try {
                 _harmony.PatchAll();
@@ -34,19 +37,23 @@ namespace slocLoader {
                 SpawnDefault();
             }
 
-            Exiled.Events.Handlers.Map.Generated += API.LoadPrefabs;
             API.PrefabsLoaded += SpawnDefault;
-            base.OnEnabled();
+            Log.Info("slocLoader has been enabled");
+            PluginAPI.Events.EventManager.RegisterEvents(this);
         }
 
-        public override void OnDisabled() {
+        [PluginUnload]
+        public void OnDisabled() {
             _harmony.UnpatchAll();
             API.UnsetPrefabs();
-            Exiled.Events.Handlers.Map.Generated -= API.LoadPrefabs;
             API.PrefabsLoaded -= AutomaticObjectLoader.LoadObjects;
             API.PrefabsLoaded -= SpawnDefault;
-            base.OnDisabled();
+            PluginAPI.Events.EventManager.UnregisterEvents(this);
+            Log.Info("slocLoader has been disabled");
         }
+
+        [PluginEvent(ServerEventType.MapGenerated)]
+        private void OnMapGenerated() => API.LoadPrefabs();
 
         private void SpawnDefault() {
             if (Config.EnableAutoSpawn)

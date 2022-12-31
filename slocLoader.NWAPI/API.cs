@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using AdminToys;
 using Axwabo.Helpers;
-using Exiled.API.Features;
 using Mirror;
+using PluginAPI.Core;
 using slocLoader.Objects;
 using slocLoader.Readers;
 using UnityEngine;
@@ -36,7 +36,7 @@ namespace slocLoader {
             try {
                 PrefabsLoaded?.Invoke();
             } catch (Exception e) {
-                Log.Error(e);
+                Log.Error(e.ToString());
                 Log.Debug($"Methods that may cause this issue:\n{string.Join("\n", PrefabsLoaded?.GetInvocationList().Select(x => $"{x.Method.DeclaringType?.FullName}::{x.Method.Name}") ?? Enumerable.Empty<string>())}");
             }
         }
@@ -85,7 +85,7 @@ namespace slocLoader {
             var binaryReader = new BinaryReader(buffered);
             var version = ReadVersionSafe(buffered, binaryReader);
             if (!VersionReaders.ContainsKey(version))
-                Log.Warn($"Unknown sloc version: {version}\nAttempting to read it using the default reader.");
+                Log.Warning($"Unknown sloc version: {version}\nAttempting to read it using the default reader.");
             var reader = GetReader(version);
             var header = reader.ReadHeader(binaryReader);
             var objectCount = header.ObjectCount;

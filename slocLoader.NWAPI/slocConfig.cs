@@ -1,16 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using Axwabo.Helpers.Config;
-using Exiled.API.Enums;
-using Exiled.API.Interfaces;
 using slocLoader.AutoObjectLoader;
 using UnityEngine;
 
 namespace slocLoader {
 
-    public sealed class Config : IConfig {
-
-        public bool IsEnabled { get; set; } = true;
+    public sealed class slocConfig {
 
         [Description("If objects in AppData should be automatically loaded.")]
         public bool AutoLoad { get; set; } = true;
@@ -23,7 +19,7 @@ namespace slocLoader {
             new PositionByRoomName("example", new MapPointByName("none", Vector3.forward, new SerializedRotation(10)))
         };
 
-        [Description("A list of objects to be automatically spawned specified by EXILED RoomTypes.")]
+        [Description("A list of objects to be automatically spawned specified by RoomTypes.")]
         public List<PositionByRoomType> AutoSpawnByRoomType { get; set; } = new() {
             new PositionByRoomType("example", new MapPointByRoomType(RoomType.Unknown, Vector3.up, new SerializedRotation(0, 30)))
         };

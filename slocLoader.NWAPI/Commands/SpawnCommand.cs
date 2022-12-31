@@ -1,8 +1,8 @@
 ﻿using System;
 using CommandSystem;
-using Exiled.API.Features;
-using Exiled.Permissions.Extensions;
 using Mirror;
+using PluginAPI.Core;
+using RemoteAdmin;
 using slocLoader.AutoObjectLoader;
 using UnityEngine;
 
@@ -17,16 +17,15 @@ namespace slocLoader.Commands {
         public string[] Aliases { get; } = {"sl_s"};
         public string Description => "Spawns the objects from a loaded sloc file.";
 
-
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response) {
-            var p = Player.Get(sender);
+            var p = Player.Get((sender as PlayerCommandSender)?.ReferenceHub);
             if (p == null) {
                 response = "You must be a player to execute this command!";
                 return false;
             }
 
-            if (!p.CheckPermission("sloc.spawn")) {
-                response = "You don't have permission to do that (sloc.spawn)!";
+            if (!sender.CheckPermission(PlayerPermissions.FacilityManagement)) {
+                response = "You don't have permission to do that (FacilityManagement)!";
                 return false;
             }
 

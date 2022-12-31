@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Exiled.API.Features;
+using PluginAPI.Core;
 using slocLoader.Objects;
 
 namespace slocLoader.AutoObjectLoader {
@@ -13,7 +13,7 @@ namespace slocLoader.AutoObjectLoader {
 
         public static void LoadObjects() {
             LoadedObjects.Clear();
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED", "Plugins", "sloc", "Objects");
+            var path = Path.Combine(PluginHandler.Get(slocPlugin.Instance).PluginDirectoryPath, "Objects");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             var loaded = 0;
@@ -23,7 +23,7 @@ namespace slocLoader.AutoObjectLoader {
                     LoadedObjects.Add(name, API.ReadObjectsFromFile(file));
                     loaded++;
                 } catch (Exception e) {
-                    Log.Warn($"Failed to parse object \"{name}\":\n{e}");
+                    Log.Warning($"Failed to parse object \"{name}\":\n{e}");
                 }
             }
 
