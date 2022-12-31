@@ -37,15 +37,9 @@ it's not meant to be interpreted as text. It is a sequence of **int**egers and *
 
 ## For EXILED
 
-Note: EXILED is in non-public beta at this time; use NWAPI.
-
-1. Download the **slocLoader.dll** file from the [latest release](https://github.com/Axwabo/slocLoader/releases/latest)
-2. Place the DLL into the **EXILED Plugins** folder (Windows: %appdata%\EXILED\Plugins)
-3. Restart your server
+**slocLoader is not available for EXILED 6.0.0 yet.**
 
 ## For Northwood Plugin API
-
-Note: slocLoader is being ported to NWAPI. Release coming soon.
 
 1. Download the **slocLoader-nw.dll** file from the [latest release](https://github.com/Axwabo/slocLoader/releases/latest)
 2. Place the DLL into the **NW Plugins** folder (Windows: %appdata%\SCP Secret Laboratory\PluginAPI\plugins\port)
@@ -71,7 +65,7 @@ command outputs.
 
 Make sure the **enable_auto_spawn** property in the plugin config is set to true.
 
-View the list of room names and types [here](https://github.com/Axwabo/SCPSL-Helpers/blob/main/Axwabo.Helpers/Config/ConfigHelper.cs) (line 65)
+View the list of room names and types [here](https://github.com/Axwabo/SCPSL-Helpers/blob/main/Axwabo.Helpers.NWAPI/Config/RoomType.cs)
 
 In the plugin config, add an item to the **auto_spawn_by_room_name**, **auto_spawn_by_room_type** or **auto_spawn_by_location** list. There are examples provider for ease of use.
 
