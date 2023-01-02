@@ -12,6 +12,8 @@ namespace slocLoader {
 
         public bool IsEnabled { get; set; } = true;
 
+        public bool Debug { get; set; } = false;
+
         [Description("If objects in AppData should be automatically loaded.")]
         public bool AutoLoad { get; set; } = true;
 
