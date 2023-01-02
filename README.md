@@ -6,7 +6,7 @@ A plugin that allows for the loading of objects contained within **sloc** files 
 
 ![Logo](https://github.com/Axwabo/slocLoader/blob/main/logo%20small.png?raw=true)
 
-[Watch the tutorial](https://youtu.be/0ssdcpPzO4U)
+[Watch the tutorial](https://youtu.be/nw5TH3bg8ok)
 
 # MapEditorReborn
 
