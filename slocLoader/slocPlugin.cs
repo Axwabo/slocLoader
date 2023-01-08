@@ -7,13 +7,13 @@ using slocLoader.AutoObjectLoader;
 
 namespace slocLoader {
 
-    public class slocPlugin : Plugin<Config> {
+    public sealed class slocPlugin : Plugin<Config> {
 
         public override string Name => "slocLoader";
         public override string Prefix => "sloc";
         public override string Author => "Axwabo";
-        public override Version Version { get; } = new(3, 0, 0);
-        public override Version RequiredExiledVersion { get; } = new(5, 3, 0);
+        public override Version Version { get; } = new(3, 0, 1);
+        public override Version RequiredExiledVersion { get; } = new(6, 0, 0);
 
         private Harmony _harmony;
 

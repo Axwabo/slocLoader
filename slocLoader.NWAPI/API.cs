@@ -140,7 +140,7 @@ namespace slocLoader {
             if (colliderMode is PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger or PrimitiveObject.ColliderCreationMode.ServerOnlyNonSpawned or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned)
                 sloc.ShouldBeSpawnedOnClient = false;
             if (colliderMode is not PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly)
-                o.AddProperCollider(primitiveType, colliderMode is PrimitiveObject.ColliderCreationMode.Trigger);
+                o.AddProperCollider(primitiveType, colliderMode is PrimitiveObject.ColliderCreationMode.Trigger or PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger);
             toy.PrimitiveType = primitiveType;
             toy.SetAbsoluteTransformFrom(parent);
             toy.SetLocalTransform(transform);

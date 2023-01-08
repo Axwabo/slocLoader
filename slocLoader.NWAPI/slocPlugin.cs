@@ -18,7 +18,7 @@ namespace slocLoader {
         [PluginConfig("config.yml")]
         public slocConfig Config = new();
 
-        [PluginEntryPoint("slocLoader", "3.0.0", "A plugin that loads sloc files.", "Axwabo")]
+        [PluginEntryPoint("slocLoader", "3.0.1", "A plugin that loads sloc files.", "Axwabo")]
         public void OnEnabled() {
             Instance = this;
             _harmony = new Harmony("Axwabo.slocLoader");

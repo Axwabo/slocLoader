@@ -37,7 +37,9 @@ it's not meant to be interpreted as text. It is a sequence of **int**egers and *
 
 ## For EXILED
 
-**slocLoader is not available for EXILED 6.0.0 yet.**
+1. Download the **slocLoader.dll** file from the [latest release](https://github.com/Axwabo/slocLoader/releases/latest)
+2. Place the DLL into the **EXILED Plugins** folder (Windows: %appdata%\EXILED\Plugins)
+3. Restart your server
 
 ## For Northwood Plugin API
 
@@ -49,7 +51,7 @@ it's not meant to be interpreted as text. It is a sequence of **int**egers and *
 
 # Adding objects
 
-To load objects automatically, put your **sloc** file into **%appdata%\EXILED\Plugins\sloc\Objects**
+To load objects automatically, put your **sloc** file into `%appdata%\EXILED\Plugins\sloc\Objects` or `%appdata%\SCP Secret Laboratory\PluginAPI\plugins\port\sloc\Objects`
 
 Make sure the **auto_load** property in the plugin config is set to true.
 
