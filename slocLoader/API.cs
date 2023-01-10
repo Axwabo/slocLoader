@@ -14,7 +14,7 @@ namespace slocLoader {
 
     public static class API {
 
-        public const ushort slocVersion = 3;
+        public const ushort slocVersion = 4;
 
         public const float ColorDivisionMultiplier = 1f / 255f;
 
@@ -339,6 +339,8 @@ namespace slocLoader {
                 collider.isTrigger = true;
             return collider;
         }
+
+        public static bool IsTrigger(this PrimitiveObject.ColliderCreationMode colliderMode) => colliderMode is PrimitiveObject.ColliderCreationMode.Trigger or PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger;
 
         public static bool HasAttribute(this slocHeader header, slocAttributes attribute) => (header.Attributes & attribute) == attribute;
 

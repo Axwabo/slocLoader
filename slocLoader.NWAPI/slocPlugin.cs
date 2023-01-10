@@ -15,10 +15,10 @@ namespace slocLoader {
 
         private Harmony _harmony;
 
-        [PluginConfig("config.yml")]
+        [PluginConfig]
         public slocConfig Config = new();
 
-        [PluginEntryPoint("slocLoader", "3.0.1", "A plugin that loads sloc files.", "Axwabo")]
+        [PluginEntryPoint("slocLoader", "4.0.0", "A plugin that loads sloc files.", "Axwabo")]
         public void OnEnabled() {
             Instance = this;
             _harmony = new Harmony("Axwabo.slocLoader");

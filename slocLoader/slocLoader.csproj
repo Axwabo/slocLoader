@@ -119,6 +119,8 @@
         <Compile Include="slocPlugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="slocObjectData.cs" />
+        <Compile Include="TriggerActions\TargetType.cs" />
+        <Compile Include="TriggerActions\TriggerActionType.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="App.config" />

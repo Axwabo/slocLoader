@@ -14,7 +14,7 @@ namespace slocLoader {
 
     public static class API {
 
-        public const ushort slocVersion = 3;
+        public const ushort slocVersion = 4;
 
         public const float ColorDivisionMultiplier = 1f / 255f;
 
@@ -140,7 +140,7 @@ namespace slocLoader {
             if (colliderMode is PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger or PrimitiveObject.ColliderCreationMode.ServerOnlyNonSpawned or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned)
                 sloc.ShouldBeSpawnedOnClient = false;
             if (colliderMode is not PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly)
-                o.AddProperCollider(primitiveType, colliderMode is PrimitiveObject.ColliderCreationMode.Trigger or PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger);
+                o.AddProperCollider(primitiveType, IsTrigger(colliderMode));
             toy.PrimitiveType = primitiveType;
             toy.SetAbsoluteTransformFrom(parent);
             toy.SetLocalTransform(transform);
@@ -339,6 +339,8 @@ namespace slocLoader {
                 collider.isTrigger = true;
             return collider;
         }
+
+        public static bool IsTrigger(this PrimitiveObject.ColliderCreationMode colliderMode) => colliderMode is PrimitiveObject.ColliderCreationMode.Trigger or PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger;
 
         public static bool HasAttribute(this slocHeader header, slocAttributes attribute) => (header.Attributes & attribute) == attribute;
 

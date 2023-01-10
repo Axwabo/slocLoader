@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace slocLoader {
 
-    public sealed class Config : IConfig {
+    public sealed class slocConfig : IConfig {
 
         public bool IsEnabled { get; set; } = true;
 
