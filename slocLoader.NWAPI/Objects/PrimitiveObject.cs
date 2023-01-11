@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using slocLoader.Readers;
+using slocLoader.TriggerActions;
+using slocLoader.TriggerActions.Data;
 using UnityEngine;
 
 namespace slocLoader.Objects {
@@ -15,23 +17,21 @@ namespace slocLoader.Objects {
 
         public Color MaterialColor = Color.gray;
 
-        public ColliderCreationMode ColliderMode { get; set; } = ColliderCreationMode.Both;
+        public ColliderCreationMode ColliderMode = ColliderCreationMode.Both;
+
+        public BaseTriggerActionData[] TriggerActions = Array.Empty<BaseTriggerActionData>();
 
         public ColliderCreationMode GetNonUnsetColliderMode() => ColliderMode is ColliderCreationMode.Unset ? ColliderCreationMode.Both : ColliderMode;
 
-        public override void WriteTo(BinaryWriter writer, slocHeader header) {
-            base.WriteTo(writer, header);
-            if (header.HasAttribute(slocAttributes.LossyColors)) {
+        protected override void WriteData(BinaryWriter writer, slocHeader header) {
+            if (header.HasAttribute(slocAttributes.LossyColors))
                 writer.Write(MaterialColor.ToLossyColor());
-                writer.Write((byte) ColliderMode);
-                return;
-            }
+            else
+                writer.WriteColor(MaterialColor);
 
-            writer.Write(MaterialColor.r);
-            writer.Write(MaterialColor.g);
-            writer.Write(MaterialColor.b);
-            writer.Write(MaterialColor.a);
             writer.Write((byte) ColliderMode);
+            if (ColliderMode.IsTrigger() || header.HasAttribute(slocAttributes.ExportAllTriggerActions))
+                ActionManager.WriteActions(writer, TriggerActions);
         }
 
         public enum ColliderCreationMode : byte {

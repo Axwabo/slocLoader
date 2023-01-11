@@ -1,11 +1,15 @@
-﻿namespace slocLoader.TriggerActions {
+﻿using System;
 
-    public enum TargetType {
+namespace slocLoader.TriggerActions {
 
-        None,
-        Player,
-        Pickup,
-        Toy
+    [Flags]
+    public enum TargetType : byte {
+
+        None = 0,
+        Player = 1,
+        Pickup = 2,
+        Toy = 4,
+        All = 255
 
     }
 

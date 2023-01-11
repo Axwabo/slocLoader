@@ -52,12 +52,13 @@ namespace slocLoader {
 
         #region Reader Declarations
 
-        public static readonly IObjectReader DefaultReader = new Ver3Reader();
+        public static readonly IObjectReader DefaultReader = new Ver4Reader();
 
         private static readonly Dictionary<ushort, IObjectReader> VersionReaders = new() {
             {1, new Ver1Reader()},
             {2, new Ver2Reader()},
-            {3, new Ver3Reader()}
+            {3, new Ver3Reader()},
+            {4, new Ver4Reader()}
         };
 
         public static bool TryGetReader(ushort version, out IObjectReader reader) => VersionReaders.TryGetValue(version, out reader);
@@ -280,6 +281,30 @@ namespace slocLoader {
         public static int ReadObjectCount(this BinaryReader reader) {
             var count = reader.ReadInt32();
             return count < 0 ? 0 : count;
+        }
+
+        #endregion
+
+        #region BinaryWriter Extensions
+
+        public static void WriteVector(this BinaryWriter writer, Vector3 vector3) {
+            writer.Write(vector3.x);
+            writer.Write(vector3.y);
+            writer.Write(vector3.z);
+        }
+
+        public static void WriteQuaternion(this BinaryWriter writer, Quaternion quaternion) {
+            writer.Write(quaternion.x);
+            writer.Write(quaternion.y);
+            writer.Write(quaternion.z);
+            writer.Write(quaternion.w);
+        }
+
+        public static void WriteColor(this BinaryWriter writer, Color color) {
+            writer.Write(color.r);
+            writer.Write(color.g);
+            writer.Write(color.b);
+            writer.Write(color.a);
         }
 
         #endregion

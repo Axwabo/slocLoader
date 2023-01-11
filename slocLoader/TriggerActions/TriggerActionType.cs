@@ -1,11 +1,13 @@
 ﻿namespace slocLoader.TriggerActions {
 
-    public enum TriggerActionType {
+    public enum TriggerActionType : ushort {
 
-        TeleportToPosition,
-        TeleportToSpawnedObject,
-        TeleportToRoom,
-        KillPlayer
+        None = 0,
+        TeleportToPosition = 1,
+        TeleportToSpawnedObject = 2,
+        TeleportToRoom = 3,
+        MoveRelativeToSelf = 4,
+        KillPlayer = 5
 
     }
 

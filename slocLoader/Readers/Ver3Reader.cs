@@ -6,33 +6,38 @@ namespace slocLoader.Readers {
 
     public sealed class Ver3Reader : IObjectReader {
 
-        public slocHeader ReadHeader(BinaryReader stream) {
-            var count = stream.ReadObjectCount();
-            var attributes = (slocAttributes) stream.ReadByte();
-            var colliderCreationMode = attributes.HasFlagFast(slocAttributes.DefaultColliderMode)
-                ? (PrimitiveObject.ColliderCreationMode) stream.ReadByte()
-                : PrimitiveObject.ColliderCreationMode.Unset;
-            return new slocHeader(count,
-                attributes,
-                colliderCreationMode
-            );
-        }
+        public slocHeader ReadHeader(BinaryReader stream) => ReadHeaderStatic(stream, 3);
 
         public slocGameObject Read(BinaryReader stream, slocHeader header) {
             var objectType = (ObjectType) stream.ReadByte();
             return objectType switch {
-                ObjectType.Cube => ReadPrimitive(stream, objectType, header),
-                ObjectType.Sphere => ReadPrimitive(stream, objectType, header),
-                ObjectType.Cylinder => ReadPrimitive(stream, objectType, header),
-                ObjectType.Plane => ReadPrimitive(stream, objectType, header),
-                ObjectType.Capsule => ReadPrimitive(stream, objectType, header),
+                ObjectType.Cube
+                    or ObjectType.Sphere
+                    or ObjectType.Cylinder
+                    or ObjectType.Plane
+                    or ObjectType.Capsule
+                    or ObjectType.Quad => ReadPrimitive(stream, objectType, header),
                 ObjectType.Light => ReadLight(stream, header),
                 ObjectType.Empty => Ver2Reader.ReadEmpty(stream),
                 _ => null
             };
         }
 
-        public static slocGameObject ReadPrimitive(BinaryReader stream, ObjectType type, slocHeader header) {
+        public static slocHeader ReadHeaderStatic(BinaryReader stream, ushort version) {
+            var count = stream.ReadObjectCount();
+            var attributes = (slocAttributes) stream.ReadByte();
+            var colliderCreationMode = attributes.HasFlagFast(slocAttributes.DefaultColliderMode)
+                ? (PrimitiveObject.ColliderCreationMode) stream.ReadByte()
+                : PrimitiveObject.ColliderCreationMode.Unset;
+            return new slocHeader(
+                version,
+                count,
+                attributes,
+                colliderCreationMode
+            );
+        }
+
+        public static PrimitiveObject ReadPrimitive(BinaryReader stream, ObjectType type, slocHeader header) {
             var instanceId = stream.ReadInt32();
             var parentId = stream.ReadInt32();
             var slocTransform = stream.ReadTransform();
@@ -49,7 +54,7 @@ namespace slocLoader.Readers {
             };
         }
 
-        public static slocGameObject ReadLight(BinaryReader stream, slocHeader header) {
+        public static LightObject ReadLight(BinaryReader stream, slocHeader header) {
             var instanceId = stream.ReadInt32();
             var parentId = stream.ReadInt32();
             var transform = stream.ReadTransform();
