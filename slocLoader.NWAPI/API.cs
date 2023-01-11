@@ -4,10 +4,12 @@ using System.IO;
 using System.Linq;
 using AdminToys;
 using Axwabo.Helpers;
+using Axwabo.Helpers.Pools;
 using Mirror;
 using PluginAPI.Core;
 using slocLoader.Objects;
 using slocLoader.Readers;
+using slocLoader.TriggerActions;
 using UnityEngine;
 
 namespace slocLoader {
@@ -141,7 +143,8 @@ namespace slocLoader {
             if (colliderMode is PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger or PrimitiveObject.ColliderCreationMode.ServerOnlyNonSpawned or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned)
                 sloc.ShouldBeSpawnedOnClient = false;
             if (colliderMode is not PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly)
-                o.AddProperCollider(primitiveType, colliderMode is PrimitiveObject.ColliderCreationMode.Trigger or PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger);
+                o.AddProperCollider(primitiveType, colliderMode.IsTrigger());
+            AddActionHandlers(o, primitive);
             toy.PrimitiveType = primitiveType;
             toy.SetAbsoluteTransformFrom(parent);
             toy.SetLocalTransform(transform);
@@ -169,6 +172,20 @@ namespace slocLoader {
             emptyObject.SetAbsoluteTransformFrom(parent);
             emptyObject.SetLocalTransform(transform);
             return emptyObject;
+        }
+
+        private static void AddActionHandlers(GameObject o, PrimitiveObject primitive) {
+            if (primitive.TriggerActions is not {Length: > 0})
+                return;
+            var list = ListPool<HandlerDataPair>.Shared.Rent();
+            foreach (var action in primitive.TriggerActions) {
+                if (ActionManager.TryGetHandler(action.TargetType, action.ActionType, out var handler))
+                    list.Add(new HandlerDataPair(action, handler));
+            }
+
+            if (list.Count > 0)
+                o.AddComponent<TriggerListener>().ActionHandlers = list.ToArray();
+            ListPool<HandlerDataPair>.Shared.Return(list);
         }
 
         public static GameObject CreateObjects(IEnumerable<slocGameObject> objects, Vector3 position, Quaternion rotation = default) => CreateObjects(objects, out _, position, rotation);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using slocLoader.TriggerActions.Data;
+using slocLoader.TriggerActions.Handlers;
 using slocLoader.TriggerActions.Readers;
 
 namespace slocLoader.TriggerActions {
@@ -15,6 +16,8 @@ namespace slocLoader.TriggerActions {
         private static readonly Dictionary<ushort, ITriggerActionDataReader> Readers = new() {
             {4, new Ver4ActionDataReader()}
         };
+
+        private static readonly ITriggerActionHandler[] ActionHandlers = { };
 
         public static bool TryGetReader(ushort version, out ITriggerActionDataReader reader) {
             reader = null;
@@ -50,6 +53,18 @@ namespace slocLoader.TriggerActions {
         public static void ReadTypes(BinaryReader reader, out TargetType targetType, out TriggerActionType actionType) {
             targetType = (TargetType) reader.ReadByte();
             actionType = (TriggerActionType) reader.ReadUInt16();
+        }
+
+        public static bool TryGetHandler(TargetType targetType, TriggerActionType actionType, out ITriggerActionHandler handler) {
+            foreach (var actionHandler in ActionHandlers) {
+                if (!actionHandler.Targets.Is(targetType) || actionHandler.ActionType != actionType)
+                    continue;
+                handler = actionHandler;
+                return true;
+            }
+
+            handler = null;
+            return false;
         }
 
         public static bool HasFlagFast(this TargetType targetType, TargetType flag) => (targetType & flag) == flag;
