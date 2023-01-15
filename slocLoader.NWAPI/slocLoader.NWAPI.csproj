@@ -9,7 +9,7 @@
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>slocLoader</RootNamespace>
-        <AssemblyName>slocLoader</AssemblyName>
+        <AssemblyName>slocLoader.NWAPI</AssemblyName>
         <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <LangVersion>9</LangVersion>
@@ -23,6 +23,7 @@
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <PlatformTarget>x64</PlatformTarget>
@@ -32,6 +33,7 @@
         <DefineConstants>TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -149,11 +151,15 @@
         <Compile Include="TriggerActions\Data\TeleportToRoomData.cs" />
         <Compile Include="TriggerActions\Data\TeleportToSpawnedObjectData.cs" />
         <Compile Include="TriggerActions\HandlerDataPair.cs" />
+        <Compile Include="TriggerActions\Handlers\Abstract\PickupActionHandler.cs" />
+        <Compile Include="TriggerActions\Handlers\Abstract\PlayerActionHandler.cs" />
+        <Compile Include="TriggerActions\Handlers\Abstract\ToyActionHandler.cs" />
+        <Compile Include="TriggerActions\Handlers\Abstract\UniversalTriggerActionHandler.cs" />
         <Compile Include="TriggerActions\Handlers\ITriggerActionHandler.cs" />
-        <Compile Include="TriggerActions\Handlers\PickupActionHandler.cs" />
-        <Compile Include="TriggerActions\Handlers\PlayerActionHandler.cs" />
-        <Compile Include="TriggerActions\Handlers\ToyActionHandler.cs" />
-        <Compile Include="TriggerActions\Handlers\UniversalTriggerActionHandler.cs" />
+        <Compile Include="TriggerActions\Handlers\KillPlayerHandler.cs" />
+        <Compile Include="TriggerActions\Handlers\MoveRelativeToSelfHandler.cs" />
+        <Compile Include="TriggerActions\Handlers\TeleportToPositionHandler.cs" />
+        <Compile Include="TriggerActions\Handlers\TeleportToRoomHandler.cs" />
         <Compile Include="TriggerActions\Readers\ITriggerActionDataReader.cs" />
         <Compile Include="TriggerActions\Readers\Ver4ActionDataReader.cs" />
         <Compile Include="TriggerActions\TargetType.cs" />

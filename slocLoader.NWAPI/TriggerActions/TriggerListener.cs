@@ -10,7 +10,7 @@ namespace slocLoader.TriggerActions {
         private void OnTriggerEnter(Collider other) {
             if (ActionHandlers == null)
                 return;
-            var go = other.gameObject;
+            var go = other.gameObject.transform.root.gameObject;
             foreach (var pair in ActionHandlers)
                 pair.Handler.HandleObject(go, pair.Data);
         }

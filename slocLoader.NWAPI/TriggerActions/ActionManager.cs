@@ -17,7 +17,12 @@ namespace slocLoader.TriggerActions {
             {4, new Ver4ActionDataReader()}
         };
 
-        private static readonly ITriggerActionHandler[] ActionHandlers = { };
+        private static readonly ITriggerActionHandler[] ActionHandlers = {
+            new TeleportToPositionHandler(),
+            new MoveRelativeToSelfHandler(),
+            new KillPlayerHandler(),
+            new TeleportToRoomHandler()
+        };
 
         public static bool TryGetReader(ushort version, out ITriggerActionDataReader reader) {
             reader = null;
