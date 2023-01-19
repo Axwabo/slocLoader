@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using slocLoader.TriggerActions.Data;
 using slocLoader.TriggerActions.Handlers;
 using slocLoader.TriggerActions.Readers;
@@ -16,6 +17,13 @@ namespace slocLoader.TriggerActions {
         private static readonly Dictionary<ushort, ITriggerActionDataReader> Readers = new() {
             {4, new Ver4ActionDataReader()}
         };
+
+        public static readonly ICollection<TargetType> TargetTypeValues = new List<TargetType> {
+            TargetType.Player,
+            TargetType.Pickup,
+            TargetType.Toy,
+            TargetType.Ragdoll
+        }.AsReadOnly();
 
         private static readonly ITriggerActionHandler[] ActionHandlers = {
             new TeleportToPositionHandler(),
@@ -60,9 +68,9 @@ namespace slocLoader.TriggerActions {
             actionType = (TriggerActionType) reader.ReadUInt16();
         }
 
-        public static bool TryGetHandler(TargetType targetType, TriggerActionType actionType, out ITriggerActionHandler handler) {
+        public static bool TryGetHandler(TriggerActionType actionType, out ITriggerActionHandler handler) {
             foreach (var actionHandler in ActionHandlers) {
-                if (!actionHandler.Targets.Is(targetType) || actionHandler.ActionType != actionType)
+                if (actionHandler.ActionType != actionType)
                     continue;
                 handler = actionHandler;
                 return true;
@@ -75,6 +83,8 @@ namespace slocLoader.TriggerActions {
         public static bool HasFlagFast(this TargetType targetType, TargetType flag) => (targetType & flag) == flag;
 
         public static bool Is(this TargetType type, TargetType isType) => type is TargetType.All || type.HasFlagFast(isType);
+
+        public static bool ContainsAnyOf(this TargetType type, TargetType multiple) => type is TargetType.All || TargetTypeValues.Any(targetType => type.HasFlagFast(targetType) && multiple.HasFlagFast(targetType));
 
     }
 

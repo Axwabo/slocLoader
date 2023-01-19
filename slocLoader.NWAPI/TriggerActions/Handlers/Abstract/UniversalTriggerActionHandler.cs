@@ -23,17 +23,17 @@ namespace slocLoader.TriggerActions.Handlers.Abstract {
         }
 
         private void HandlePlayerInternal(ReferenceHub hub, TData data) {
-            if (data.TargetType.Is(TargetType.Player))
+            if (data.SelectedTargets.Is(TargetType.Player))
                 HandlePlayer(hub, data);
         }
 
         private void HandleItemInternal(ItemPickupBase pickup, TData data) {
-            if (data.TargetType.Is(TargetType.Pickup))
+            if (data.PossibleTargets.Is(TargetType.Pickup))
                 HandleItem(pickup, data);
         }
 
         private void HandleToyInternal(AdminToyBase toy, TData data) {
-            if (data.TargetType.Is(TargetType.Toy))
+            if (data.PossibleTargets.Is(TargetType.Toy))
                 HandleToy(toy, data);
         }
 

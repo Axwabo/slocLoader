@@ -33,8 +33,10 @@ namespace slocLoader {
                     LightPrefab = light;
             }
 
-            if (PrimitivePrefab == null || LightPrefab == null)
+            if (PrimitivePrefab == null || LightPrefab == null) {
+                Log.Error("Either the primitive or light prefab is null. This should not happen!");
                 return;
+            }
             try {
                 PrefabsLoaded?.Invoke();
             } catch (Exception e) {
@@ -175,11 +177,11 @@ namespace slocLoader {
         }
 
         private static void AddActionHandlers(GameObject o, PrimitiveObject primitive) {
-            if (primitive.TriggerActions is not {Length: > 0})
+            if (primitive.TriggerActions is not {Length: not 0})
                 return;
             var list = ListPool<HandlerDataPair>.Shared.Rent();
             foreach (var action in primitive.TriggerActions) {
-                if (ActionManager.TryGetHandler(action.TargetType, action.ActionType, out var handler))
+                if (action.SelectedTargets is not TargetType.None && ActionManager.TryGetHandler(action.ActionType, out var handler))
                     list.Add(new HandlerDataPair(action, handler));
             }
 
