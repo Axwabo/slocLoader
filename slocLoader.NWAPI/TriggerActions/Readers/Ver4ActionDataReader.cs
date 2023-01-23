@@ -6,7 +6,7 @@ namespace slocLoader.TriggerActions.Readers {
     public sealed class Ver4ActionDataReader : ITriggerActionDataReader {
 
         public BaseTriggerActionData Read(BinaryReader reader) {
-            ActionManager.ReadTypes(reader, out var targetType, out var actionType);
+            ActionManager.ReadTypes(reader, out var actionType, out var targetType);
             return actionType switch {
                 TriggerActionType.TeleportToPosition => ReadTpToPos(targetType, reader),
                 TriggerActionType.MoveRelativeToSelf => ReadMoveRelative(targetType, reader),

@@ -37,9 +37,9 @@ namespace slocLoader {
                 SpawnDefault();
             }
 
+            SeedSynchronizer.OnMapGenerated += API.LoadPrefabs;
             API.PrefabsLoaded += SpawnDefault;
             Log.Info("slocLoader has been enabled");
-            PluginAPI.Events.EventManager.RegisterEvents(this);
         }
 
         [PluginUnload]
@@ -48,7 +48,7 @@ namespace slocLoader {
             API.UnsetPrefabs();
             API.PrefabsLoaded -= AutomaticObjectLoader.LoadObjects;
             API.PrefabsLoaded -= SpawnDefault;
-            PluginAPI.Events.EventManager.UnregisterEvents(this);
+            SeedSynchronizer.OnMapGenerated -= API.LoadPrefabs;
             Log.Info("slocLoader has been disabled");
         }
 

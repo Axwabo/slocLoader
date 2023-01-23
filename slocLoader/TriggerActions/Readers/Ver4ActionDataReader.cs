@@ -6,42 +6,42 @@ namespace slocLoader.TriggerActions.Readers {
     public sealed class Ver4ActionDataReader : ITriggerActionDataReader {
 
         public BaseTriggerActionData Read(BinaryReader reader) {
-            ActionManager.ReadTypes(reader, out var targetType, out var actionType);
+            ActionManager.ReadTypes(reader, out var actionType, out var targetType);
             return actionType switch {
-                TriggerActionType.TeleportToPosition => ReadTpToPos(reader),
-                TriggerActionType.MoveRelativeToSelf => ReadMoveRelative(reader),
-                TriggerActionType.TeleportToRoom => ReadTpToRoom(reader),
-                TriggerActionType.KillPlayer => ReadKillPlayer(targetType, reader),
-                TriggerActionType.TeleportToSpawnedObject => ReadTpToSpawnedObject(reader),
+                TriggerActionType.TeleportToPosition => ReadTpToPos(targetType, reader),
+                TriggerActionType.MoveRelativeToSelf => ReadMoveRelative(targetType, reader),
+                TriggerActionType.TeleportToRoom => ReadTpToRoom(targetType, reader),
+                TriggerActionType.KillPlayer => ReadKillPlayer(reader),
+                TriggerActionType.TeleportToSpawnedObject => ReadTpToSpawnedObject(targetType, reader),
                 _ => null
             };
         }
 
-        public static TeleportToPositionData ReadTpToPos(BinaryReader reader) {
+        public static TeleportToPositionData ReadTpToPos(TargetType targetType, BinaryReader reader) {
             var position = reader.ReadVector();
-            return new TeleportToPositionData(position);
+            return new TeleportToPositionData(position) {SelectedTargets = targetType};
         }
 
-        public static MoveRelativeToSelfData ReadMoveRelative(BinaryReader reader) {
+        public static MoveRelativeToSelfData ReadMoveRelative(TargetType targetType, BinaryReader reader) {
             var position = reader.ReadVector();
-            return new MoveRelativeToSelfData(position);
+            return new MoveRelativeToSelfData(position) {SelectedTargets = targetType};
         }
 
-        public static TeleportToRoomData ReadTpToRoom(BinaryReader reader) {
+        public static TeleportToRoomData ReadTpToRoom(TargetType targetType, BinaryReader reader) {
             var position = reader.ReadVector();
             var name = reader.ReadString();
-            return new TeleportToRoomData(position, name);
+            return new TeleportToRoomData(position, name) {SelectedTargets = targetType};
         }
 
-        public static KillPlayerData ReadKillPlayer(TargetType type, BinaryReader reader) {
+        public static KillPlayerData ReadKillPlayer(BinaryReader reader) {
             var cause = reader.ReadString();
-            return type.Is(TargetType.Player) ? new KillPlayerData(cause) : null;
+            return new KillPlayerData(cause);
         }
 
-        public static TeleportToSpawnedObjectData ReadTpToSpawnedObject(BinaryReader reader) {
+        public static SerializableTeleportToSpawnedObjectData ReadTpToSpawnedObject(TargetType targetType, BinaryReader reader) {
             var virtualInstanceId = reader.ReadInt32();
             var offset = reader.ReadVector();
-            return new TeleportToSpawnedObjectData(virtualInstanceId, offset);
+            return new SerializableTeleportToSpawnedObjectData(virtualInstanceId, offset) {SelectedTargets = targetType};
         }
 
     }

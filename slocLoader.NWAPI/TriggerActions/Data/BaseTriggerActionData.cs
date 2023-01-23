@@ -1,30 +1,33 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using UnityEngine;
 
 namespace slocLoader.TriggerActions.Data {
 
+    [Serializable]
     public abstract class BaseTriggerActionData {
 
-        private TargetType _selected;
+        [SerializeField]
+        private TargetType selected;
 
         public abstract TargetType PossibleTargets { get; }
 
         public abstract TriggerActionType ActionType { get; }
 
         public TargetType SelectedTargets {
-            get => _selected;
+            get => selected;
             set {
                 if (value is TargetType.None) {
-                    _selected = value;
+                    selected = value;
                     return;
                 }
 
                 var possible = PossibleTargets;
-                foreach (var v in ActionManager.TargetTypeValues) {
+                foreach (var v in ActionManager.TargetTypeValues)
                     if (value.HasFlagFast(v) && possible.HasFlagFast(v))
-                        _selected |= v;
+                        selected |= v;
                     else
-                        _selected &= ~v;
-                }
+                        selected &= ~v;
             }
         }
 

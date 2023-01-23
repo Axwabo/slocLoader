@@ -1,21 +1,20 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using UnityEngine;
 
 namespace slocLoader.TriggerActions.Data {
 
-    [Serializable]
     public sealed class MoveRelativeToSelfData : BaseTriggerActionData {
 
         public override TargetType PossibleTargets => TargetType.All;
 
         public override TriggerActionType ActionType => TriggerActionType.MoveRelativeToSelf;
 
-        public Vector3 offset;
+        [field: SerializeField]
+        public Vector3 Offset { get; set; }
 
-        public MoveRelativeToSelfData(Vector3 offset) => this.offset = offset;
+        public MoveRelativeToSelfData(Vector3 offset) => Offset = offset;
 
-        protected override void WriteData(BinaryWriter writer) => writer.WriteVector(offset);
+        protected override void WriteData(BinaryWriter writer) => writer.WriteVector(Offset);
 
     }
 

@@ -63,9 +63,9 @@ namespace slocLoader.TriggerActions {
             return array;
         }
 
-        public static void ReadTypes(BinaryReader reader, out TargetType targetType, out TriggerActionType actionType) {
-            targetType = (TargetType) reader.ReadByte();
+        public static void ReadTypes(BinaryReader reader, out TriggerActionType actionType, out TargetType targetType) {
             actionType = (TriggerActionType) reader.ReadUInt16();
+            targetType = (TargetType) reader.ReadByte();
         }
 
         public static bool TryGetHandler(TriggerActionType actionType, out ITriggerActionHandler handler) {

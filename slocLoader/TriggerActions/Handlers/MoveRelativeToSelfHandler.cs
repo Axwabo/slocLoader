@@ -15,18 +15,18 @@ namespace slocLoader.TriggerActions.Handlers {
             if (player.roleManager.CurrentRole is not IFpcRole fpc)
                 return;
             var module = fpc.FpcModule;
-            var pose = new Pose(module.Position, module.MouseLook.TargetCamRotation);
-            player.TryOverridePosition(pose.position + pose.rotation * data.offset, Vector3.zero);
+            player.TryOverridePosition(module.Position + module.MouseLook.TargetCamRotation * data.Offset, Vector3.zero);
         }
 
-        protected override void HandleItem(ItemPickupBase pickup, MoveRelativeToSelfData data) {
-            var t = pickup.transform;
-            pickup.transform.position = t.TransformPoint(data.offset);
-        }
+        protected override void HandleItem(ItemPickupBase pickup, MoveRelativeToSelfData data) => HandleComponent(pickup, data);
 
-        protected override void HandleToy(AdminToyBase toy, MoveRelativeToSelfData data) {
-            var t = toy.transform;
-            t.position = t.TransformPoint(data.offset);
+        protected override void HandleToy(AdminToyBase toy, MoveRelativeToSelfData data) => HandleComponent(toy, data);
+        
+        protected override void HandleRagdoll(BasicRagdoll ragdoll, MoveRelativeToSelfData data) => HandleComponent(ragdoll, data);
+
+        private static void HandleComponent(Component component, MoveRelativeToSelfData data) {
+            var t = component.transform;
+            t.position = t.TransformPoint(data.Offset);
         }
 
     }

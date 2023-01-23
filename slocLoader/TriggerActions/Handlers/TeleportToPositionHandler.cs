@@ -12,11 +12,15 @@ namespace slocLoader.TriggerActions.Handlers {
         public override TriggerActionType ActionType => TriggerActionType.TeleportToPosition;
 
         protected override void HandlePlayer(ReferenceHub player, TeleportToPositionData data) =>
-            player.TryOverridePosition(data.position, Vector3.zero);
+            player.TryOverridePosition(data.Position, Vector3.zero);
 
-        protected override void HandleItem(ItemPickupBase pickup, TeleportToPositionData data) => pickup.transform.position = data.position;
+        protected override void HandleItem(ItemPickupBase pickup, TeleportToPositionData data) => HandleComponent(pickup,data);
 
-        protected override void HandleToy(AdminToyBase toy, TeleportToPositionData data) => toy.transform.position = data.position;
+        protected override void HandleToy(AdminToyBase toy, TeleportToPositionData data) => HandleComponent(toy, data);
+
+        protected override void HandleRagdoll(BasicRagdoll ragdoll, TeleportToPositionData data) => HandleComponent(ragdoll, data);
+
+        private static void HandleComponent(Component component, TeleportToPositionData data) => component.transform.position = data.Position;
 
     }
 

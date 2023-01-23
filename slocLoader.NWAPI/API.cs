@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using AdminToys;
 using Axwabo.Helpers;
 using Axwabo.Helpers.Pools;
@@ -37,11 +38,21 @@ namespace slocLoader {
                 Log.Error("Either the primitive or light prefab is null. This should not happen!");
                 return;
             }
-            try {
-                PrefabsLoaded?.Invoke();
-            } catch (Exception e) {
-                Log.Error(e.ToString());
-                Log.Debug($"Methods that may cause this issue:\n{string.Join("\n", PrefabsLoaded?.GetInvocationList().Select(x => $"{x.Method.DeclaringType?.FullName}::{x.Method.Name}") ?? Enumerable.Empty<string>())}");
+
+            InvokeEvent();
+        }
+
+        private static void InvokeEvent() {
+            if (PrefabsLoaded == null)
+                return;
+            foreach (var subscriber in PrefabsLoaded.GetInvocationList()) {
+                try {
+                    subscriber.DynamicInvoke();
+                } catch (Exception e) {
+                    var method = subscriber.Method;
+                    var exception = e is TargetInvocationException {InnerException: var inner} ? inner : e;
+                    Log.Error($"An exception was thrown by {method.DeclaringType?.FullName}::{method.Name} upon the invocation of PrefabsLoaded:\n{exception}");
+                }
             }
         }
 
@@ -144,7 +155,7 @@ namespace slocLoader {
             sloc.HasColliderOnClient = colliderMode is PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.Both;
             if (colliderMode is PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger or PrimitiveObject.ColliderCreationMode.ServerOnlyNonSpawned or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned)
                 sloc.ShouldBeSpawnedOnClient = false;
-            if (colliderMode is not PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly)
+            if (colliderMode is not (PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned))
                 o.AddProperCollider(primitiveType, colliderMode.IsTrigger());
             AddActionHandlers(o, primitive);
             toy.PrimitiveType = primitiveType;

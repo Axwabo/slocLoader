@@ -17,17 +17,19 @@ namespace slocLoader.TriggerActions.Handlers {
                 player.TryOverridePosition(pos, Vector3.zero);
         }
 
-        protected override void HandleItem(ItemPickupBase pickup, TeleportToRoomData data) {
-            if (TryCalculatePosition(data, out var pos))
-                pickup.transform.position = pos;
-        }
+        protected override void HandleItem(ItemPickupBase pickup, TeleportToRoomData data) => HandleComponent(pickup, data);
 
-        protected override void HandleToy(AdminToyBase toy, TeleportToRoomData data) {
-            if (TryCalculatePosition(data, out var pos))
-                toy.transform.position = pos;
-        }
+        protected override void HandleToy(AdminToyBase toy, TeleportToRoomData data) => HandleComponent(toy, data);
 
-        private static bool TryCalculatePosition(TeleportToRoomData data, out Vector3 vector) => new MapPointByName(data.room, data.positionOffset).TryGetWorldPose(out vector, out _);
+        protected override void HandleRagdoll(BasicRagdoll ragdoll, TeleportToRoomData data) => HandleComponent(ragdoll, data);
+
+        private static bool TryCalculatePosition(TeleportToRoomData data, out Vector3 vector) =>
+            new MapPointByName(data.Room, data.PositionOffset).TryGetWorldPose(out vector, out _);
+
+        private static void HandleComponent(Component component, TeleportToRoomData data) {
+            if (TryCalculatePosition(data, out var pos))
+                component.transform.position = pos;
+        }
 
     }
 

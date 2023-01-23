@@ -10,7 +10,7 @@ namespace slocLoader.TriggerActions.Handlers {
 
         protected override void HandlePlayer(ReferenceHub player, KillPlayerData data) {
             if (!player.characterClassManager.GodMode)
-                player.playerStats.DealDamage(new CustomReasonDamageHandler(data.cause));
+                player.playerStats.DealDamage(new CustomReasonDamageHandler(data.Cause));
         }
 
     }

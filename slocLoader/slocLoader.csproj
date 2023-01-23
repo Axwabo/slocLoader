@@ -124,9 +124,10 @@
         <Compile Include="TriggerActions\Data\BaseTriggerActionData.cs" />
         <Compile Include="TriggerActions\Data\KillPlayerData.cs" />
         <Compile Include="TriggerActions\Data\MoveRelativeToSelfData.cs" />
+        <Compile Include="TriggerActions\Data\RuntimeTeleportToSpawnedObjectData.cs" />
+        <Compile Include="TriggerActions\Data\SerializableTeleportToSpawnedObjectData.cs" />
         <Compile Include="TriggerActions\Data\TeleportToPositionData.cs" />
         <Compile Include="TriggerActions\Data\TeleportToRoomData.cs" />
-        <Compile Include="TriggerActions\Data\TeleportToSpawnedObjectData.cs" />
         <Compile Include="TriggerActions\HandlerDataPair.cs" />
         <Compile Include="TriggerActions\Handlers\Abstract\PickupActionHandler.cs" />
         <Compile Include="TriggerActions\Handlers\Abstract\PlayerActionHandler.cs" />

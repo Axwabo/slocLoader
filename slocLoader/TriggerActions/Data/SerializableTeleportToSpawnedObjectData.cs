@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace slocLoader.TriggerActions.Data {
 
-    public sealed class TeleportToSpawnedObjectData : BaseTriggerActionData {
+    public sealed class SerializableTeleportToSpawnedObjectData : BaseTriggerActionData {
 
-        public override TargetType TargetType => TargetType.Toy;
+        public override TargetType PossibleTargets => TargetType.Toy;
         public override TriggerActionType ActionType => TriggerActionType.TeleportToSpawnedObject;
 
         public readonly int ID;
 
         public readonly Vector3 Offset;
 
-        public TeleportToSpawnedObjectData(int id, Vector3 offset) {
+        public SerializableTeleportToSpawnedObjectData(int id, Vector3 offset) {
             ID = id;
             Offset = offset;
         }

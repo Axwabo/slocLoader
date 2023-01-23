@@ -20,21 +20,28 @@ namespace slocLoader.TriggerActions.Handlers.Abstract {
                 HandleItemInternal(pickup, t);
             else if (obj.TryGetComponent(out AdminToyBase toy))
                 HandleToyInternal(toy, t);
+            else if (obj.TryGetComponent(out BasicRagdoll ragdoll))
+                HandleRagdollInternal(ragdoll, t);
         }
 
         private void HandlePlayerInternal(ReferenceHub hub, TData data) {
-            if (data.TargetType.Is(TargetType.Player))
+            if (data.SelectedTargets.Is(TargetType.Player))
                 HandlePlayer(hub, data);
         }
 
         private void HandleItemInternal(ItemPickupBase pickup, TData data) {
-            if (data.TargetType.Is(TargetType.Pickup))
+            if (data.PossibleTargets.Is(TargetType.Pickup))
                 HandleItem(pickup, data);
         }
 
         private void HandleToyInternal(AdminToyBase toy, TData data) {
-            if (data.TargetType.Is(TargetType.Toy))
+            if (data.PossibleTargets.Is(TargetType.Toy))
                 HandleToy(toy, data);
+        }
+        
+        private void HandleRagdollInternal(BasicRagdoll ragdoll, TData data) {
+            if (data.PossibleTargets.Is(TargetType.Ragdoll))
+                HandleRagdoll(ragdoll, data);
         }
 
         protected abstract void HandlePlayer(ReferenceHub player, TData data);
@@ -42,6 +49,8 @@ namespace slocLoader.TriggerActions.Handlers.Abstract {
         protected abstract void HandleItem(ItemPickupBase pickup, TData data);
 
         protected abstract void HandleToy(AdminToyBase toy, TData data);
+
+        protected abstract void HandleRagdoll(BasicRagdoll ragdoll, TData data);
 
     }
 

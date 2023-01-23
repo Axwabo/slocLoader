@@ -1,28 +1,28 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using UnityEngine;
 
 namespace slocLoader.TriggerActions.Data {
 
-    [Serializable]
     public sealed class TeleportToRoomData : BaseTriggerActionData {
 
-        public override TargetType TargetType => TargetType.All;
+        public override TargetType PossibleTargets => TargetType.All;
 
         public override TriggerActionType ActionType => TriggerActionType.TeleportToRoom;
 
-        public Vector3 positionOffset;
+        [field: SerializeField]
+        public Vector3 PositionOffset { get; set; }
 
-        public string room;
+        [field: SerializeField]
+        public string Room { get; set; }
 
         public TeleportToRoomData(Vector3 positionOffset, string room) {
-            this.positionOffset = positionOffset;
-            this.room = room;
+            PositionOffset = positionOffset;
+            Room = room;
         }
 
         protected override void WriteData(BinaryWriter writer) {
-            writer.WriteVector(positionOffset);
-            writer.Write(room);
+            writer.WriteVector(PositionOffset);
+            writer.Write(Room);
         }
 
     }
