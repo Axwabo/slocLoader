@@ -24,7 +24,7 @@ namespace slocLoader.TriggerActions.Handlers {
         protected override void HandleRagdoll(BasicRagdoll ragdoll, TeleportToRoomData data) => HandleComponent(ragdoll, data);
 
         private static bool TryCalculatePosition(TeleportToRoomData data, out Vector3 vector) =>
-            new MapPointByName(data.Room, data.PositionOffset).TryGetWorldPose(out vector, out _);
+            new MapPointByName(data.Room, data.Offset).TryGetWorldPose(out vector, out _);
 
         private static void HandleComponent(Component component, TeleportToRoomData data) {
             if (TryCalculatePosition(data, out var pos))

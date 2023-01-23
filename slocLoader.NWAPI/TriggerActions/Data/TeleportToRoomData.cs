@@ -10,19 +10,19 @@ namespace slocLoader.TriggerActions.Data {
         public override TriggerActionType ActionType => TriggerActionType.TeleportToRoom;
 
         [field: SerializeField]
-        public Vector3 PositionOffset { get; set; }
+        public Vector3 Offset { get; set; }
 
         [field: SerializeField]
         public string Room { get; set; }
 
-        public TeleportToRoomData(Vector3 positionOffset, string room) {
-            PositionOffset = positionOffset;
+        public TeleportToRoomData(string room, Vector3 offset) {
             Room = room;
+            Offset = offset;
         }
 
         protected override void WriteData(BinaryWriter writer) {
-            writer.WriteVector(PositionOffset);
             writer.Write(Room);
+            writer.WriteVector(Offset);
         }
 
     }
