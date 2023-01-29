@@ -5,7 +5,8 @@ namespace slocLoader.TriggerActions.Data {
 
     public sealed class SerializableTeleportToSpawnedObjectData : BaseTriggerActionData {
 
-        public override TargetType PossibleTargets => TargetType.Toy;
+        public override TargetType PossibleTargets => TargetType.All;
+
         public override TriggerActionType ActionType => TriggerActionType.TeleportToSpawnedObject;
 
         public readonly int ID;

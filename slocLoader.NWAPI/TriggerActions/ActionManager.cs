@@ -29,12 +29,13 @@ namespace slocLoader.TriggerActions {
             new TeleportToPositionHandler(),
             new MoveRelativeToSelfHandler(),
             new KillPlayerHandler(),
-            new TeleportToRoomHandler()
+            new TeleportToRoomHandler(),
+            new TeleportToSpawnedObjectHandler()
         };
 
         public static bool TryGetReader(ushort version, out ITriggerActionDataReader reader) {
             reader = null;
-            if (version < MinVersion)
+            if (version >= MinVersion)
                 return Readers.TryGetValue(version, out reader);
             reader = DefaultReader;
             return true;

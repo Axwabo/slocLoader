@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using AdminToys;
 using Axwabo.Helpers;
 using Axwabo.Helpers.Pools;
@@ -10,6 +11,7 @@ using Mirror;
 using slocLoader.Objects;
 using slocLoader.Readers;
 using slocLoader.TriggerActions;
+using slocLoader.TriggerActions.Data;
 using UnityEngine;
 
 namespace slocLoader {
@@ -33,13 +35,25 @@ namespace slocLoader {
                     LightPrefab = light;
             }
 
-            if (PrimitivePrefab == null || LightPrefab == null)
+            if (PrimitivePrefab == null || LightPrefab == null) {
+                Log.Error("Either the primitive or light prefab is null. This should not happen!");
                 return;
-            try {
-                PrefabsLoaded?.Invoke();
-            } catch (Exception e) {
-                Log.Error(e);
-                Log.Debug($"Methods that may cause this issue:\n{string.Join("\n", PrefabsLoaded?.GetInvocationList().Select(x => $"{x.Method.DeclaringType?.FullName}::{x.Method.Name}") ?? Enumerable.Empty<string>())}");
+            }
+
+            InvokeEvent();
+        }
+
+        private static void InvokeEvent() {
+            if (PrefabsLoaded == null)
+                return;
+            foreach (var subscriber in PrefabsLoaded.GetInvocationList()) {
+                try {
+                    subscriber.DynamicInvoke();
+                } catch (Exception e) {
+                    var method = subscriber.Method;
+                    var exception = e is TargetInvocationException {InnerException: var inner} ? inner : e;
+                    Log.Error($"An exception was thrown by {method.DeclaringType?.FullName}::{method.Name} upon the invocation of PrefabsLoaded:\n{exception}");
+                }
             }
         }
 
@@ -121,20 +135,20 @@ namespace slocLoader {
             _ => null
         };
 
-        public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
+        public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, bool throwOnError = true) {
             var transform = obj.Transform;
             return obj switch {
-                PrimitiveObject primitive => CreatePrimitive(parent, positionOffset, rotationOffset, primitive, transform),
-                LightObject light => CreateLight(parent, positionOffset, rotationOffset, transform, light),
+                PrimitiveObject primitive => CreatePrimitive(parent, primitive, transform),
+                LightObject light => CreateLight(parent, transform, light),
                 EmptyObject => CreateEmpty(parent, transform),
                 _ => throwOnError ? throw new IndexOutOfRangeException($"Unknown object type {obj.Type}") : null
             };
         }
 
-        private static GameObject CreatePrimitive(GameObject parent, Vector3 positionOffset, Quaternion rotationOffset, PrimitiveObject primitive, slocTransform transform) {
+        private static GameObject CreatePrimitive(GameObject parent, PrimitiveObject primitive, slocTransform transform) {
             if (PrimitivePrefab == null)
                 throw new InvalidOperationException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
-            var toy = UnityEngine.Object.Instantiate(PrimitivePrefab, positionOffset, rotationOffset);
+            var toy = UnityEngine.Object.Instantiate(PrimitivePrefab);
             var colliderMode = primitive.GetNonUnsetColliderMode();
             var primitiveType = primitive.Type.ToPrimitiveType();
             var o = toy.gameObject;
@@ -142,7 +156,7 @@ namespace slocLoader {
             sloc.HasColliderOnClient = colliderMode is PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.Both;
             if (colliderMode is PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger or PrimitiveObject.ColliderCreationMode.ServerOnlyNonSpawned or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned)
                 sloc.ShouldBeSpawnedOnClient = false;
-            if (colliderMode is not PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly)
+            if (colliderMode is not (PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned))
                 o.AddProperCollider(primitiveType, colliderMode.IsTrigger());
             AddActionHandlers(o, primitive);
             toy.PrimitiveType = primitiveType;
@@ -153,10 +167,10 @@ namespace slocLoader {
             return o;
         }
 
-        private static GameObject CreateLight(GameObject parent, Vector3 positionOffset, Quaternion rotationOffset, slocTransform transform, LightObject light) {
+        private static GameObject CreateLight(GameObject parent, slocTransform transform, LightObject light) {
             if (LightPrefab == null)
                 throw new InvalidOperationException("Light prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
-            var toy = UnityEngine.Object.Instantiate(LightPrefab, positionOffset, rotationOffset);
+            var toy = UnityEngine.Object.Instantiate(LightPrefab);
             toy.SetAbsoluteTransformFrom(parent);
             toy.SetLocalTransform(transform);
             toy.LightColor = light.LightColor;
@@ -179,38 +193,67 @@ namespace slocLoader {
                 return;
             var list = ListPool<HandlerDataPair>.Shared.Rent();
             foreach (var action in primitive.TriggerActions) {
-                if (action.SelectedTargets is not TargetType.None && ActionManager.TryGetHandler(action.ActionType, out var handler))
+                if (action is SerializableTeleportToSpawnedObjectData tp)
+                    TpToSpawnedCache.GetOrAdd(o, () => new List<SerializableTeleportToSpawnedObjectData>()).Add(tp);
+                else if (ActionManager.TryGetHandler(action.ActionType, out var handler))
                     list.Add(new HandlerDataPair(action, handler));
             }
 
             if (list.Count > 0)
-                o.AddComponent<TriggerListener>().ActionHandlers = list.ToArray();
+                o.AddComponent<TriggerListener>().ActionHandlers.AddRange(list);
             ListPool<HandlerDataPair>.Shared.Return(list);
         }
+
+        private static readonly InstanceDictionary<GameObject> CreatedInstances = new();
+
+        private static readonly Dictionary<GameObject, List<SerializableTeleportToSpawnedObjectData>> TpToSpawnedCache = new();
 
         public static GameObject CreateObjects(IEnumerable<slocGameObject> objects, Vector3 position, Quaternion rotation = default) => CreateObjects(objects, out _, position, rotation);
 
         public static GameObject CreateObjects(IEnumerable<slocGameObject> objects, out int createdAmount, Vector3 position, Quaternion rotation = default) {
-            var go = new GameObject {
-                transform = {
-                    position = position,
-                    rotation = rotation,
+            CreatedInstances.Clear();
+            TpToSpawnedCache.Clear();
+            try {
+                var go = new GameObject {
+                    transform = {
+                        position = position,
+                        rotation = rotation,
+                    }
+                };
+                go.AddComponent<NetworkIdentity>();
+                go.AddComponent<slocObjectData>();
+                createdAmount = 0;
+                foreach (var o in objects) {
+                    var gameObject = o.CreateObject(CreatedInstances.GetOrReturn(o.ParentId, go, o.HasParent));
+                    if (gameObject == null)
+                        continue;
+                    createdAmount++;
+                    CreatedInstances[o.InstanceId] = gameObject;
                 }
-            };
-            go.AddComponent<NetworkIdentity>();
-            createdAmount = 0;
-            var createdInstances = new Dictionary<int, GameObject>();
-            foreach (var o in objects) {
-                var parent = o.HasParent && createdInstances.TryGetValue(o.ParentId, out var parentInstance) ? parentInstance : go;
-                var gameObject = o.CreateObject(parent, throwOnError: false);
-                if (gameObject == null)
-                    continue;
-                createdAmount++;
-                createdInstances[o.InstanceId] = gameObject;
-            }
 
-            return go;
+                PostProcessSpecialTriggerActions();
+                return go;
+            } finally {
+                CreatedInstances.Clear();
+                TpToSpawnedCache.Clear();
+            }
         }
+
+        private static void PostProcessSpecialTriggerActions() {
+            if (!ActionManager.TryGetHandler(TriggerActionType.TeleportToSpawnedObject, out var handler))
+                return;
+            foreach (var kvp in TpToSpawnedCache)
+            foreach (var data in kvp.Value) {
+                if (!CreatedInstances.TryGetValue(data.ID, out var target))
+                    continue;
+                kvp.Key.GetOrAddComponent<TriggerListener>().ActionHandlers
+                    .Add(new HandlerDataPair(
+                        new RuntimeTeleportToSpawnedObjectData(target, data.Offset) {SelectedTargets = data.SelectedTargets},
+                        handler
+                    ));
+            }
+        }
+
 
         public static GameObject CreateObjectsFromStream(Stream objects, out int spawnedAmount, Vector3 position, Quaternion rotation = default) => CreateObjects(ReadObjects(objects), out spawnedAmount, position, rotation);
 
@@ -223,27 +266,33 @@ namespace slocLoader {
         public static GameObject SpawnObjects(IEnumerable<slocGameObject> objects, Vector3 position, Quaternion rotation = default) => SpawnObjects(objects, out _, position, rotation);
 
         public static GameObject SpawnObjects(IEnumerable<slocGameObject> objects, out int spawnedAmount, Vector3 position, Quaternion rotation = default) {
-            var go = new GameObject {
-                transform = {
-                    position = position,
-                    rotation = rotation
+            CreatedInstances.Clear();
+            TpToSpawnedCache.Clear();
+            try {
+                var go = new GameObject {
+                    transform = {
+                        position = position,
+                        rotation = rotation,
+                    }
+                };
+                go.AddComponent<NetworkIdentity>();
+                go.AddComponent<slocObjectData>();
+                NetworkServer.Spawn(go);
+                spawnedAmount = 0;
+                foreach (var o in objects) {
+                    var gameObject = o.SpawnObject(CreatedInstances.GetOrReturn(o.ParentId, go, o.HasParent));
+                    if (gameObject == null)
+                        continue;
+                    spawnedAmount++;
+                    CreatedInstances[o.InstanceId] = gameObject;
                 }
-            };
-            go.AddComponent<NetworkIdentity>();
-            go.AddComponent<slocObjectData>();
-            NetworkServer.Spawn(go);
-            spawnedAmount = 0;
-            var createdInstances = new Dictionary<int, GameObject>();
-            foreach (var o in objects) {
-                var parent = o.HasParent && createdInstances.TryGetValue(o.ParentId, out var parentInstance) ? parentInstance : go;
-                var gameObject = o.SpawnObject(parent, throwOnError: false);
-                if (gameObject == null)
-                    continue;
-                spawnedAmount++;
-                createdInstances[o.InstanceId] = gameObject;
-            }
 
-            return go;
+                PostProcessSpecialTriggerActions();
+                return go;
+            } finally {
+                CreatedInstances.Clear();
+                TpToSpawnedCache.Clear();
+            }
         }
 
         public static GameObject SpawnObjectsFromStream(Stream objects, out int spawnedAmount, Vector3 position, Quaternion rotation = default)
@@ -252,8 +301,8 @@ namespace slocLoader {
         public static GameObject SpawnObjectsFromFile(string path, out int spawnedAmount, Vector3 position, Quaternion rotation = default)
             => SpawnObjects(ReadObjectsFromFile(path), out spawnedAmount, position, rotation);
 
-        public static GameObject SpawnObject(this slocGameObject obj, GameObject parent = null, Vector3 positionOffset = default, Quaternion rotationOffset = default, bool throwOnError = true) {
-            var o = CreateObject(obj, parent, positionOffset, rotationOffset, throwOnError);
+        public static GameObject SpawnObject(this slocGameObject obj, GameObject parent = null, bool throwOnError = true) {
+            var o = CreateObject(obj, parent, throwOnError);
             if (o == null) {
                 if (throwOnError)
                     throw new ArgumentOutOfRangeException(nameof(obj.Type), obj.Type, "Unknown object type");

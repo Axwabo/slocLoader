@@ -11,8 +11,10 @@ namespace slocLoader.TriggerActions.Handlers.Abstract {
 
         public abstract TriggerActionType ActionType { get; }
 
+        protected virtual bool ValidateData(TData data) => true;
+
         public void HandleObject(GameObject obj, BaseTriggerActionData data) {
-            if (data is not TData t)
+            if (data is not TData t || !ValidateData(t))
                 return;
             if (obj.TryGetComponent(out ReferenceHub hub))
                 HandlePlayerInternal(hub, t);
@@ -38,7 +40,7 @@ namespace slocLoader.TriggerActions.Handlers.Abstract {
             if (data.PossibleTargets.Is(TargetType.Toy))
                 HandleToy(toy, data);
         }
-        
+
         private void HandleRagdollInternal(BasicRagdoll ragdoll, TData data) {
             if (data.PossibleTargets.Is(TargetType.Ragdoll))
                 HandleRagdoll(ragdoll, data);

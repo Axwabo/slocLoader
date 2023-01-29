@@ -4,7 +4,6 @@ using HarmonyLib;
 using MapGeneration;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
-using PluginAPI.Enums;
 using slocLoader.AutoObjectLoader;
 
 namespace slocLoader {
@@ -51,9 +50,6 @@ namespace slocLoader {
             SeedSynchronizer.OnMapGenerated -= API.LoadPrefabs;
             Log.Info("slocLoader has been disabled");
         }
-
-        [PluginEvent(ServerEventType.MapGenerated)]
-        private void OnMapGenerated() => API.LoadPrefabs();
 
         private void SpawnDefault() {
             if (Config.EnableAutoSpawn)

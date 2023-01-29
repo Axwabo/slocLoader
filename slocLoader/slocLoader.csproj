@@ -49,40 +49,40 @@
             <HintPath>..\..\assemblies\Axwabo.Helpers.dll</HintPath>
         </Reference>
         <Reference Include="CommandSystem.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-            <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\CommandSystem.Core.dll</HintPath>
+          <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\CommandSystem.Core.dll</HintPath>
         </Reference>
         <Reference Include="Exiled.API, Version=6.0.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\Exiled.API.dll</HintPath>
+          <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\Exiled.API.dll</HintPath>
         </Reference>
         <Reference Include="Exiled.CreditTags, Version=6.0.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\Exiled.CreditTags.dll</HintPath>
+          <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\Exiled.CreditTags.dll</HintPath>
         </Reference>
         <Reference Include="Exiled.CustomItems, Version=6.0.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\Exiled.CustomItems.dll</HintPath>
+          <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\Exiled.CustomItems.dll</HintPath>
         </Reference>
         <Reference Include="Exiled.CustomRoles, Version=6.0.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\Exiled.CustomRoles.dll</HintPath>
+          <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\Exiled.CustomRoles.dll</HintPath>
         </Reference>
         <Reference Include="Exiled.Events, Version=6.0.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\Exiled.Events.dll</HintPath>
+          <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\Exiled.Events.dll</HintPath>
         </Reference>
         <Reference Include="Exiled.Loader, Version=6.0.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\Exiled.Loader.dll</HintPath>
+          <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\Exiled.Loader.dll</HintPath>
         </Reference>
         <Reference Include="Exiled.Permissions, Version=6.0.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\Exiled.Permissions.dll</HintPath>
+          <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\Exiled.Permissions.dll</HintPath>
         </Reference>
         <Reference Include="Exiled.Updater, Version=3.1.1.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\Exiled.Updater.dll</HintPath>
+          <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\Exiled.Updater.dll</HintPath>
         </Reference>
         <Reference Include="Mirror, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>..\..\assemblies\Mirror.dll</HintPath>
         </Reference>
         <Reference Include="NorthwoodLib, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-            <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\NorthwoodLib.dll</HintPath>
+          <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\NorthwoodLib.dll</HintPath>
         </Reference>
         <Reference Include="PluginAPI, Version=12.0.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\PluginAPI.dll</HintPath>
+          <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\PluginAPI.dll</HintPath>
         </Reference>
         <Reference Include="System" />
         <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -103,6 +103,7 @@
         <Compile Include="Commands\DestroyCommand.cs" />
         <Compile Include="Commands\ReloadCommand.cs" />
         <Compile Include="Commands\SpawnCommand.cs" />
+        <Compile Include="InstanceDictionary.cs" />
         <Compile Include="Objects\EmptyObject.cs" />
         <Compile Include="Objects\LightObject.cs" />
         <Compile Include="Objects\ObjectType.cs" />
@@ -138,6 +139,7 @@
         <Compile Include="TriggerActions\Handlers\MoveRelativeToSelfHandler.cs" />
         <Compile Include="TriggerActions\Handlers\TeleportToPositionHandler.cs" />
         <Compile Include="TriggerActions\Handlers\TeleportToRoomHandler.cs" />
+        <Compile Include="TriggerActions\Handlers\TeleportToSpawnedObjectHandler.cs" />
         <Compile Include="TriggerActions\Readers\ITriggerActionDataReader.cs" />
         <Compile Include="TriggerActions\Readers\Ver4ActionDataReader.cs" />
         <Compile Include="TriggerActions\TargetType.cs" />
