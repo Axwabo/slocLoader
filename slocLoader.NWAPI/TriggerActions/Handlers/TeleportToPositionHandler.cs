@@ -1,7 +1,7 @@
 ﻿using AdminToys;
 using InventorySystem.Items.Pickups;
-using PlayerRoles.FirstPersonControl;
 using slocLoader.TriggerActions.Data;
+using slocLoader.TriggerActions.Enums;
 using slocLoader.TriggerActions.Handlers.Abstract;
 using UnityEngine;
 
@@ -12,9 +12,9 @@ namespace slocLoader.TriggerActions.Handlers {
         public override TriggerActionType ActionType => TriggerActionType.TeleportToPosition;
 
         protected override void HandlePlayer(ReferenceHub player, TeleportToPositionData data) =>
-            player.TryOverridePosition(data.Position, Vector3.zero);
+            player.OverridePosition(data.Position, data.Options);
 
-        protected override void HandleItem(ItemPickupBase pickup, TeleportToPositionData data) => HandleComponent(pickup,data);
+        protected override void HandleItem(ItemPickupBase pickup, TeleportToPositionData data) => HandleComponent(pickup, data);
 
         protected override void HandleToy(AdminToyBase toy, TeleportToPositionData data) => HandleComponent(toy, data);
 

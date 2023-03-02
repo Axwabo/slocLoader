@@ -27,15 +27,10 @@ namespace slocLoader {
             }
 
             API.UnsetPrefabs();
-            if (Config.AutoLoad)
-                API.PrefabsLoaded += AutomaticObjectLoader.LoadObjects;
-            if (SeedSynchronizer.MapGenerated) {
-                API.LoadPrefabs();
-                SpawnDefault();
-            }
-
             Exiled.Events.Handlers.Map.Generated += API.LoadPrefabs;
             API.PrefabsLoaded += SpawnDefault;
+            if (SeedSynchronizer.MapGenerated)
+                API.LoadPrefabs();
             base.OnEnabled();
         }
 
@@ -43,7 +38,6 @@ namespace slocLoader {
             _harmony.UnpatchAll();
             API.UnsetPrefabs();
             Exiled.Events.Handlers.Map.Generated -= API.LoadPrefabs;
-            API.PrefabsLoaded -= AutomaticObjectLoader.LoadObjects;
             API.PrefabsLoaded -= SpawnDefault;
             base.OnDisabled();
         }

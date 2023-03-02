@@ -1,6 +1,7 @@
 ﻿using AdminToys;
 using InventorySystem.Items.Pickups;
 using slocLoader.TriggerActions.Data;
+using slocLoader.TriggerActions.Enums;
 using UnityEngine;
 
 namespace slocLoader.TriggerActions.Handlers.Abstract {

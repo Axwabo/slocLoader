@@ -1,8 +1,8 @@
 ﻿using AdminToys;
 using Axwabo.Helpers.Config;
 using InventorySystem.Items.Pickups;
-using PlayerRoles.FirstPersonControl;
 using slocLoader.TriggerActions.Data;
+using slocLoader.TriggerActions.Enums;
 using slocLoader.TriggerActions.Handlers.Abstract;
 using UnityEngine;
 
@@ -14,7 +14,7 @@ namespace slocLoader.TriggerActions.Handlers {
 
         protected override void HandlePlayer(ReferenceHub player, TeleportToRoomData data) {
             if (TryCalculatePosition(data, out var pos))
-                player.TryOverridePosition(pos, Vector3.zero);
+                player.OverridePosition(pos, data.Options);
         }
 
         protected override void HandleItem(ItemPickupBase pickup, TeleportToRoomData data) => HandleComponent(pickup, data);
@@ -23,8 +23,19 @@ namespace slocLoader.TriggerActions.Handlers {
 
         protected override void HandleRagdoll(BasicRagdoll ragdoll, TeleportToRoomData data) => HandleComponent(ragdoll, data);
 
-        private static bool TryCalculatePosition(TeleportToRoomData data, out Vector3 vector) =>
-            new MapPointByName(data.Room, data.Offset).TryGetWorldPose(out vector, out _);
+        private static bool TryCalculatePosition(TeleportToRoomData data, out Vector3 vector) {
+            var point = new MapPointByName(data.Room, data.Position);
+            if (!data.Options.HasFlagFast(TeleportOptions.WorldSpaceTransform))
+                return point.TryGetWorldPose(out vector, out _);
+            var transform = point.RoomTransform();
+            if (!transform) {
+                vector = Vector3.zero;
+                return false;
+            }
+
+            vector = transform.position + data.Position;
+            return true;
+        }
 
         private static void HandleComponent(Component component, TeleportToRoomData data) {
             if (TryCalculatePosition(data, out var pos))

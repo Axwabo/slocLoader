@@ -28,16 +28,18 @@ namespace slocLoader {
                 Log.Error("Patching failed! Nested object scaling will behave weirdly!\n" + e);
             }
 
-            API.UnsetPrefabs();
             if (Config.AutoLoad)
-                API.PrefabsLoaded += AutomaticObjectLoader.LoadObjects;
-            if (SeedSynchronizer.MapGenerated) {
-                API.LoadPrefabs();
-                SpawnDefault();
-            }
+                try {
+                    AutomaticObjectLoader.LoadObjects();
+                } catch (Exception e) {
+                    Log.Error("Failed to load objects automatically:\n" + e);
+                }
 
+            API.UnsetPrefabs();
             SeedSynchronizer.OnMapGenerated += API.LoadPrefabs;
             API.PrefabsLoaded += SpawnDefault;
+            if (SeedSynchronizer.MapGenerated)
+                API.LoadPrefabs();
             Log.Info("slocLoader has been enabled");
         }
 
@@ -45,7 +47,6 @@ namespace slocLoader {
         public void OnDisabled() {
             _harmony.UnpatchAll();
             API.UnsetPrefabs();
-            API.PrefabsLoaded -= AutomaticObjectLoader.LoadObjects;
             API.PrefabsLoaded -= SpawnDefault;
             SeedSynchronizer.OnMapGenerated -= API.LoadPrefabs;
             Log.Info("slocLoader has been disabled");

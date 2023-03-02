@@ -5,13 +5,14 @@ using System.Linq;
 using System.Reflection;
 using AdminToys;
 using Axwabo.Helpers;
-using Axwabo.Helpers.Pools;
 using Mirror;
 using PluginAPI.Core;
 using slocLoader.Objects;
 using slocLoader.Readers;
 using slocLoader.TriggerActions;
 using slocLoader.TriggerActions.Data;
+using slocLoader.TriggerActions.Enums;
+using slocLoader.TriggerActions.Handlers;
 using UnityEngine;
 
 namespace slocLoader {
@@ -51,7 +52,7 @@ namespace slocLoader {
                     subscriber.DynamicInvoke();
                 } catch (Exception e) {
                     var method = subscriber.Method;
-                    var exception = e is TargetInvocationException {InnerException: var inner} ? inner : e;
+                    var exception = e is TargetInvocationException {InnerException: { } inner} ? inner : e;
                     Log.Error($"An exception was thrown by {method.DeclaringType?.FullName}::{method.Name} upon the invocation of PrefabsLoaded:\n{exception}");
                 }
             }
@@ -191,17 +192,35 @@ namespace slocLoader {
         private static void AddActionHandlers(GameObject o, PrimitiveObject primitive) {
             if (primitive.TriggerActions is not {Length: not 0})
                 return;
-            var list = ListPool<HandlerDataPair>.Shared.Rent();
+            var enter = new List<HandlerDataPair>();
+            var stay = new List<HandlerDataPair>();
+            var exit = new List<HandlerDataPair>();
             foreach (var action in primitive.TriggerActions) {
                 if (action is SerializableTeleportToSpawnedObjectData tp)
                     TpToSpawnedCache.GetOrAdd(o, () => new List<SerializableTeleportToSpawnedObjectData>()).Add(tp);
                 else if (ActionManager.TryGetHandler(action.ActionType, out var handler))
-                    list.Add(new HandlerDataPair(action, handler));
+                    AddActionDataPairToList(action, handler, enter, stay, exit);
             }
 
-            if (list.Count > 0)
-                o.AddComponent<TriggerListener>().ActionHandlers.AddRange(list);
-            ListPool<HandlerDataPair>.Shared.Return(list);
+            if (enter.Count == 0 && stay.Count == 0 && exit.Count == 0)
+                return;
+            var component = o.AddComponent<TriggerListener>();
+            component.OnEnter.AddRange(enter);
+            component.OnStay.AddRange(stay);
+            component.OnExit.AddRange(exit);
+        }
+
+        private static void AddActionDataPairToList(BaseTriggerActionData action, ITriggerActionHandler handler, List<HandlerDataPair> enter, List<HandlerDataPair> stay, List<HandlerDataPair> exit) {
+            var e = action.SelectedEvents;
+            if (e == TriggerEventType.None)
+                return;
+            var pair = new HandlerDataPair(action, handler);
+            if (e.Is(TriggerEventType.Enter))
+                enter.Add(pair);
+            if (e.Is(TriggerEventType.Stay))
+                stay.Add(pair);
+            if (e.Is(TriggerEventType.Exit))
+                exit.Add(pair);
         }
 
         private static readonly InstanceDictionary<GameObject> CreatedInstances = new();
@@ -246,7 +265,7 @@ namespace slocLoader {
             foreach (var data in kvp.Value) {
                 if (!CreatedInstances.TryGetValue(data.ID, out var target))
                     continue;
-                kvp.Key.GetOrAddComponent<TriggerListener>().ActionHandlers
+                kvp.Key.GetOrAddComponent<TriggerListener>().OnEnter
                     .Add(new HandlerDataPair(
                         new RuntimeTeleportToSpawnedObjectData(target, data.Offset) {SelectedTargets = data.SelectedTargets},
                         handler
@@ -371,6 +390,26 @@ namespace slocLoader {
             writer.Write(color.g);
             writer.Write(color.b);
             writer.Write(color.a);
+        }
+
+        #endregion
+
+        #region Bit Math
+
+        public static PrimitiveObject.ColliderCreationMode CombineSafe(PrimitiveObject.ColliderCreationMode a, PrimitiveObject.ColliderCreationMode b) =>
+            (PrimitiveObject.ColliderCreationMode) CombineSafe((byte) a, (byte) b);
+
+        public static void SplitSafe(PrimitiveObject.ColliderCreationMode combined, out PrimitiveObject.ColliderCreationMode a, out PrimitiveObject.ColliderCreationMode b) {
+            SplitSafe((byte) combined, out var x, out var y);
+            a = (PrimitiveObject.ColliderCreationMode) x;
+            b = (PrimitiveObject.ColliderCreationMode) y;
+        }
+
+        public static byte CombineSafe(byte a, byte b) => (byte) (a << 4 | b);
+
+        public static void SplitSafe(byte combined, out byte a, out byte b) {
+            a = (byte) (combined >> 4);
+            b = (byte) (combined & 0xF);
         }
 
         #endregion

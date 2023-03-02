@@ -1,4 +1,4 @@
-﻿namespace slocLoader.TriggerActions {
+﻿namespace slocLoader.TriggerActions.Enums {
 
     public enum TriggerActionType : ushort {
 

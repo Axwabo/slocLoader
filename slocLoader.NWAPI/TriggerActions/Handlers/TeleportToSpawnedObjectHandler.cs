@@ -1,7 +1,7 @@
 ﻿using AdminToys;
 using InventorySystem.Items.Pickups;
-using PlayerRoles.FirstPersonControl;
 using slocLoader.TriggerActions.Data;
+using slocLoader.TriggerActions.Enums;
 using slocLoader.TriggerActions.Handlers.Abstract;
 using UnityEngine;
 
@@ -14,7 +14,7 @@ namespace slocLoader.TriggerActions.Handlers {
         protected override bool ValidateData(RuntimeTeleportToSpawnedObjectData data) => data.Target != null;
 
         protected override void HandlePlayer(ReferenceHub player, RuntimeTeleportToSpawnedObjectData data) =>
-            player.TryOverridePosition(data.Target.transform.TransformPoint(data.Offset), Vector3.zero);
+            player.OverridePosition(data.ToWorldSpacePosition(data.Target.transform), data.Options);
 
         protected override void HandleItem(ItemPickupBase pickup, RuntimeTeleportToSpawnedObjectData data) => HandleComponent(pickup, data);
 
@@ -23,7 +23,7 @@ namespace slocLoader.TriggerActions.Handlers {
         protected override void HandleRagdoll(BasicRagdoll ragdoll, RuntimeTeleportToSpawnedObjectData data) => HandleComponent(ragdoll, data);
 
         private static void HandleComponent(Component component, RuntimeTeleportToSpawnedObjectData data) =>
-            component.transform.position = data.Target.transform.TransformPoint(data.Offset);
+            component.transform.position = data.ToWorldSpacePosition(data.Target.transform);
 
     }
 

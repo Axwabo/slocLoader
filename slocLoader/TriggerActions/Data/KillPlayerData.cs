@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using slocLoader.TriggerActions.Enums;
 using UnityEngine;
 
 namespace slocLoader.TriggerActions.Data {

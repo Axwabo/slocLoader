@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace slocLoader.TriggerActions {
+namespace slocLoader.TriggerActions.Enums {
 
     [Flags]
     public enum TargetType : byte {
