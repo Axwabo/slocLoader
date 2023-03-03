@@ -12,19 +12,23 @@ namespace slocLoader.TriggerActions.Handlers {
 
         public override TriggerActionType ActionType => TriggerActionType.MoveRelativeToSelf;
 
-        protected override void HandlePlayer(ReferenceHub player, MoveRelativeToSelfData data) {
-            if (player.roleManager.CurrentRole is not IFpcRole fpc)
+        protected override bool ValidateData(GameObject interactingObject, MoveRelativeToSelfData data, TriggerListener listener) =>
+            !TeleporterImmunityStorage.IsImmune(interactingObject, listener);
+
+        protected override void HandlePlayer(ReferenceHub player, MoveRelativeToSelfData data, TriggerListener listener) {
+            if (player.roleManager.CurrentRole is not IFpcRole {FpcModule: var module})
                 return;
-            var module = fpc.FpcModule;
             var offset = data.Options.HasFlagFast(TeleportOptions.WorldSpaceTransform) ? module.MouseLook.TargetCamRotation * data.Position : data.Position;
-            player.TryOverridePosition(module.Position + offset, Vector3.zero);
+            if (data.Options.HasFlagFast(TeleportOptions.ResetFallDamage))
+                module.Motor.ResetFallDamageCooldown();
+            module.ServerOverridePosition(module.Position + offset, Vector3.zero);
         }
 
-        protected override void HandleItem(ItemPickupBase pickup, MoveRelativeToSelfData data) => HandleComponent(pickup, data);
+        protected override void HandleItem(ItemPickupBase pickup, MoveRelativeToSelfData data, TriggerListener listener) => HandleComponent(pickup, data);
 
-        protected override void HandleToy(AdminToyBase toy, MoveRelativeToSelfData data) => HandleComponent(toy, data);
+        protected override void HandleToy(AdminToyBase toy, MoveRelativeToSelfData data, TriggerListener listener) => HandleComponent(toy, data);
 
-        protected override void HandleRagdoll(BasicRagdoll ragdoll, MoveRelativeToSelfData data) => HandleComponent(ragdoll, data);
+        protected override void HandleRagdoll(BasicRagdoll ragdoll, MoveRelativeToSelfData data, TriggerListener listener) => HandleComponent(ragdoll, data);
 
         private static void HandleComponent(Component component, MoveRelativeToSelfData data) {
             var t = component.transform;

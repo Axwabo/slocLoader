@@ -45,7 +45,8 @@ namespace slocLoader.TriggerActions {
             new MoveRelativeToSelfHandler(),
             new KillPlayerHandler(),
             new TeleportToRoomHandler(),
-            new TeleportToSpawnedObjectHandler()
+            new TeleportToSpawnedObjectHandler(),
+            new TeleporterImmunityHandler()
         };
 
         public static bool TryGetReader(ushort version, out ITriggerActionDataReader reader) {

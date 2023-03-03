@@ -7,7 +7,8 @@
         TeleportToSpawnedObject = 2,
         TeleportToRoom = 3,
         MoveRelativeToSelf = 4,
-        KillPlayer = 5
+        KillPlayer = 5,
+        TeleporterImmunity = 6
 
     }
 

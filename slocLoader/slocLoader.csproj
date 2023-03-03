@@ -40,13 +40,13 @@
             <HintPath>..\packages\EXILED.6.0.0-beta.17\lib\net48\Assembly-CSharp-Publicized.dll</HintPath>
         </Reference>
         <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\..\assemblies\Assembly-CSharp.dll</HintPath>
+            <HintPath>$(EXILED-ASSEMBLIES)\Assembly-CSharp.dll</HintPath>
         </Reference>
         <Reference Include="Assembly-CSharp-firstpass">
-            <HintPath>..\..\assemblies\Assembly-CSharp-firstpass.dll</HintPath>
+            <HintPath>$(EXILED-ASSEMBLIES)\Assembly-CSharp-firstpass.dll</HintPath>
         </Reference>
         <Reference Include="Axwabo.Helpers">
-            <HintPath>..\..\assemblies\Axwabo.Helpers.dll</HintPath>
+            <HintPath>$(EXILED-ASSEMBLIES)\Axwabo.Helpers.dll</HintPath>
         </Reference>
         <Reference Include="CommandSystem.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\CommandSystem.Core.dll</HintPath>
@@ -76,7 +76,7 @@
           <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\Exiled.Updater.dll</HintPath>
         </Reference>
         <Reference Include="Mirror, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\..\assemblies\Mirror.dll</HintPath>
+            <HintPath>$(EXILED-ASSEMBLIES)\Mirror.dll</HintPath>
         </Reference>
         <Reference Include="NorthwoodLib, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
           <HintPath>..\packages\EXILED.6.0.0-beta.25\lib\net48\NorthwoodLib.dll</HintPath>
@@ -86,10 +86,10 @@
         </Reference>
         <Reference Include="System" />
         <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\..\assemblies\UnityEngine.CoreModule.dll</HintPath>
+            <HintPath>$(EXILED-ASSEMBLIES)\UnityEngine.CoreModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\..\assemblies\UnityEngine.PhysicsModule.dll</HintPath>
+            <HintPath>$(EXILED-ASSEMBLIES)\UnityEngine.PhysicsModule.dll</HintPath>
         </Reference>
     </ItemGroup>
     <ItemGroup>
@@ -110,16 +110,16 @@
         <Compile Include="Objects\PrimitiveObject.cs" />
         <Compile Include="Objects\slocGameObject.cs" />
         <Compile Include="Objects\slocTransform.cs" />
-        <Compile Include="Readers\IObjectReader.cs" />
-        <Compile Include="Readers\slocHeader.cs" />
-        <Compile Include="Readers\Ver1Reader.cs" />
-        <Compile Include="Readers\Ver2Reader.cs" />
-        <Compile Include="Readers\Ver3Reader.cs" />
-        <Compile Include="Readers\Ver4Reader.cs" />
-        <Compile Include="slocAttributes.cs" />
-        <Compile Include="slocConfig.cs" />
-        <Compile Include="slocPlugin.cs" />
-        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Readers\IObjectReader.cs"/>
+        <Compile Include="Readers\slocHeader.cs"/>
+        <Compile Include="Readers\Ver1Reader.cs"/>
+        <Compile Include="Readers\Ver2Reader.cs"/>
+        <Compile Include="Readers\Ver3Reader.cs"/>
+        <Compile Include="Readers\Ver4Reader.cs"/>
+        <Compile Include="slocAttributes.cs"/>
+        <Compile Include="slocConfig.cs"/>
+        <Compile Include="slocPlugin.cs"/>
+        <Compile Include="Properties\AssemblyInfo.cs"/>
         <Compile Include="slocObjectData.cs"/>
         <Compile Include="TriggerActions\ActionManager.cs"/>
         <Compile Include="TriggerActions\Data\BaseTeleportData.cs"/>
@@ -128,6 +128,7 @@
         <Compile Include="TriggerActions\Data\MoveRelativeToSelfData.cs"/>
         <Compile Include="TriggerActions\Data\RuntimeTeleportToSpawnedObjectData.cs"/>
         <Compile Include="TriggerActions\Data\SerializableTeleportToSpawnedObjectData.cs"/>
+        <Compile Include="TriggerActions\Data\TeleporterImmunityData.cs"/>
         <Compile Include="TriggerActions\Data\TeleportToPositionData.cs"/>
         <Compile Include="TriggerActions\Data\TeleportToRoomData.cs"/>
         <Compile Include="TriggerActions\Enums\TargetType.cs"/>
@@ -143,12 +144,14 @@
         <Compile Include="TriggerActions\Handlers\ITriggerActionHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\KillPlayerHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\MoveRelativeToSelfHandler.cs"/>
+        <Compile Include="TriggerActions\Handlers\TeleporterImmunityHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\TeleportToPositionHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\TeleportToRoomHandler.cs" />
-        <Compile Include="TriggerActions\Handlers\TeleportToSpawnedObjectHandler.cs" />
-        <Compile Include="TriggerActions\Readers\ITriggerActionDataReader.cs" />
-        <Compile Include="TriggerActions\Readers\Ver4ActionDataReader.cs" />
-        <Compile Include="TriggerActions\TriggerListener.cs" />
+        <Compile Include="TriggerActions\Handlers\TeleportToRoomHandler.cs"/>
+        <Compile Include="TriggerActions\Handlers\TeleportToSpawnedObjectHandler.cs"/>
+        <Compile Include="TriggerActions\Readers\ITriggerActionDataReader.cs"/>
+        <Compile Include="TriggerActions\Readers\Ver4ActionDataReader.cs"/>
+        <Compile Include="TriggerActions\TeleporterImmunityStorage.cs"/>
+        <Compile Include="TriggerActions\TriggerListener.cs"/>
     </ItemGroup>
     <ItemGroup>
         <None Include="App.config" />

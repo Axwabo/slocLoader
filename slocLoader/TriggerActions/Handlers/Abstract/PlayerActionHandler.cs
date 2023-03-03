@@ -10,12 +10,12 @@ namespace slocLoader.TriggerActions.Handlers.Abstract {
 
         public abstract TriggerActionType ActionType { get; }
 
-        public void HandleObject(GameObject obj, BaseTriggerActionData data) {
-            if (data is TData t && obj.TryGetComponent(out ReferenceHub hub))
-                HandlePlayer(hub, t);
+        public void HandleObject(GameObject interactingObject, BaseTriggerActionData data, TriggerListener listener) {
+            if (data is TData t && interactingObject.TryGetComponent(out ReferenceHub hub))
+                HandlePlayer(hub, t, listener);
         }
 
-        protected abstract void HandlePlayer(ReferenceHub player, TData data);
+        protected abstract void HandlePlayer(ReferenceHub player, TData data, TriggerListener listener);
 
     }
 

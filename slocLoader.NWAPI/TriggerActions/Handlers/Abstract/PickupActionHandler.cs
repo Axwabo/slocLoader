@@ -11,8 +11,8 @@ namespace slocLoader.TriggerActions.Handlers.Abstract {
 
         public abstract TriggerActionType ActionType { get; }
 
-        public void HandleObject(GameObject obj, BaseTriggerActionData data) {
-            if (data is TData t && obj.TryGetComponent(out ItemPickupBase pickup))
+        public void HandleObject(GameObject interactingObject, BaseTriggerActionData data, TriggerListener listener) {
+            if (data is TData t && interactingObject.TryGetComponent(out ItemPickupBase pickup))
                 HandlePickup(pickup, t);
         }
 

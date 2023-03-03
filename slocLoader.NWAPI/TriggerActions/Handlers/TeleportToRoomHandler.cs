@@ -12,16 +12,19 @@ namespace slocLoader.TriggerActions.Handlers {
 
         public override TriggerActionType ActionType => TriggerActionType.TeleportToPosition;
 
-        protected override void HandlePlayer(ReferenceHub player, TeleportToRoomData data) {
+        protected override bool ValidateData(GameObject interactingObject, TeleportToRoomData data, TriggerListener listener) =>
+            !string.IsNullOrWhiteSpace(data.Room) && !TeleporterImmunityStorage.IsImmune(interactingObject, listener);
+
+        protected override void HandlePlayer(ReferenceHub player, TeleportToRoomData data, TriggerListener listener) {
             if (TryCalculatePosition(data, out var pos))
                 player.OverridePosition(pos, data.Options);
         }
 
-        protected override void HandleItem(ItemPickupBase pickup, TeleportToRoomData data) => HandleComponent(pickup, data);
+        protected override void HandleItem(ItemPickupBase pickup, TeleportToRoomData data, TriggerListener listener) => HandleComponent(pickup, data);
 
-        protected override void HandleToy(AdminToyBase toy, TeleportToRoomData data) => HandleComponent(toy, data);
+        protected override void HandleToy(AdminToyBase toy, TeleportToRoomData data, TriggerListener listener) => HandleComponent(toy, data);
 
-        protected override void HandleRagdoll(BasicRagdoll ragdoll, TeleportToRoomData data) => HandleComponent(ragdoll, data);
+        protected override void HandleRagdoll(BasicRagdoll ragdoll, TeleportToRoomData data, TriggerListener listener) => HandleComponent(ragdoll, data);
 
         private static bool TryCalculatePosition(TeleportToRoomData data, out Vector3 vector) {
             var point = new MapPointByName(data.Room, data.Position);

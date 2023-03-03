@@ -10,7 +10,7 @@ namespace slocLoader.TriggerActions.Handlers {
 
         TriggerActionType ActionType { get; }
 
-        void HandleObject(GameObject obj, BaseTriggerActionData data);
+        void HandleObject(GameObject interactingObject, BaseTriggerActionData data, TriggerListener listener);
 
     }
 

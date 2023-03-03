@@ -227,7 +227,8 @@ namespace slocLoader {
 
         private static readonly Dictionary<GameObject, List<SerializableTeleportToSpawnedObjectData>> TpToSpawnedCache = new();
 
-        public static GameObject CreateObjects(IEnumerable<slocGameObject> objects, Vector3 position, Quaternion rotation = default) => CreateObjects(objects, out _, position, rotation);
+        public static GameObject CreateObjects(IEnumerable<slocGameObject> objects, Vector3 position, Quaternion rotation = default) =>
+            CreateObjects(objects, out _, position, rotation);
 
         public static GameObject CreateObjects(IEnumerable<slocGameObject> objects, out int createdAmount, Vector3 position, Quaternion rotation = default) {
             CreatedInstances.Clear();
@@ -265,24 +266,33 @@ namespace slocLoader {
             foreach (var data in kvp.Value) {
                 if (!CreatedInstances.TryGetValue(data.ID, out var target))
                     continue;
-                kvp.Key.GetOrAddComponent<TriggerListener>().OnEnter
-                    .Add(new HandlerDataPair(
-                        new RuntimeTeleportToSpawnedObjectData(target, data.Offset) {SelectedTargets = data.SelectedTargets},
-                        handler
-                    ));
+                var component = kvp.Key.GetOrAddComponent<TriggerListener>();
+                AddActionDataPairToList(
+                    new RuntimeTeleportToSpawnedObjectData(target, data.Offset) {
+                        SelectedTargets = data.SelectedTargets,
+                        Options = data.Options
+                    },
+                    handler,
+                    component.OnEnter,
+                    component.OnStay,
+                    component.OnExit
+                );
             }
         }
 
 
-        public static GameObject CreateObjectsFromStream(Stream objects, out int spawnedAmount, Vector3 position, Quaternion rotation = default) => CreateObjects(ReadObjects(objects), out spawnedAmount, position, rotation);
+        public static GameObject CreateObjectsFromStream(Stream objects, out int spawnedAmount, Vector3 position, Quaternion rotation = default) =>
+            CreateObjects(ReadObjects(objects), out spawnedAmount, position, rotation);
 
-        public static GameObject CreateObjectsFromFile(string path, out int spawnedAmount, Vector3 position, Quaternion rotation = default) => CreateObjects(ReadObjectsFromFile(path), out spawnedAmount, position, rotation);
+        public static GameObject CreateObjectsFromFile(string path, out int spawnedAmount, Vector3 position, Quaternion rotation = default) =>
+            CreateObjects(ReadObjectsFromFile(path), out spawnedAmount, position, rotation);
 
         #endregion
 
         #region Spawn
 
-        public static GameObject SpawnObjects(IEnumerable<slocGameObject> objects, Vector3 position, Quaternion rotation = default) => SpawnObjects(objects, out _, position, rotation);
+        public static GameObject SpawnObjects(IEnumerable<slocGameObject> objects, Vector3 position, Quaternion rotation = default) =>
+            SpawnObjects(objects, out _, position, rotation);
 
         public static GameObject SpawnObjects(IEnumerable<slocGameObject> objects, out int spawnedAmount, Vector3 position, Quaternion rotation = default) {
             CreatedInstances.Clear();
@@ -368,6 +378,8 @@ namespace slocLoader {
             return count < 0 ? 0 : count;
         }
 
+        public static float ReadShortAsFloat(this BinaryReader reader) => reader.ReadInt16() * TeleporterImmunityData.ShortToFloatMultiplier;
+
         #endregion
 
         #region BinaryWriter Extensions
@@ -391,6 +403,8 @@ namespace slocLoader {
             writer.Write(color.b);
             writer.Write(color.a);
         }
+
+        public static void WriteFloatAsShort(this BinaryWriter writer, float value) => writer.Write((ushort) Mathf.Floor(value * TeleporterImmunityData.FloatToShortMultiplier));
 
         #endregion
 

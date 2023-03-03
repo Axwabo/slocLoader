@@ -14,6 +14,7 @@ namespace slocLoader.TriggerActions.Readers {
                 TriggerActionType.TeleportToRoom => ReadTpToRoom(reader),
                 TriggerActionType.KillPlayer => ReadKillPlayer(reader),
                 TriggerActionType.TeleportToSpawnedObject => ReadTpToSpawnedObject(reader),
+                TriggerActionType.TeleporterImmunity => ReadTeleporterImmunity(reader),
                 _ => null
             };
             if (data is null)
@@ -48,6 +49,12 @@ namespace slocLoader.TriggerActions.Readers {
             ActionManager.ReadTeleportData(reader, out var offset, out var options);
             var virtualInstanceId = reader.ReadInt32();
             return new SerializableTeleportToSpawnedObjectData(virtualInstanceId, offset, options);
+        }
+
+        public static TeleporterImmunityData ReadTeleporterImmunity(BinaryReader reader) {
+            var global = reader.ReadBoolean();
+            var duration = reader.ReadShortAsFloat();
+            return new TeleporterImmunityData(global, duration);
         }
 
     }

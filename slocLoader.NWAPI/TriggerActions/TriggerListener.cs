@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace slocLoader.TriggerActions {
 
-    [DisallowMultipleComponent]
     public sealed class TriggerListener : MonoBehaviour {
 
         public readonly List<HandlerDataPair> OnEnter = new();
@@ -17,15 +16,23 @@ namespace slocLoader.TriggerActions {
 
         private void OnTriggerExit(Collider other) => ExecuteAll(other, OnExit);
 
-        private static void ExecuteAll(Collider other, List<HandlerDataPair> list) {
+        private void ExecuteAll(Collider other, List<HandlerDataPair> list) {
             var go = other.gameObject;
             var root = go.transform.root;
             if (root.TryGetComponent(out ItemPickupBase pickup))
                 go = pickup.gameObject;
             else if (root.TryGetComponent(out BasicRagdoll ragdoll))
                 go = ragdoll.gameObject;
-            foreach (var pair in list)
-                pair.Handler.HandleObject(go, pair.Data);
+            var hasStorage = go.TryGetComponent(out TeleporterImmunityStorage storage);
+            if (hasStorage)
+                storage.IsTriggerProcessActive = true;
+            try {
+                foreach (var pair in list)
+                    pair.Handler.HandleObject(go, pair.Data, this);
+            } finally {
+                if (hasStorage)
+                    storage.IsTriggerProcessActive = false;
+            }
         }
 
     }
