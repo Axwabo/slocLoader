@@ -1,6 +1,5 @@
 ﻿using System;
 using CommandSystem;
-using Exiled.Permissions.Extensions;
 using Mirror;
 
 namespace slocLoader.Commands {
@@ -9,16 +8,15 @@ namespace slocLoader.Commands {
     [CommandHandler(typeof(GameConsoleCommandHandler))]
     public sealed class DestroyCommand : ICommand, IUsageProvider {
 
-        public string[] Usage { get; } = {"sl_destroy <netID>"};
-
+        public string[] Usage { get; } = {"netID"};
         public string Command => "sl_destroy";
         public string[] Aliases { get; } = {"sl_del", "sl_d", "sl_remove"};
         public string Description => "Destroys a previously spawned object.";
 
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response) {
-            if (!sender.CheckPermission("sloc.destroy")) {
-                response = "You don't have permission to do that (sloc.destroy)!";
+            if (!sender.CheckPermission(PlayerPermissions.FacilityManagement)) {
+                response = "You don't have permission to do that (FacilityManagement)!";
                 return false;
             }
 

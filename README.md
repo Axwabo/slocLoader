@@ -1,5 +1,3 @@
-
-
 # slocLoader
 
 A plugin that allows for the loading of objects contained within **sloc** files in SCP: Secret Laboratory.
@@ -7,6 +5,8 @@ A plugin that allows for the loading of objects contained within **sloc** files 
 ![Logo](https://github.com/Axwabo/slocLoader/blob/main/logo%20small.png?raw=true)
 
 [Watch the tutorial](https://youtu.be/nw5TH3bg8ok)
+
+[Set up the plugin](#setup)
 
 # MapEditorReborn
 
@@ -43,6 +43,13 @@ it's not meant to be interpreted as text. It is a sequence of **int**egers and *
 
 ## For Northwood Plugin API
 
+### Automatically
+
+1. Run the command `p install Axwabo/slocLoader` in the server console
+2. Restart your server
+
+### Manually
+
 1. Download the **slocLoader-nw.dll** file from the [latest release](https://github.com/Axwabo/slocLoader/releases/latest)
 2. Place the DLL into the **NW Plugins** folder (Windows: %appdata%\SCP Secret Laboratory\PluginAPI\plugins\port)
 3. Download the latest [Harmony](https://github.com/pardeike/Harmony/releases) release (**Harmony.x.x.x.x.zip**, not the source code)
@@ -69,11 +76,11 @@ Make sure the **enable_auto_spawn** property in the plugin config is set to true
 
 View the list of room names and types [here](https://github.com/Axwabo/SCPSL-Helpers/blob/main/Axwabo.Helpers.NWAPI/Config/RoomType.cs)
 
-In the plugin config, add an item to the **auto_spawn_by_room_name**, **auto_spawn_by_room_type** or **auto_spawn_by_location** list. There are examples provider for ease of use.
+In the plugin config, add an item to the `auto_spawn_by_room_name`, `auto_spawn_by_room_type` or `auto_spawn_by_location` list. There are examples provider for ease of use.
 
 Room name template:
 
-```
+```yaml
 asset_name: example
 point:
   room_name: HCZ_106
@@ -89,7 +96,7 @@ point:
 
 RoomType template:
 
-```
+```yaml
 asset_name: example
 point:
   type: LczClassDSpawn
@@ -105,7 +112,7 @@ point:
 
 StaticPosition template:
 
-```
+```yaml
 asset_name: example
 point:
   position:
@@ -124,6 +131,20 @@ If an asset was not loaded, it will be ignored.
 
 Rotation offsets are specified using **Euler angles, _not Quaternions_.**
 
+# Spawning objects in-game
+
+The `sl_spawn` command can be used to spawn assets through the Remote Admin. Required permission is `FacilityManagement`
+
+Example: `sl_s MyObject`
+
+The asset has to be defined as in [automatic spawning](#automatic-spawning)
+
+Your position and horizontal rotation will be applied to the objects by default. To modify this behavior, use the `sl_position` and `sl_rotation` commands.
+
+For example, `sl_pos 0 1000 0` will spawn the specified object at the coordinates **0, 1000, 0** (x, y, z)
+
+To clear the current settings, simply type `sl_pos` or `sl_rot` to remove the defined values.
+
 # API usage
 
 The plugin offers various methods to make loading objects easy.
@@ -137,6 +158,26 @@ Use the methods in the **slocLoader.API** class to load objects.
 
 Make sure to do this **after the prefabs are loaded**; register a handler to the **PrefabsLoaded** event contained in
 the API class.
+
+Example of spawning a singular object:
+
+```csharp
+using UnityEngine;
+using slocLoader;
+using slocLoader.Objects;
+
+new PrimitiveObject(ObjecType.Capsule)  // non-primitive type will throw an exception
+{
+    Transform = 
+    {
+        Position = new Vector3(0, 50, 0),
+        Rotation = Quaternion.Euler(0, 50, 0),
+        Scale = new Vector3(2, 1, 2)
+    },
+    ColliderMode = PrimitiveObject.ColliderCreationMode.Trigger,
+    MaterialColor = Color.red
+}.SpawnObject();
+```
 
 # Versioning
 

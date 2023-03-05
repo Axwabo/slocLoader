@@ -87,7 +87,9 @@
         <Compile Include="AutoObjectLoader\PositionByRoomType.cs"/>
         <Compile Include="AutoObjectLoader\StaticAssetPosition.cs"/>
         <Compile Include="Commands\DestroyCommand.cs"/>
+        <Compile Include="Commands\PositionCommand.cs"/>
         <Compile Include="Commands\ReloadCommand.cs"/>
+        <Compile Include="Commands\RotationCommand.cs"/>
         <Compile Include="Commands\SpawnCommand.cs"/>
         <Compile Include="InstanceDictionary.cs"/>
         <Compile Include="Objects\EmptyObject.cs"/>
