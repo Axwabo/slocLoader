@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using slocLoader.TriggerActions.Data;
 using slocLoader.TriggerActions.Enums;
+using UnityEngine;
 
 namespace slocLoader.TriggerActions.Readers {
 
@@ -25,17 +26,17 @@ namespace slocLoader.TriggerActions.Readers {
         }
 
         public static TeleportToPositionData ReadTpToPos(BinaryReader reader) {
-            ActionManager.ReadTeleportData(reader, out var position, out var options);
+            ReadTeleportData(reader, out var position, out var options);
             return new TeleportToPositionData(position) {Options = options};
         }
 
         public static MoveRelativeToSelfData ReadMoveRelative(BinaryReader reader) {
-            ActionManager.ReadTeleportData(reader, out var position, out var options);
+            ReadTeleportData(reader, out var position, out var options);
             return new MoveRelativeToSelfData(position) {Options = options};
         }
 
         public static TeleportToRoomData ReadTpToRoom(BinaryReader reader) {
-            ActionManager.ReadTeleportData(reader, out var position, out var options);
+            ReadTeleportData(reader, out var position, out var options);
             var name = reader.ReadString();
             return new TeleportToRoomData(name, position) {Options = options};
         }
@@ -46,15 +47,21 @@ namespace slocLoader.TriggerActions.Readers {
         }
 
         public static SerializableTeleportToSpawnedObjectData ReadTpToSpawnedObject(BinaryReader reader) {
-            ActionManager.ReadTeleportData(reader, out var offset, out var options);
+            ReadTeleportData(reader, out var offset, out var options);
             var virtualInstanceId = reader.ReadInt32();
             return new SerializableTeleportToSpawnedObjectData(virtualInstanceId, offset, options);
         }
 
         public static TeleporterImmunityData ReadTeleporterImmunity(BinaryReader reader) {
-            var global = reader.ReadBoolean();
+            var firstByte = reader.ReadByte();
+            API.SplitSafe(firstByte, out var isGlobal, out var options);
             var duration = reader.ReadShortAsFloat();
-            return new TeleporterImmunityData(global, duration);
+            return new TeleporterImmunityData(isGlobal != 0, (ImmunityDurationMode) options, duration);
+        }
+
+        public static void ReadTeleportData(BinaryReader reader, out Vector3 position, out TeleportOptions options) {
+            position = reader.ReadVector();
+            options = (TeleportOptions) reader.ReadByte();
         }
 
     }

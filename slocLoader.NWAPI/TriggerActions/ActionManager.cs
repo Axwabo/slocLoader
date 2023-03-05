@@ -88,11 +88,6 @@ namespace slocLoader.TriggerActions {
             eventType = (TriggerEventType) eventTypes;
         }
 
-        public static void ReadTeleportData(BinaryReader reader, out Vector3 position, out TeleportOptions options) {
-            position = reader.ReadVector();
-            options = (TeleportOptions) reader.ReadByte();
-        }
-
         public static bool TryGetHandler(TriggerActionType actionType, out ITriggerActionHandler handler) {
             foreach (var actionHandler in ActionHandlers) {
                 if (actionHandler.ActionType != actionType)

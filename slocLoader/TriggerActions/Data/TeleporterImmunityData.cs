@@ -12,21 +12,25 @@ namespace slocLoader.TriggerActions.Data {
 
         public override TriggerActionType ActionType => TriggerActionType.TeleporterImmunity;
 
-        public override TargetType PossibleTargets => TargetType.All;
+        public override TargetType PossibleTargets => TargetType.Player;
 
         [field: SerializeField]
         public bool IsGlobal { get; set; }
 
         [field: SerializeField]
+        public ImmunityDurationMode DurationMode { get; set; }
+
+        [field: SerializeField]
         public float Duration { get; set; }
 
-        public TeleporterImmunityData(bool isGlobal, float duration) {
+        public TeleporterImmunityData(bool isGlobal, ImmunityDurationMode durationMode, float duration) {
             IsGlobal = isGlobal;
+            DurationMode = durationMode;
             Duration = duration;
         }
 
         protected override void WriteData(BinaryWriter writer) {
-            writer.Write(IsGlobal);
+            writer.Write(API.CombineSafe((byte) (IsGlobal ? 1 : 0), (byte) DurationMode));
             writer.WriteFloatAsShort(Duration);
         }
 

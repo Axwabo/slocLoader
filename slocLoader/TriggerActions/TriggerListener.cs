@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using InventorySystem.Items.Pickups;
+using slocLoader.TriggerActions.Handlers;
 using UnityEngine;
 
 namespace slocLoader.TriggerActions {
@@ -23,15 +24,11 @@ namespace slocLoader.TriggerActions {
                 go = pickup.gameObject;
             else if (root.TryGetComponent(out BasicRagdoll ragdoll))
                 go = ragdoll.gameObject;
-            var hasStorage = go.TryGetComponent(out TeleporterImmunityStorage storage);
-            if (hasStorage)
-                storage.IsTriggerProcessActive = true;
             try {
                 foreach (var pair in list)
                     pair.Handler.HandleObject(go, pair.Data, this);
             } finally {
-                if (hasStorage)
-                    storage.IsTriggerProcessActive = false;
+                TeleporterImmunityHandler.ApplyAllQueued(go, this);
             }
         }
 
