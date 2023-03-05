@@ -9,6 +9,8 @@ namespace slocLoader {
 
     public sealed class slocPlugin : Plugin<slocConfig> {
 
+        internal static slocPlugin Instance;
+
         public override string Name => "slocLoader";
         public override string Prefix => "sloc";
         public override string Author => "Axwabo";
@@ -18,6 +20,7 @@ namespace slocLoader {
         private Harmony _harmony;
 
         public override void OnEnabled() {
+            Instance = this;
             _harmony = new Harmony("Axwabo.slocLoader");
             try {
                 _harmony.PatchAll();

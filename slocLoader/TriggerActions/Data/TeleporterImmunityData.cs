@@ -12,7 +12,7 @@ namespace slocLoader.TriggerActions.Data {
 
         public override TriggerActionType ActionType => TriggerActionType.TeleporterImmunity;
 
-        public override TargetType PossibleTargets => TargetType.Player;
+        public override TargetType PossibleTargets => TargetType.All;
 
         [field: SerializeField]
         public bool IsGlobal { get; set; }

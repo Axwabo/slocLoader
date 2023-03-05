@@ -24,7 +24,10 @@ namespace slocLoader.TriggerActions.Handlers {
 
         protected override void HandleToy(AdminToyBase toy, TeleportToRoomData data, TriggerListener listener) => HandleComponent(toy, data);
 
-        protected override void HandleRagdoll(BasicRagdoll ragdoll, TeleportToRoomData data, TriggerListener listener) => HandleComponent(ragdoll, data);
+        protected override void HandleRagdoll(BasicRagdoll ragdoll, TeleportToRoomData data, TriggerListener listener) {
+            if (TryCalculatePosition(data, out var pos))
+                API.SetRagdollPosition(ragdoll, pos);
+        }
 
         private static bool TryCalculatePosition(TeleportToRoomData data, out Vector3 vector) {
             var point = new MapPointByName(data.Room, data.Position);

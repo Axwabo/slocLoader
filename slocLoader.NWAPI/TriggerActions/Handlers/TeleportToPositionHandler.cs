@@ -21,7 +21,8 @@ namespace slocLoader.TriggerActions.Handlers {
 
         protected override void HandleToy(AdminToyBase toy, TeleportToPositionData data, TriggerListener listener) => HandleComponent(toy, data);
 
-        protected override void HandleRagdoll(BasicRagdoll ragdoll, TeleportToPositionData data, TriggerListener listener) => HandleComponent(ragdoll, data);
+        protected override void HandleRagdoll(BasicRagdoll ragdoll, TeleportToPositionData data, TriggerListener listener) =>
+            API.SetRagdollPosition(ragdoll, data.Position);
 
         private static void HandleComponent(Component component, TeleportToPositionData data) => component.transform.position = data.Position;
 
