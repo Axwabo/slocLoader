@@ -137,6 +137,7 @@
         <Compile Include="TriggerActions\Handlers\TeleportToPositionHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\TeleportToRoomHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\TeleportToSpawnedObjectHandler.cs"/>
+        <Compile Include="TriggerActions\Handlers\TriggerActionHelpers.cs"/>
         <Compile Include="TriggerActions\Readers\ITriggerActionDataReader.cs"/>
         <Compile Include="TriggerActions\Readers\Ver4ActionDataReader.cs"/>
         <Compile Include="TriggerActions\TeleporterImmunityStorage.cs"/>

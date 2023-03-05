@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PlayerRoles.FirstPersonControl;
 using slocLoader.TriggerActions.Data;
 using slocLoader.TriggerActions.Enums;
 using slocLoader.TriggerActions.Handlers;
 using slocLoader.TriggerActions.Readers;
-using UnityEngine;
 
 namespace slocLoader.TriggerActions {
 
@@ -98,14 +96,6 @@ namespace slocLoader.TriggerActions {
 
             handler = null;
             return false;
-        }
-
-        public static void OverridePosition(this ReferenceHub hub, Vector3 position, TeleportOptions options) {
-            if (hub.roleManager.CurrentRole is not IFpcRole {FpcModule: var module})
-                return;
-            if (options.HasFlagFast(TeleportOptions.ResetFallDamage))
-                module.Motor.ResetFallDamageCooldown();
-            module.ServerOverridePosition(position, Vector3.zero);
         }
 
         public static bool HasFlagFast(this TargetType targetType, TargetType flag) => (targetType & flag) == flag;

@@ -17,12 +17,15 @@ namespace slocLoader.TriggerActions.Handlers {
         protected override void HandlePlayer(ReferenceHub player, RuntimeTeleportToSpawnedObjectData data, TriggerListener listener) =>
             player.OverridePosition(data.ToWorldSpacePosition(data.Target.transform), data.Options);
 
-        protected override void HandleItem(ItemPickupBase pickup, RuntimeTeleportToSpawnedObjectData data, TriggerListener listener) => HandleComponent(pickup, data);
+        protected override void HandleItem(ItemPickupBase pickup, RuntimeTeleportToSpawnedObjectData data, TriggerListener listener) {
+            TriggerActionHelpers.ResetVelocityOfPickup(pickup, data.Options);
+            HandleComponent(pickup, data);
+        }
 
         protected override void HandleToy(AdminToyBase toy, RuntimeTeleportToSpawnedObjectData data, TriggerListener listener) => HandleComponent(toy, data);
 
         protected override void HandleRagdoll(BasicRagdoll ragdoll, RuntimeTeleportToSpawnedObjectData data, TriggerListener listener) =>
-            API.SetRagdollPosition(ragdoll, data.ToWorldSpacePosition(data.Target.transform));
+            TriggerActionHelpers.SetRagdollPosition(ragdoll, data.ToWorldSpacePosition(data.Target.transform));
 
         private static void HandleComponent(Component component, RuntimeTeleportToSpawnedObjectData data) =>
             component.transform.position = data.ToWorldSpacePosition(data.Target.transform);

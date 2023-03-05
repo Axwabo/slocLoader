@@ -488,18 +488,6 @@ namespace slocLoader {
 
         public static bool HasAttribute(this slocHeader header, slocAttributes attribute) => (header.Attributes & attribute) == attribute;
 
-        public static void SetRagdollPosition(BasicRagdoll ragdoll, Vector3 targetPosition) {
-            if (!slocPlugin.Instance.Config.EnableRagdollPositionModification)
-                return;
-            ragdoll.transform.position = targetPosition;
-            var info = ragdoll.NetworkInfo;
-            ragdoll.NetworkInfo = new RagdollData(info.OwnerHub, info.Handler, info.RoleType, targetPosition, info.StartRotation, info.Nickname, info.CreationTime);
-            var identity = ragdoll.netIdentity;
-            foreach (var hub in ReferenceHub.AllHubs)
-                if (hub.connectionToClient != null)
-                    NetworkServer.SendSpawnMessage(identity, hub.connectionToClient);
-        }
-
     }
 
 }

@@ -20,13 +20,16 @@ namespace slocLoader.TriggerActions.Handlers {
                 player.OverridePosition(pos, data.Options);
         }
 
-        protected override void HandleItem(ItemPickupBase pickup, TeleportToRoomData data, TriggerListener listener) => HandleComponent(pickup, data);
+        protected override void HandleItem(ItemPickupBase pickup, TeleportToRoomData data, TriggerListener listener) {
+            TriggerActionHelpers.ResetVelocityOfPickup(pickup, data.Options);
+            HandleComponent(pickup, data);
+        }
 
         protected override void HandleToy(AdminToyBase toy, TeleportToRoomData data, TriggerListener listener) => HandleComponent(toy, data);
 
         protected override void HandleRagdoll(BasicRagdoll ragdoll, TeleportToRoomData data, TriggerListener listener) {
             if (TryCalculatePosition(data, out var pos))
-                API.SetRagdollPosition(ragdoll, pos);
+                TriggerActionHelpers.SetRagdollPosition(ragdoll, pos);
         }
 
         private static bool TryCalculatePosition(TeleportToRoomData data, out Vector3 vector) {
