@@ -91,7 +91,7 @@ namespace slocLoader {
             var newVersion = binaryReader.ReadUInt16();
             var oldVersion = binaryReader.ReadUInt16();
             if (oldVersion is 0)
-                return (ushort) (newVersion | ((uint) oldVersion << 16));
+                return (ushort) (newVersion | (uint) oldVersion << 16);
             var newPos = buffered.Get<int>("_readPos") - sizeof(ushort);
             buffered.Set("_readPos", newPos); // rewind the buffer by two bytes, so the whole stream won't be malformed data
             return newVersion;
@@ -366,9 +366,9 @@ namespace slocLoader {
 
         public static Color ReadLossyColor(this BinaryReader reader) {
             var color = reader.ReadInt32();
-            var red = (color >> 24) & 0xFF;
-            var green = (color >> 16) & 0xFF;
-            var blue = (color >> 8) & 0xFF;
+            var red = color >> 24 & 0xFF;
+            var green = color >> 16 & 0xFF;
+            var blue = color >> 8 & 0xFF;
             var alpha = color & 0xFF;
             return new(red * ColorDivisionMultiplier, green * ColorDivisionMultiplier, blue * ColorDivisionMultiplier, alpha * ColorDivisionMultiplier);
         }

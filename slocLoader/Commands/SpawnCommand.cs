@@ -1,6 +1,7 @@
 ﻿using System;
 using CommandSystem;
 using Exiled.API.Features;
+using Exiled.Permissions.Extensions;
 using Mirror;
 using slocLoader.AutoObjectLoader;
 using UnityEngine;
@@ -22,8 +23,8 @@ namespace slocLoader.Commands {
                 return false;
             }
 
-            if (!sender.CheckPermission(PlayerPermissions.FacilityManagement)) {
-                response = "You don't have permission to do that (FacilityManagement)!";
+            if (!p.CheckPermission("sloc.spawn")) {
+                response = "You don't have permission to do that (sloc.spawn)!";
                 return false;
             }
 

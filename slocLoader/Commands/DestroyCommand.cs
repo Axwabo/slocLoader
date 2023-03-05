@@ -1,5 +1,6 @@
 ﻿using System;
 using CommandSystem;
+using Exiled.Permissions.Extensions;
 using Mirror;
 
 namespace slocLoader.Commands {
@@ -15,8 +16,8 @@ namespace slocLoader.Commands {
 
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response) {
-            if (!sender.CheckPermission(PlayerPermissions.FacilityManagement)) {
-                response = "You don't have permission to do that (FacilityManagement)!";
+            if (!sender.CheckPermission("sloc.destroy")) {
+                response = "You don't have permission to do that (sloc.destroy)!";
                 return false;
             }
 
