@@ -6,6 +6,7 @@ namespace slocLoader.TriggerActions.Data {
 
     public abstract class BaseTeleportData : BaseTriggerActionData {
 
+        [field: SerializeField]
         public Vector3 Position { get; set; }
 
         [field: SerializeField]

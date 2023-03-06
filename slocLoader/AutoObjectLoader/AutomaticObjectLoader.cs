@@ -27,7 +27,7 @@ namespace slocLoader.AutoObjectLoader {
                 }
             }
 
-            Log.Debug($"Loaded {loaded} object{(loaded == 1 ? "" : "s")} from AppData.");
+            Log.Info($"Loaded {loaded} object{(loaded == 1 ? "" : "s")} from AppData.");
         }
 
         public static void SpawnObjects(IEnumerable<IAssetLocation> locations) {
@@ -44,7 +44,7 @@ namespace slocLoader.AutoObjectLoader {
                 spawnedObjects += spawned;
             }
 
-            Log.Debug($"Spawned {spawnedAssets} asset(s) out of {totalAssetsToSpawn} specified; {spawnedObjects} object(s) in total.");
+            Log.Info($"Spawned {spawnedAssets} asset(s) out of {totalAssetsToSpawn} specified; {spawnedObjects} object(s) in total.");
         }
 
         public static bool TryGetObjects(string name, out List<slocGameObject> objects) => LoadedObjects.TryGetValue(name, out objects);
