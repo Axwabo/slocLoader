@@ -35,7 +35,7 @@ namespace slocLoader.Commands {
 
             var rot = Quaternion.Euler(x, y, z);
             Defined[ps.SenderId] = rot;
-            response = $"Objects will now be spawned with rotation {rot}";
+            response = $"Objects will now be spawned with rotation {rot.eulerAngles}";
             return true;
         }
 
