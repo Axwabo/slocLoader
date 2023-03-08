@@ -29,6 +29,9 @@ namespace slocLoader {
             new StaticAssetPosition("example", new StaticMapPoint(0, 1000, 5))
         };
 
+        [Description("If set to false, teleporters will not be able to modify the positions of ragdolls. When enabled, can cause issues with networking and client-side ragdoll physics.")]
+        public bool EnableRagdollPositionModification { get; set; } = true;
+
     }
 
 }

@@ -6,6 +6,9 @@ namespace slocLoader.Objects {
 
     public sealed class LightObject : slocGameObject {
 
+        public LightObject() : this(0) {
+        }
+
         public LightObject(int instanceId) : base(instanceId) => Type = ObjectType.Light;
 
         public Color LightColor = Color.white;
@@ -16,16 +19,11 @@ namespace slocLoader.Objects {
 
         public float Intensity = 1;
 
-        public override void WriteTo(BinaryWriter writer, slocHeader header) {
-            base.WriteTo(writer, header);
+        protected override void WriteData(BinaryWriter writer, slocHeader header) {
             if (header.HasAttribute(slocAttributes.LossyColors))
                 writer.Write(LightColor.ToLossyColor());
-            else {
-                writer.Write(LightColor.r);
-                writer.Write(LightColor.g);
-                writer.Write(LightColor.b);
-                writer.Write(LightColor.a);
-            }
+            else
+                writer.WriteColor(LightColor);
 
             writer.Write(Shadows);
             writer.Write(Range);

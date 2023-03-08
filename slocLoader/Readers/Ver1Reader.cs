@@ -5,22 +5,23 @@ namespace slocLoader.Readers {
 
     public sealed class Ver1Reader : IObjectReader {
 
-        public slocHeader ReadHeader(BinaryReader stream) => new(stream.ReadObjectCount());
+        public slocHeader ReadHeader(BinaryReader stream) => new(1, stream.ReadObjectCount());
 
         public slocGameObject Read(BinaryReader stream, slocHeader header) {
             var objectType = (ObjectType) stream.ReadByte();
             return objectType switch {
-                ObjectType.Cube => ReadPrimitive(stream, objectType),
-                ObjectType.Sphere => ReadPrimitive(stream, objectType),
-                ObjectType.Cylinder => ReadPrimitive(stream, objectType),
-                ObjectType.Plane => ReadPrimitive(stream, objectType),
-                ObjectType.Capsule => ReadPrimitive(stream, objectType),
+                ObjectType.Cube
+                    or ObjectType.Sphere
+                    or ObjectType.Cylinder
+                    or ObjectType.Plane
+                    or ObjectType.Capsule
+                    or ObjectType.Quad => ReadPrimitive(stream, objectType),
                 ObjectType.Light => ReadLight(stream),
                 _ => null
             };
         }
 
-        public static slocGameObject ReadPrimitive(BinaryReader stream, ObjectType type) {
+        public static PrimitiveObject ReadPrimitive(BinaryReader stream, ObjectType type) {
             var transform = stream.ReadTransform();
             var materialColor = stream.ReadColor();
             return new PrimitiveObject(0, type) {
@@ -29,7 +30,7 @@ namespace slocLoader.Readers {
             };
         }
 
-        public static slocGameObject ReadLight(BinaryReader stream) {
+        public static LightObject ReadLight(BinaryReader stream) {
             var transform = stream.ReadTransform();
             var lightColor = stream.ReadColor();
             var shadows = stream.ReadBoolean();

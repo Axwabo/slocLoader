@@ -4,7 +4,6 @@ using HarmonyLib;
 using MapGeneration;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
-using PluginAPI.Enums;
 using slocLoader.AutoObjectLoader;
 
 namespace slocLoader {
@@ -15,10 +14,10 @@ namespace slocLoader {
 
         private Harmony _harmony;
 
-        [PluginConfig("config.yml")]
+        [PluginConfig]
         public slocConfig Config = new();
 
-        [PluginEntryPoint("slocLoader", "3.0.1", "A plugin that loads sloc files.", "Axwabo")]
+        [PluginEntryPoint("slocLoader", "4.0.0", "A plugin that loads sloc files.", "Axwabo")]
         public void OnEnabled() {
             Instance = this;
             _harmony = new Harmony("Axwabo.slocLoader");
@@ -29,31 +28,29 @@ namespace slocLoader {
                 Log.Error("Patching failed! Nested object scaling will behave weirdly!\n" + e);
             }
 
-            API.UnsetPrefabs();
             if (Config.AutoLoad)
-                API.PrefabsLoaded += AutomaticObjectLoader.LoadObjects;
-            if (SeedSynchronizer.MapGenerated) {
-                API.LoadPrefabs();
-                SpawnDefault();
-            }
+                try {
+                    AutomaticObjectLoader.LoadObjects();
+                } catch (Exception e) {
+                    Log.Error("Failed to load objects automatically:\n" + e);
+                }
 
+            API.UnsetPrefabs();
+            SeedSynchronizer.OnMapGenerated += API.LoadPrefabs;
             API.PrefabsLoaded += SpawnDefault;
+            if (SeedSynchronizer.MapGenerated)
+                API.LoadPrefabs();
             Log.Info("slocLoader has been enabled");
-            PluginAPI.Events.EventManager.RegisterEvents(this);
         }
 
         [PluginUnload]
         public void OnDisabled() {
             _harmony.UnpatchAll();
             API.UnsetPrefabs();
-            API.PrefabsLoaded -= AutomaticObjectLoader.LoadObjects;
             API.PrefabsLoaded -= SpawnDefault;
-            PluginAPI.Events.EventManager.UnregisterEvents(this);
+            SeedSynchronizer.OnMapGenerated -= API.LoadPrefabs;
             Log.Info("slocLoader has been disabled");
         }
-
-        [PluginEvent(ServerEventType.MapGenerated)]
-        private void OnMapGenerated() => API.LoadPrefabs();
 
         private void SpawnDefault() {
             if (Config.EnableAutoSpawn)

@@ -7,17 +7,20 @@ using slocLoader.AutoObjectLoader;
 
 namespace slocLoader {
 
-    public sealed class slocPlugin : Plugin<Config> {
+    public sealed class slocPlugin : Plugin<slocConfig> {
+
+        internal static slocPlugin Instance;
 
         public override string Name => "slocLoader";
         public override string Prefix => "sloc";
         public override string Author => "Axwabo";
-        public override Version Version { get; } = new(3, 0, 1);
+        public override Version Version { get; } = new(4, 0, 0);
         public override Version RequiredExiledVersion { get; } = new(6, 0, 0);
 
         private Harmony _harmony;
 
         public override void OnEnabled() {
+            Instance = this;
             _harmony = new Harmony("Axwabo.slocLoader");
             try {
                 _harmony.PatchAll();
@@ -27,15 +30,10 @@ namespace slocLoader {
             }
 
             API.UnsetPrefabs();
-            if (Config.AutoLoad)
-                API.PrefabsLoaded += AutomaticObjectLoader.LoadObjects;
-            if (SeedSynchronizer.MapGenerated) {
-                API.LoadPrefabs();
-                SpawnDefault();
-            }
-
             Exiled.Events.Handlers.Map.Generated += API.LoadPrefabs;
             API.PrefabsLoaded += SpawnDefault;
+            if (SeedSynchronizer.MapGenerated)
+                API.LoadPrefabs();
             base.OnEnabled();
         }
 
@@ -43,7 +41,6 @@ namespace slocLoader {
             _harmony.UnpatchAll();
             API.UnsetPrefabs();
             Exiled.Events.Handlers.Map.Generated -= API.LoadPrefabs;
-            API.PrefabsLoaded -= AutomaticObjectLoader.LoadObjects;
             API.PrefabsLoaded -= SpawnDefault;
             base.OnDisabled();
         }

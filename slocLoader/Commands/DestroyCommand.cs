@@ -9,8 +9,7 @@ namespace slocLoader.Commands {
     [CommandHandler(typeof(GameConsoleCommandHandler))]
     public sealed class DestroyCommand : ICommand, IUsageProvider {
 
-        public string[] Usage { get; } = {"sl_destroy <netID>"};
-
+        public string[] Usage { get; } = {"netID"};
         public string Command => "sl_destroy";
         public string[] Aliases { get; } = {"sl_del", "sl_d", "sl_remove"};
         public string Description => "Destroys a previously spawned object.";
