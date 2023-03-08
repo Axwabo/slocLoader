@@ -10,7 +10,7 @@ namespace slocLoader.TriggerActions.Handlers {
         public override TriggerActionType ActionType => TriggerActionType.KillPlayer;
 
         protected override void HandlePlayer(ReferenceHub player, KillPlayerData data, TriggerListener listener) {
-            if (!player.characterClassManager.GodMode)
+            if (!player.characterClassManager.GodMode && player.roleManager.CurrentRole.ActiveTime > 0.1f)
                 player.playerStats.DealDamage(new CustomReasonDamageHandler(data.Cause));
         }
 
