@@ -1,24 +1,23 @@
-﻿using System.IO;
-using UnityEngine;
+﻿using slocLoader.TriggerActions.Enums;
 
-namespace slocLoader.TriggerActions.Data {
+namespace slocLoader.TriggerActions.Data;
 
-    public sealed class TeleportToRoomData : BaseTeleportData {
+public sealed class TeleportToRoomData : BaseTeleportData
+{
 
-        public override Enums.TargetType PossibleTargets => Enums.TargetType.All;
+    public override TargetType PossibleTargets => TargetType.All;
 
-        public override Enums.TriggerActionType ActionType => Enums.TriggerActionType.TeleportToRoom;
+    public override TriggerActionType ActionType => TriggerActionType.TeleportToRoom;
 
-        [field: SerializeField]
-        public string Room { get; set; }
+    [field: SerializeField]
+    public string Room { get; set; }
 
-        public TeleportToRoomData(string room, Vector3 offset) {
-            Room = room;
-            Position = offset;
-        }
-
-        protected override void WriteAdditionalData(BinaryWriter writer) => writer.Write(Room);
-
+    public TeleportToRoomData(string room, Vector3 offset)
+    {
+        Room = room;
+        Position = offset;
     }
+
+    protected override void WriteAdditionalData(BinaryWriter writer) => writer.Write(Room);
 
 }

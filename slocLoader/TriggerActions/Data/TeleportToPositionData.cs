@@ -1,15 +1,14 @@
-﻿using UnityEngine;
+﻿using slocLoader.TriggerActions.Enums;
 
-namespace slocLoader.TriggerActions.Data {
+namespace slocLoader.TriggerActions.Data;
 
-    public sealed class TeleportToPositionData : BaseTeleportData {
+public sealed class TeleportToPositionData : BaseTeleportData
+{
 
-        public override Enums.TargetType PossibleTargets => Enums.TargetType.All;
+    public override TargetType PossibleTargets => TargetType.All;
 
-        public override Enums.TriggerActionType ActionType => Enums.TriggerActionType.TeleportToPosition;
+    public override TriggerActionType ActionType => TriggerActionType.TeleportToPosition;
 
-        public TeleportToPositionData(Vector3 position) => Position = position;
-
-    }
+    public TeleportToPositionData(Vector3 position) => Position = position;
 
 }

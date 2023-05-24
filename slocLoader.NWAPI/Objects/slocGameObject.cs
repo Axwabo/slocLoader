@@ -1,35 +1,35 @@
-﻿using System.IO;
-using slocLoader.Readers;
+﻿using slocLoader.Readers;
 
-namespace slocLoader.Objects {
+namespace slocLoader.Objects;
 
-    public abstract class slocGameObject {
+public abstract class slocGameObject
+{
 
-        protected slocGameObject(int instanceId) => InstanceId = instanceId;
+    protected slocGameObject(int instanceId) => InstanceId = instanceId;
 
-        public readonly int InstanceId;
+    public readonly int InstanceId;
 
-        public int ParentId = 0;
+    public int ParentId = 0;
 
-        public bool HasParent => ParentId != InstanceId;
+    public bool HasParent => ParentId != InstanceId;
 
-        public ObjectType Type { get; protected set; } = ObjectType.None;
+    public ObjectType Type { get; protected set; } = ObjectType.None;
 
-        public slocTransform Transform = new();
+    public slocTransform Transform = new();
 
-        public virtual bool IsValid => Type != ObjectType.None;
+    public virtual bool IsValid => Type != ObjectType.None;
 
-        public void WriteTo(BinaryWriter writer, slocHeader header) {
-            writer.Write((byte) Type);
-            writer.Write(InstanceId);
-            writer.Write(ParentId);
-            Transform.WriteTo(writer);
-            WriteData(writer, header);
-        }
+    public void WriteTo(BinaryWriter writer, slocHeader header)
+    {
+        writer.Write((byte) Type);
+        writer.Write(InstanceId);
+        writer.Write(ParentId);
+        Transform.WriteTo(writer);
+        WriteData(writer, header);
+    }
 
-        protected virtual void WriteData(BinaryWriter writer, slocHeader header) {
-        }
-
+    protected virtual void WriteData(BinaryWriter writer, slocHeader header)
+    {
     }
 
 }

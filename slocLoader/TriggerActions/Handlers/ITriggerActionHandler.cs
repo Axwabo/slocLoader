@@ -1,17 +1,15 @@
 ﻿using slocLoader.TriggerActions.Data;
 using slocLoader.TriggerActions.Enums;
-using UnityEngine;
 
-namespace slocLoader.TriggerActions.Handlers {
+namespace slocLoader.TriggerActions.Handlers;
 
-    public interface ITriggerActionHandler {
+public interface ITriggerActionHandler
+{
 
-        TargetType Targets { get; }
+    TargetType Targets { get; }
 
-        TriggerActionType ActionType { get; }
+    TriggerActionType ActionType { get; }
 
-        void HandleObject(GameObject interactingObject, BaseTriggerActionData data, TriggerListener listener);
-
-    }
+    void HandleObject(GameObject interactingObject, BaseTriggerActionData data, TriggerListener listener);
 
 }

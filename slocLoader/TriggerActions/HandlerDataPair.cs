@@ -1,19 +1,19 @@
 ﻿using slocLoader.TriggerActions.Data;
 using slocLoader.TriggerActions.Handlers;
 
-namespace slocLoader.TriggerActions {
+namespace slocLoader.TriggerActions;
 
-    public readonly struct HandlerDataPair {
+public readonly struct HandlerDataPair
+{
 
-        public readonly BaseTriggerActionData Data;
+    public readonly BaseTriggerActionData Data;
 
-        public readonly ITriggerActionHandler Handler;
+    public readonly ITriggerActionHandler Handler;
 
-        public HandlerDataPair(BaseTriggerActionData data, ITriggerActionHandler handler) {
-            Data = data;
-            Handler = handler;
-        }
-
+    public HandlerDataPair(BaseTriggerActionData data, ITriggerActionHandler handler)
+    {
+        Data = data;
+        Handler = handler;
     }
 
 }

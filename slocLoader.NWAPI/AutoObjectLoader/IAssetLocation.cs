@@ -1,13 +1,12 @@
 ﻿using Axwabo.Helpers.Config;
 
-namespace slocLoader.AutoObjectLoader {
+namespace slocLoader.AutoObjectLoader;
 
-    public interface IAssetLocation {
+public interface IAssetLocation
+{
 
-        public string AssetName { get; set; }
+    public string AssetName { get; set; }
 
-        public IMapPoint Location();
-
-    }
+    public IMapPoint Location();
 
 }

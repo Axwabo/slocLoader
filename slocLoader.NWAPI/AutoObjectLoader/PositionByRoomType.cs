@@ -1,22 +1,21 @@
-﻿using System;
-using Axwabo.Helpers.Config;
+﻿using Axwabo.Helpers.Config;
 
-namespace slocLoader.AutoObjectLoader {
+namespace slocLoader.AutoObjectLoader;
 
-    [Serializable]
-    public struct PositionByRoomType : IAssetLocation {
+[Serializable]
+public struct PositionByRoomType : IAssetLocation
+{
 
-        public string AssetName { get; set; }
+    public string AssetName { get; set; }
 
-        public MapPointByRoomType Point { get; set; }
+    public MapPointByRoomType Point { get; set; }
 
-        public IMapPoint Location() => Point;
+    public IMapPoint Location() => Point;
 
-        public PositionByRoomType(string assetName, MapPointByRoomType location) {
-            AssetName = assetName;
-            Point = location;
-        }
-
+    public PositionByRoomType(string assetName, MapPointByRoomType location)
+    {
+        AssetName = assetName;
+        Point = location;
     }
 
 }

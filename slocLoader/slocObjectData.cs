@@ -1,23 +1,20 @@
-﻿using System;
-using Mirror;
-using UnityEngine;
+﻿using Mirror;
 
-namespace slocLoader {
+namespace slocLoader;
 
-    [DisallowMultipleComponent]
-    public sealed class slocObjectData : MonoBehaviour {
+[DisallowMultipleComponent]
+public sealed class slocObjectData : MonoBehaviour
+{
 
-        [NonSerialized]
-        public NetworkIdentity networkIdentity;
+    [NonSerialized]
+    public NetworkIdentity networkIdentity;
 
-        public uint netId => networkIdentity.netId;
+    public uint netId => networkIdentity.netId;
 
-        public bool HasColliderOnClient { get; set; } = true;
+    public bool HasColliderOnClient { get; set; } = true;
 
-        public bool ShouldBeSpawnedOnClient { get; set; } = true;
+    public bool ShouldBeSpawnedOnClient { get; set; } = true;
 
-        private void Awake() => networkIdentity = GetComponent<NetworkIdentity>();
-
-    }
+    private void Awake() => networkIdentity = GetComponent<NetworkIdentity>();
 
 }

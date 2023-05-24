@@ -1,15 +1,12 @@
-﻿using System;
+﻿namespace slocLoader;
 
-namespace slocLoader {
+[Flags]
+public enum slocAttributes : byte
+{
 
-    [Flags]
-    public enum slocAttributes : byte {
-
-        None = 0,
-        LossyColors = 1,
-        DefaultColliderMode = 2,
-        ExportAllTriggerActions = 4
-
-    }
+    None = 0,
+    LossyColors = 1,
+    DefaultColliderMode = 2,
+    ExportAllTriggerActions = 4
 
 }

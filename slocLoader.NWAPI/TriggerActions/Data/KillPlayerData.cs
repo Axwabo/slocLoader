@@ -1,22 +1,19 @@
-﻿using System.IO;
-using slocLoader.TriggerActions.Enums;
-using UnityEngine;
+﻿using slocLoader.TriggerActions.Enums;
 
-namespace slocLoader.TriggerActions.Data {
+namespace slocLoader.TriggerActions.Data;
 
-    public sealed class KillPlayerData : BaseTriggerActionData {
+public sealed class KillPlayerData : BaseTriggerActionData
+{
 
-        public override TargetType PossibleTargets => TargetType.Player;
+    public override TargetType PossibleTargets => TargetType.Player;
 
-        public override TriggerActionType ActionType => TriggerActionType.KillPlayer;
+    public override TriggerActionType ActionType => TriggerActionType.KillPlayer;
 
-        [field: SerializeField]
-        public string Cause { get; set; }
+    [field: SerializeField]
+    public string Cause { get; set; }
 
-        public KillPlayerData(string cause) => Cause = cause;
+    public KillPlayerData(string cause) => Cause = cause;
 
-        protected override void WriteData(BinaryWriter writer) => writer.Write(Cause);
-
-    }
+    protected override void WriteData(BinaryWriter writer) => writer.Write(Cause);
 
 }

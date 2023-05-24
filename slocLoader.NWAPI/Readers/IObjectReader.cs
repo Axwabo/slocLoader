@@ -1,14 +1,12 @@
-﻿using System.IO;
-using slocLoader.Objects;
+﻿using slocLoader.Objects;
 
-namespace slocLoader.Readers {
+namespace slocLoader.Readers;
 
-    public interface IObjectReader {
+public interface IObjectReader
+{
 
-        slocHeader ReadHeader(BinaryReader stream);
+    slocHeader ReadHeader(BinaryReader stream);
 
-        slocGameObject Read(BinaryReader stream, slocHeader header);
-
-    }
+    slocGameObject Read(BinaryReader stream, slocHeader header);
 
 }

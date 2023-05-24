@@ -1,12 +1,10 @@
-﻿using System.IO;
-using slocLoader.TriggerActions.Data;
+﻿using slocLoader.TriggerActions.Data;
 
-namespace slocLoader.TriggerActions.Readers {
+namespace slocLoader.TriggerActions.Readers;
 
-    public interface ITriggerActionDataReader {
+public interface ITriggerActionDataReader
+{
 
-        BaseTriggerActionData Read(BinaryReader reader);
-
-    }
+    BaseTriggerActionData Read(BinaryReader reader);
 
 }
