@@ -1,4 +1,5 @@
 ﻿using InventorySystem.Items.Pickups;
+using InventorySystem.Items.ThrowableProjectiles;
 using Mirror;
 using PlayerRoles.FirstPersonControl;
 using slocLoader.TriggerActions.Enums;
@@ -23,8 +24,15 @@ public static class TriggerActionHelpers
     {
         if (!options.Is(TeleportOptions.ResetVelocity))
             return;
-        pickup._estimatedVelocity = Vector3.zero;
-        pickup.RigidBody.velocity = Vector3.zero;
+        switch (pickup.PhysicsModule)
+        {
+            case PickupStandardPhysics physics:
+                physics.Rb.velocity = Vector3.zero;
+                break;
+            case Scp018Physics scp018:
+                scp018._lastVelocity = Vector3.zero;
+                break;
+        }
     }
 
     public static bool TryGetMovementModule(this ReferenceHub hub, out FirstPersonMovementModule module)
