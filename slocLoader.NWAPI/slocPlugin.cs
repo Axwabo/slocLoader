@@ -15,7 +15,7 @@ public sealed class slocPlugin
     [PluginConfig]
     public slocConfig Config = new();
 
-    [PluginEntryPoint("slocLoader", "4.1.1", "A plugin that loads sloc files.", "Axwabo")]
+    [PluginEntryPoint("slocLoader", "4.1.2", "A plugin that loads sloc files.", "Axwabo")]
     public void OnEnabled()
     {
         Instance = this;
