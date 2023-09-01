@@ -13,7 +13,7 @@ public sealed class slocPlugin : Plugin<slocConfig>
     public override string Name => "slocLoader";
     public override string Prefix => "sloc";
     public override string Author => "Axwabo";
-    public override Version Version { get; } = new(4, 1, 2);
+    public override Version Version { get; } = new(4, 1, 3);
     public override Version RequiredExiledVersion { get; } = new(7, 0, 0);
 
     private Harmony _harmony;
