@@ -72,6 +72,7 @@ public static partial class API
         toy.LightRange = light.Range;
         toy.LightIntensity = light.Intensity;
         toy.Scale = transform.Scale;
+        toy.MovementSmoothing = light.MovementSmoothing;
         return toy.gameObject;
     }
 
