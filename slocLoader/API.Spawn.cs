@@ -47,41 +47,7 @@ public static partial class API
     }
 
     public static GameObject SpawnObjects(ObjectsSource source, CreateOptions options, out int spawnedAmount)
-    {
-        CreatedInstances.Clear();
-        TpToSpawnedCache.Clear();
-        try
-        {
-            var go = new GameObject
-            {
-                transform =
-                {
-                    position = options.Position,
-                    rotation = options.Rotation,
-                }
-            };
-            go.AddComponent<NetworkIdentity>();
-            go.AddComponent<slocObjectData>();
-            NetworkServer.Spawn(go);
-            spawnedAmount = 0;
-            foreach (var o in source)
-            {
-                var gameObject = o.SpawnObject(CreatedInstances.GetOrReturn(o.ParentId, go, o.HasParent));
-                if (gameObject == null)
-                    continue;
-                spawnedAmount++;
-                CreatedInstances[o.InstanceId] = gameObject;
-            }
-
-            PostProcessSpecialTriggerActions();
-            return go;
-        }
-        finally
-        {
-            CreatedInstances.Clear();
-            TpToSpawnedCache.Clear();
-        }
-    }
+        => CreateOrSpawn(source, options, true, SpawnObject, out spawnedAmount);
 
     public static GameObject SpawnObjects(ObjectsSource source, Vector3 position, Quaternion rotation = default)
         => SpawnObjects(source, out _, position, rotation);

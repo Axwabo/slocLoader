@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using AdminToys;
 using Mirror;
+using slocLoader.ObjectCreation;
 using slocLoader.Objects;
 using slocLoader.Readers;
 using slocLoader.TriggerActions;
@@ -141,6 +142,52 @@ public static partial class API
         if (!gameObject.TryGetComponent(out PrimitiveObjectToy toy))
             throw new ArgumentException("The provided game object does not have a PrimitiveObjectToy component.", nameof(gameObject));
         toy.AddTriggerAction(data, handler);
+    }
+
+    private static GameObject CreateOrSpawn(ObjectsSource source, CreateOptions options, bool spawnRoot, Func<slocGameObject, GameObject, bool, GameObject> createMethod, out int createdAmount)
+    {
+        if (source.Objects == null)
+            throw new ArgumentException("Source is null.", nameof(source));
+        CreatedInstances.Clear();
+        TpToSpawnedCache.Clear();
+        try
+        {
+            var go = new GameObject
+            {
+                transform =
+                {
+                    position = options.Position,
+                    rotation = options.Rotation,
+                }
+            };
+            go.AddComponent<NetworkIdentity>();
+            go.AddComponent<slocObjectData>();
+            if (spawnRoot)
+                NetworkServer.Spawn(go);
+            createdAmount = 0;
+            foreach (var o in source)
+            {
+                var primitive = o as PrimitiveObject;
+                var previousSmoothing = primitive?.MovementSmoothing ?? 0;
+                if (primitive != null && options.MovementSmoothing != null)
+                    primitive.MovementSmoothing = options.MovementSmoothing.Value;
+                var gameObject = createMethod(o, CreatedInstances.GetOrReturn(o.ParentId, go, o.HasParent), true);
+                if (primitive != null)
+                    primitive.MovementSmoothing = previousSmoothing;
+                if (gameObject == null)
+                    continue;
+                createdAmount++;
+                CreatedInstances[o.InstanceId] = gameObject;
+            }
+
+            PostProcessSpecialTriggerActions();
+            return go;
+        }
+        finally
+        {
+            CreatedInstances.Clear();
+            TpToSpawnedCache.Clear();
+        }
     }
 
 }

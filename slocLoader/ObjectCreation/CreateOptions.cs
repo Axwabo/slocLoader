@@ -7,4 +7,6 @@ public struct CreateOptions
 
     public Quaternion Rotation;
 
+    public byte? MovementSmoothing;
+
 }

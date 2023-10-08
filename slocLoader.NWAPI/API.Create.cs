@@ -156,42 +156,7 @@ public static partial class API
     #endregion
 
     public static GameObject CreateObjects(ObjectsSource source, CreateOptions options, out int createdAmount)
-    {
-        if (source.Objects == null)
-            throw new ArgumentException("Source is null.", nameof(source));
-        CreatedInstances.Clear();
-        TpToSpawnedCache.Clear();
-        try
-        {
-            var go = new GameObject
-            {
-                transform =
-                {
-                    position = options.Position,
-                    rotation = options.Rotation,
-                }
-            };
-            go.AddComponent<NetworkIdentity>();
-            go.AddComponent<slocObjectData>();
-            createdAmount = 0;
-            foreach (var o in source)
-            {
-                var gameObject = o.CreateObject(CreatedInstances.GetOrReturn(o.ParentId, go, o.HasParent));
-                if (gameObject == null)
-                    continue;
-                createdAmount++;
-                CreatedInstances[o.InstanceId] = gameObject;
-            }
-
-            PostProcessSpecialTriggerActions();
-            return go;
-        }
-        finally
-        {
-            CreatedInstances.Clear();
-            TpToSpawnedCache.Clear();
-        }
-    }
+        => CreateOrSpawn(source, options, true, CreateObject, out createdAmount);
 
     public static GameObject CreateObjects(ObjectsSource source, Vector3 position, Quaternion rotation = default)
         => CreateObjects(source, out _, position, rotation);
