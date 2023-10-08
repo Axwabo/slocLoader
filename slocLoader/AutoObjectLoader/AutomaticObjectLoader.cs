@@ -10,9 +10,8 @@ public static class AutomaticObjectLoader
     public static void LoadObjects()
     {
         LoadedObjects.Clear();
-        var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED", "Plugins", "sloc", "Objects");
-        if (!Directory.Exists(path))
-            Directory.CreateDirectory(path);
+        var path = Path.Combine(Paths.Plugins, "sloc", "Objects");
+        Directory.CreateDirectory(path);
         var loaded = 0;
         foreach (var file in Directory.EnumerateFiles(path, "*.sloc"))
         {
