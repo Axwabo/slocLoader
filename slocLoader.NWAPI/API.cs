@@ -196,7 +196,7 @@ public static class API
 
     private static GameObject CreateEmpty(GameObject parent, slocTransform transform)
     {
-        var emptyObject = new GameObject("Empty");
+        var emptyObject = new GameObject("Empty", typeof(NetworkIdentity));
         emptyObject.SetAbsoluteTransformFrom(parent);
         emptyObject.SetLocalTransform(transform);
         return emptyObject;
@@ -225,7 +225,7 @@ public static class API
         component.OnExit.AddRange(exit);
     }
 
-    private static void AddActionDataPairToList(BaseTriggerActionData action, ITriggerActionHandler handler, List<HandlerDataPair> enter, List<HandlerDataPair> stay, List<HandlerDataPair> exit)
+    public static void AddActionDataPairToList(BaseTriggerActionData action, ITriggerActionHandler handler, List<HandlerDataPair> enter, List<HandlerDataPair> stay, List<HandlerDataPair> exit)
     {
         var e = action.SelectedEvents;
         if (e == TriggerEventType.None)
@@ -520,22 +520,27 @@ public static class API
 
     public static Collider AddProperCollider(this GameObject o, PrimitiveType type, bool isTrigger)
     {
-        Collider collider = type switch
-        {
-            PrimitiveType.Cube => o.AddComponent<BoxCollider>(),
-            PrimitiveType.Sphere => o.AddComponent<SphereCollider>(),
-            PrimitiveType.Capsule or PrimitiveType.Cylinder => o.AddComponent<CapsuleCollider>(),
-            PrimitiveType.Plane => o.AddComponent<BoxCollider>(),
-            PrimitiveType.Quad => o.AddComponent<BoxCollider>(),
-            _ => null
-        };
-        if (collider && isTrigger)
-            collider.isTrigger = true;
+        var collider = o.AddComponent<MeshCollider>();
+        collider.convex = type is not PrimitiveType.Plane and not PrimitiveType.Quad;
+        collider.isTrigger = isTrigger;
         return collider;
     }
 
     public static bool IsTrigger(this PrimitiveObject.ColliderCreationMode colliderMode) => colliderMode is PrimitiveObject.ColliderCreationMode.Trigger or PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger;
 
     public static bool HasAttribute(this slocHeader header, slocAttributes attribute) => (header.Attributes & attribute) == attribute;
+
+    public static void AddTriggerAction(this PrimitiveObjectToy toy, BaseTriggerActionData data)
+    {
+        if (!ActionManager.TryGetHandler(data.ActionType, out var handler))
+            throw new ArgumentException("The required action handler could not be found based on the provided data. To use a custom handler, specify the handler yourself.", nameof(data));
+        toy.AddTriggerAction(data, handler);
+    }
+
+    public static void AddTriggerAction(this PrimitiveObjectToy toy, BaseTriggerActionData data, ITriggerActionHandler handler)
+    {
+        var listener = toy.GetOrAddComponent<TriggerListener>();
+        AddActionDataPairToList(data, handler, listener.OnEnter, listener.OnStay, listener.OnExit);
+    }
 
 }
