@@ -52,6 +52,7 @@ public static partial class API
             o.AddProperCollider(primitiveType, colliderMode.IsTrigger());
         AddActionHandlers(o, primitive);
         toy.PrimitiveType = primitiveType;
+        toy.MovementSmoothing = primitive.MovementSmoothing;
         toy.SetAbsoluteTransformFrom(parent);
         toy.SetLocalTransform(transform);
         toy.Scale = AdminToyPatch.GetScale(transform.Scale, sloc.HasColliderOnClient);
