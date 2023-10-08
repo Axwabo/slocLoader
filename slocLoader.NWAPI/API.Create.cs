@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using slocLoader.ObjectCreation;
 using slocLoader.Objects;
 using slocLoader.TriggerActions;
 using slocLoader.TriggerActions.Data;
@@ -122,11 +123,42 @@ public static partial class API
 
     private static readonly Dictionary<GameObject, List<SerializableTeleportToSpawnedObjectData>> TpToSpawnedCache = new();
 
-    public static GameObject CreateObjects(IEnumerable<slocGameObject> objects, Vector3 position, Quaternion rotation = default) =>
-        CreateObjects(objects, out _, position, rotation);
+    #region Deprecated methods
 
+    [Obsolete("Use CreateObjects(ObjectSource, Vector3, Quaternion) instead")]
+    public static GameObject CreateObjects(IEnumerable<slocGameObject> objects, Vector3 position, Quaternion rotation = default)
+        => CreateObjects(objects, out _, position, rotation);
+
+    [Obsolete("Use CreateObjects(ObjectSource, out int, Vector3, Quaternion) instead")]
     public static GameObject CreateObjects(IEnumerable<slocGameObject> objects, out int createdAmount, Vector3 position, Quaternion rotation = default)
+        => CreateObjects(ObjectsSource.From(objects), new CreateOptions
+        {
+            Position = position,
+            Rotation = rotation
+        }, out createdAmount);
+
+    [Obsolete("Use CreateObjects(ObjectSource, out int, Vector3, Quaternion) instead")]
+    public static GameObject CreateObjectsFromStream(Stream objects, out int createdAmount, Vector3 position, Quaternion rotation = default)
+        => CreateObjects(objects, new CreateOptions
+        {
+            Position = position,
+            Rotation = rotation
+        }, out createdAmount);
+
+    [Obsolete("Use CreateObjects(ObjectSource, out int, Vector3, Quaternion) instead")]
+    public static GameObject CreateObjectsFromFile(string path, out int createdAmount, Vector3 position, Quaternion rotation = default)
+        => CreateObjects(path, new CreateOptions
+        {
+            Position = position,
+            Rotation = rotation
+        }, out createdAmount);
+
+    #endregion
+
+    public static GameObject CreateObjects(ObjectsSource source, CreateOptions options, out int createdAmount)
     {
+        if (source.Objects == null)
+            throw new ArgumentException("Source is null.", nameof(source));
         CreatedInstances.Clear();
         TpToSpawnedCache.Clear();
         try
@@ -135,14 +167,14 @@ public static partial class API
             {
                 transform =
                 {
-                    position = position,
-                    rotation = rotation,
+                    position = options.Position,
+                    rotation = options.Rotation,
                 }
             };
             go.AddComponent<NetworkIdentity>();
             go.AddComponent<slocObjectData>();
             createdAmount = 0;
-            foreach (var o in objects)
+            foreach (var o in source)
             {
                 var gameObject = o.CreateObject(CreatedInstances.GetOrReturn(o.ParentId, go, o.HasParent));
                 if (gameObject == null)
@@ -161,6 +193,19 @@ public static partial class API
         }
     }
 
+    public static GameObject CreateObjects(ObjectsSource source, Vector3 position, Quaternion rotation = default)
+        => CreateObjects(source, out _, position, rotation);
+
+    public static GameObject CreateObjects(ObjectsSource source, out int createdAmount, Vector3 position, Quaternion rotation = default)
+        => CreateObjects(source, new CreateOptions
+        {
+            Position = position,
+            Rotation = rotation
+        }, out createdAmount);
+
+    public static GameObject CreateObjects(ObjectsSource source, CreateOptions options)
+        => CreateObjects(source, options, out _);
+
     private static void PostProcessSpecialTriggerActions()
     {
         if (!ActionManager.TryGetHandler(TriggerActionType.TeleportToSpawnedObject, out var handler))
@@ -176,11 +221,5 @@ public static partial class API
                 }, handler);
         }
     }
-
-    public static GameObject CreateObjectsFromStream(Stream objects, out int spawnedAmount, Vector3 position, Quaternion rotation = default) =>
-        CreateObjects(ReadObjects(objects), out spawnedAmount, position, rotation);
-
-    public static GameObject CreateObjectsFromFile(string path, out int spawnedAmount, Vector3 position, Quaternion rotation = default) =>
-        CreateObjects(ReadObjectsFromFile(path), out spawnedAmount, position, rotation);
 
 }

@@ -1,11 +1,16 @@
-﻿using slocLoader.Objects;
+﻿using System.Collections;
+using slocLoader.Objects;
 
 namespace slocLoader.ObjectCreation;
 
-public readonly struct ObjectsSource
+public readonly struct ObjectsSource : IEnumerable<slocGameObject>
 {
 
     public readonly IEnumerable<slocGameObject> Objects;
+
+    public IEnumerator<slocGameObject> GetEnumerator() => Objects.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public ObjectsSource(IEnumerable<slocGameObject> objects) => Objects = objects;
 
