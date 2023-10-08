@@ -97,7 +97,11 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="AdminToyPatch.cs"/>
+        <Compile Include="API.BinaryExtensions.cs"/>
+        <Compile Include="API.Create.cs"/>
         <Compile Include="API.cs"/>
+        <Compile Include="API.Read.cs"/>
+        <Compile Include="API.Spawn.cs"/>
         <Compile Include="AutoObjectLoader\AutomaticObjectLoader.cs"/>
         <Compile Include="AutoObjectLoader\IAssetLocation.cs"/>
         <Compile Include="AutoObjectLoader\PositionByRoomName.cs"/>
