@@ -160,8 +160,8 @@ public static partial class API
     public static GameObject CreateObjects(ObjectsSource source, CreateOptions options, out int createdAmount)
         => CreateOrSpawn(source, options, false, CreateObject, out createdAmount);
 
-    public static GameObject CreateObjects(ObjectsSource source, Vector3 position, Quaternion rotation = default)
-        => CreateObjects(source, out _, position, rotation);
+    public static GameObject CreateObjects(ObjectsSource source, CreateOptions options)
+        => CreateObjects(source, options, out _);
 
     public static GameObject CreateObjects(ObjectsSource source, out int createdAmount, Vector3 position, Quaternion rotation = default)
         => CreateObjects(source, new CreateOptions
@@ -170,8 +170,8 @@ public static partial class API
             Rotation = rotation
         }, out createdAmount);
 
-    public static GameObject CreateObjects(ObjectsSource source, CreateOptions options)
-        => CreateObjects(source, options, out _);
+    public static GameObject CreateObjects(ObjectsSource source, Vector3 position, Quaternion rotation = default)
+        => CreateObjects(source, out _, position, rotation);
 
     private static void PostProcessSpecialTriggerActions()
     {

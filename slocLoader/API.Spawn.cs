@@ -49,8 +49,8 @@ public static partial class API
     public static GameObject SpawnObjects(ObjectsSource source, CreateOptions options, out int spawnedAmount)
         => CreateOrSpawn(source, options, true, SpawnObject, out spawnedAmount);
 
-    public static GameObject SpawnObjects(ObjectsSource source, Vector3 position, Quaternion rotation = default)
-        => SpawnObjects(source, out _, position, rotation);
+    public static GameObject SpawnObjects(ObjectsSource source, CreateOptions options)
+        => SpawnObjects(source, options, out _);
 
     public static GameObject SpawnObjects(ObjectsSource source, out int spawnedAmount, Vector3 position, Quaternion rotation = default)
         => SpawnObjects(source, new CreateOptions
@@ -59,7 +59,7 @@ public static partial class API
             Rotation = rotation
         }, out spawnedAmount);
 
-    public static GameObject SpawnObjects(ObjectsSource source, CreateOptions options)
-        => SpawnObjects(source, options, out _);
+    public static GameObject SpawnObjects(ObjectsSource source, Vector3 position, Quaternion rotation = default)
+        => SpawnObjects(source, out _, position, rotation);
 
 }
