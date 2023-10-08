@@ -120,6 +120,8 @@
         <Compile Include="Objects\PrimitiveObject.cs"/>
         <Compile Include="Objects\slocGameObject.cs"/>
         <Compile Include="Objects\slocTransform.cs"/>
+        <Compile Include="ObjectCreation\ObjectsSource.cs"/>
+        <Compile Include="ObjectCreation\CreateOptions.cs"/>
         <Compile Include="Readers\IObjectReader.cs"/>
         <Compile Include="Readers\slocHeader.cs"/>
         <Compile Include="Readers\Ver1Reader.cs"/>
