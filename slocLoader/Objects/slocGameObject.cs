@@ -17,6 +17,8 @@ public abstract class slocGameObject
 
     public slocTransform Transform = new();
 
+    public byte MovementSmoothing;
+
     public virtual bool IsValid => Type != ObjectType.None;
 
     public void WriteTo(BinaryWriter writer, slocHeader header)

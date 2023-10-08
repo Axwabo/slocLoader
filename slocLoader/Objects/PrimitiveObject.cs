@@ -24,8 +24,6 @@ public sealed class PrimitiveObject : slocGameObject
 
     public BaseTriggerActionData[] TriggerActions = Array.Empty<BaseTriggerActionData>();
 
-    public byte MovementSmoothing;
-
     public ColliderCreationMode GetNonUnsetColliderMode() => ColliderMode is ColliderCreationMode.Unset ? ColliderCreationMode.Both : ColliderMode;
 
     protected override void WriteData(BinaryWriter writer, slocHeader header)

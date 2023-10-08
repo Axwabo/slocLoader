@@ -167,13 +167,11 @@ public static partial class API
             createdAmount = 0;
             foreach (var o in source)
             {
-                var primitive = o as PrimitiveObject;
-                var previousSmoothing = primitive?.MovementSmoothing ?? 0;
-                if (primitive != null && options.MovementSmoothing != null)
-                    primitive.MovementSmoothing = options.MovementSmoothing.Value;
+                var previousSmoothing = o.MovementSmoothing;
+                if (options.MovementSmoothing != null)
+                    o.MovementSmoothing = options.MovementSmoothing.Value;
                 var gameObject = createMethod(o, CreatedInstances.GetOrReturn(o.ParentId, go, o.HasParent), true);
-                if (primitive != null)
-                    primitive.MovementSmoothing = previousSmoothing;
+                o.MovementSmoothing = previousSmoothing;
                 if (gameObject == null)
                     continue;
                 createdAmount++;
