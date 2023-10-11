@@ -24,17 +24,13 @@ public static partial class API
         _ => null
     };
 
-    public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, bool throwOnError = true)
+    public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, bool throwOnError = true) => obj switch
     {
-        var transform = obj.Transform;
-        return obj switch
-        {
-            PrimitiveObject primitive => CreatePrimitive(parent, primitive, transform),
-            LightObject light => CreateLight(parent, transform, light),
-            EmptyObject => CreateEmpty(parent, transform),
-            _ => throwOnError ? throw new IndexOutOfRangeException($"Unknown object type {obj.Type}") : null
-        };
-    }
+        PrimitiveObject primitive => CreatePrimitive(parent, primitive, obj.Transform),
+        LightObject light => CreateLight(parent, obj.Transform, light),
+        EmptyObject => CreateEmpty(parent, obj.Transform),
+        _ => throwOnError ? throw new IndexOutOfRangeException($"Unknown object type {obj.Type}") : null
+    };
 
     private static GameObject CreatePrimitive(GameObject parent, PrimitiveObject primitive, slocTransform transform)
     {
@@ -49,8 +45,10 @@ public static partial class API
         if (colliderMode is PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger or PrimitiveObject.ColliderCreationMode.ServerOnlyNonSpawned or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned)
             sloc.ShouldBeSpawnedOnClient = false;
         if (colliderMode is not (PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned))
-            o.AddProperCollider(primitiveType, colliderMode.IsTrigger());
-        AddActionHandlers(o, primitive);
+            sloc.IsTrigger = colliderMode.IsTrigger();
+        else
+            sloc.HasColliderOnServer = false;
+        AddActionHandlers(o, primitive.TriggerActions);
         toy.PrimitiveType = primitiveType;
         toy.MovementSmoothing = primitive.MovementSmoothing;
         toy.SetAbsoluteTransformFrom(parent);
@@ -84,14 +82,14 @@ public static partial class API
         return emptyObject;
     }
 
-    private static void AddActionHandlers(GameObject o, PrimitiveObject primitive)
+    private static void AddActionHandlers(GameObject o, BaseTriggerActionData[] data)
     {
-        if (primitive.TriggerActions is not {Length: not 0})
+        if (data is not {Length: not 0})
             return;
         var enter = new List<HandlerDataPair>();
         var stay = new List<HandlerDataPair>();
         var exit = new List<HandlerDataPair>();
-        foreach (var action in primitive.TriggerActions)
+        foreach (var action in data)
         {
             if (action is SerializableTeleportToSpawnedObjectData tp)
                 TpToSpawnedCache.GetOrAdd(o, () => new List<SerializableTeleportToSpawnedObjectData>()).Add(tp);
@@ -101,7 +99,7 @@ public static partial class API
 
         if (enter.Count == 0 && stay.Count == 0 && exit.Count == 0)
             return;
-        var component = o.AddComponent<TriggerListener>();
+        var component = o.GetOrAddComponent<TriggerListener>();
         component.OnEnter.AddRange(enter);
         component.OnStay.AddRange(stay);
         component.OnExit.AddRange(exit);

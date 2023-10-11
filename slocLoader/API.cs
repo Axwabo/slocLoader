@@ -119,7 +119,7 @@ public static partial class API
 
     public static Collider AddProperCollider(this GameObject o, PrimitiveType type, bool isTrigger)
     {
-        var collider = o.AddComponent<MeshCollider>();
+        var collider = o.GetOrAddComponent<MeshCollider>();
         collider.convex = type is not PrimitiveType.Plane and not PrimitiveType.Quad;
         collider.isTrigger = isTrigger;
         return collider;

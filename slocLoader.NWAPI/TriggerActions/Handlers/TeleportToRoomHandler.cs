@@ -10,7 +10,7 @@ namespace slocLoader.TriggerActions.Handlers;
 public sealed class TeleportToRoomHandler : UniversalTriggerActionHandler<TeleportToRoomData>
 {
 
-    public override TriggerActionType ActionType => TriggerActionType.TeleportToPosition;
+    public override TriggerActionType ActionType => TriggerActionType.TeleportToRoom;
 
     protected override bool ValidateData(GameObject interactingObject, TeleportToRoomData data, TriggerListener listener) =>
         !string.IsNullOrWhiteSpace(data.Room) && !TeleporterImmunityStorage.IsImmune(interactingObject, listener);

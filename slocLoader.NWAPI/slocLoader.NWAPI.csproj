@@ -114,6 +114,7 @@
         <Compile Include="Readers\Ver2Reader.cs"/>
         <Compile Include="Readers\Ver3Reader.cs"/>
         <Compile Include="Readers\Ver4Reader.cs"/>
+        <Compile Include="SetPrimitiveTypePatch.cs"/>
         <Compile Include="slocAttributes.cs"/>
         <Compile Include="slocConfig.cs"/>
         <Compile Include="slocObjectData.cs"/>
@@ -151,6 +152,7 @@
         <Compile Include="TriggerActions\Readers\Ver4ActionDataReader.cs"/>
         <Compile Include="TriggerActions\TeleporterImmunityStorage.cs"/>
         <Compile Include="TriggerActions\TriggerListener.cs"/>
+        <Compile Include="TriggerActions\TriggerListenerInvoker.cs"/>
     </ItemGroup>
     <ItemGroup>
         <None Include="App.config"/>

@@ -10,13 +10,13 @@ public sealed class TriggerListener : MonoBehaviour
     public readonly List<HandlerDataPair> OnStay = new();
     public readonly List<HandlerDataPair> OnExit = new();
 
-    private void OnTriggerEnter(Collider other) => ExecuteAll(other, OnEnter);
+    public void InvokeOnEnter(Collider other) => ExecuteAll(other, OnEnter);
 
-    private void OnTriggerStay(Collider other) => ExecuteAll(other, OnStay);
+    public void InvokeOnStay(Collider other) => ExecuteAll(other, OnStay);
 
-    private void OnTriggerExit(Collider other) => ExecuteAll(other, OnExit);
+    public void InvokeOnExit(Collider other) => ExecuteAll(other, OnExit);
 
-    private void ExecuteAll(Collider other, List<HandlerDataPair> list)
+    private void ExecuteAll(Component other, List<HandlerDataPair> list)
     {
         var go = other.gameObject;
         var root = go.transform.root;

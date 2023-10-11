@@ -15,6 +15,10 @@ public sealed class slocObjectData : MonoBehaviour
 
     public bool ShouldBeSpawnedOnClient { get; set; } = true;
 
+    public bool HasColliderOnServer { get; set; } = true;
+
+    public bool IsTrigger { get; set; }
+
     private void Awake() => networkIdentity = GetComponent<NetworkIdentity>();
 
 }
