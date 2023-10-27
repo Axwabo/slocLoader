@@ -60,8 +60,8 @@
         <Reference Include="NorthwoodLib">
             <HintPath>$(NW-ASSEMBLIES)\NorthwoodLib.dll</HintPath>
         </Reference>
-        <Reference Include="PluginAPI, Version=13.1.1.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\Northwood.PluginAPI.13.1.1\lib\net48\PluginAPI.dll</HintPath>
+        <Reference Include="PluginAPI">
+            <HintPath>$(NW-ASSEMBLIES)\PluginAPI.dll</HintPath>
         </Reference>
         <Reference Include="Pooling">
             <HintPath>$(NW-ASSEMBLIES)\Pooling.dll</HintPath>
