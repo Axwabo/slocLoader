@@ -1,4 +1,5 @@
 ﻿using InventorySystem.Items.Pickups;
+using PlayerRoles.Ragdolls;
 using slocLoader.TriggerActions.Handlers;
 
 namespace slocLoader.TriggerActions;

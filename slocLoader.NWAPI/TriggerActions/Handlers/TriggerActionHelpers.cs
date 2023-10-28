@@ -2,6 +2,7 @@
 using InventorySystem.Items.ThrowableProjectiles;
 using Mirror;
 using PlayerRoles.FirstPersonControl;
+using PlayerRoles.Ragdolls;
 using slocLoader.TriggerActions.Enums;
 
 namespace slocLoader.TriggerActions.Handlers;

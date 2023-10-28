@@ -1,5 +1,6 @@
 ﻿using AdminToys;
 using InventorySystem.Items.Pickups;
+using PlayerRoles.Ragdolls;
 using slocLoader.TriggerActions.Data;
 using slocLoader.TriggerActions.Enums;
 using slocLoader.TriggerActions.Handlers.Abstract;

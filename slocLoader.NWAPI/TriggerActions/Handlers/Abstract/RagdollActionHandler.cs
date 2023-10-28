@@ -1,4 +1,5 @@
-﻿using slocLoader.TriggerActions.Data;
+﻿using PlayerRoles.Ragdolls;
+using slocLoader.TriggerActions.Data;
 using slocLoader.TriggerActions.Enums;
 
 namespace slocLoader.TriggerActions.Handlers.Abstract;
