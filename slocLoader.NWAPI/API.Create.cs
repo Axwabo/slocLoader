@@ -18,21 +18,58 @@ public static partial class API
             or ObjectType.Cylinder
             or ObjectType.Plane
             or ObjectType.Capsule
-            or ObjectType.Quad => new PrimitiveObject(0, type),
-        ObjectType.Light => new LightObject(0),
-        ObjectType.Empty => new EmptyObject(0),
+            or ObjectType.Quad => new PrimitiveObject(type),
+        ObjectType.Light => new LightObject(),
+        ObjectType.Empty => new EmptyObject(),
+        ObjectType.Structure => new StructureObject(StructureObject.StructureType.Adrenaline),
         _ => null
     };
 
     public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, bool throwOnError = true) => obj switch
     {
-        PrimitiveObject primitive => CreatePrimitive(parent, primitive, obj.Transform),
-        LightObject light => CreateLight(parent, obj.Transform, light),
+        StructureObject structure => CreateStructure(parent, structure),
+        PrimitiveObject primitive => CreatePrimitive(parent, primitive),
+        LightObject light => CreateLight(parent, light),
         EmptyObject => CreateEmpty(parent, obj.Transform),
         _ => throwOnError ? throw new IndexOutOfRangeException($"Unknown object type {obj.Type}") : null
     };
 
-    private static GameObject CreatePrimitive(GameObject parent, PrimitiveObject primitive, slocTransform transform)
+    public static readonly Dictionary<StructureObject.StructureType, uint> StructurePrefabIds = new()
+    {
+        {StructureObject.StructureType.Adrenaline, 2525847434},
+        {StructureObject.StructureType.BinaryTarget, 3613149668},
+        {StructureObject.StructureType.DboyTarget, 858699872},
+        {StructureObject.StructureType.EzBreakableDoor, 1883254029},
+        {StructureObject.StructureType.Generator, 2724603877},
+        {StructureObject.StructureType.HczBreakableDoor, 2295511789},
+        {StructureObject.StructureType.LargeGunLocker, 2830750618},
+        {StructureObject.StructureType.LczBreakableDoor, 3038351124},
+        {StructureObject.StructureType.Medkit, 4040822781},
+        {StructureObject.StructureType.MiscellaneousLocker, 1964083310},
+        {StructureObject.StructureType.RifleRack, 3352879624},
+        {StructureObject.StructureType.Scp018Pedestal, 2286635216},
+        {StructureObject.StructureType.Scp207Pedestal, 664776131},
+        {StructureObject.StructureType.Scp244Pedestal, 3724306703},
+        {StructureObject.StructureType.Scp268Pedestal, 3849573771},
+        {StructureObject.StructureType.Scp500Pedestal, 373821065},
+        {StructureObject.StructureType.Scp1576Pedestal, 3372339835},
+        {StructureObject.StructureType.Scp1853Pedestal, 3962534659},
+        {StructureObject.StructureType.Scp2176Pedestal, 3578915554},
+        {StructureObject.StructureType.SportTarget, 1704345398},
+        {StructureObject.StructureType.Workstation, 1783091262}
+    };
+
+    private static GameObject CreateStructure(GameObject parent, StructureObject structure)
+    {
+        if (!StructurePrefabIds.TryGetValue(structure.Structure, out var id) || !NetworkClient.prefabs.TryGetValue(id, out var prefab))
+            return null;
+        var gameObject = Object.Instantiate(prefab);
+        gameObject.SetAbsoluteTransformFrom(parent);
+        gameObject.SetLocalTransform(structure.Transform);
+        return gameObject;
+    }
+
+    private static GameObject CreatePrimitive(GameObject parent, PrimitiveObject primitive)
     {
         if (PrimitivePrefab == null)
             throw new InvalidOperationException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
@@ -52,24 +89,24 @@ public static partial class API
         toy.PrimitiveType = primitiveType;
         toy.MovementSmoothing = primitive.MovementSmoothing;
         toy.SetAbsoluteTransformFrom(parent);
-        toy.SetLocalTransform(transform);
-        toy.Scale = AdminToyPatch.GetScale(transform.Scale, sloc.HasColliderOnClient);
+        toy.SetLocalTransform(primitive.Transform);
+        toy.Scale = AdminToyPatch.GetScale(primitive.Transform.Scale, sloc.HasColliderOnClient);
         toy.MaterialColor = primitive.MaterialColor;
         return o;
     }
 
-    private static GameObject CreateLight(GameObject parent, slocTransform transform, LightObject light)
+    private static GameObject CreateLight(GameObject parent, LightObject light)
     {
         if (LightPrefab == null)
             throw new InvalidOperationException("Light prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
         var toy = Object.Instantiate(LightPrefab);
         toy.SetAbsoluteTransformFrom(parent);
-        toy.SetLocalTransform(transform);
+        toy.SetLocalTransform(light.Transform);
         toy.LightColor = light.LightColor;
         toy.LightShadows = light.Shadows;
         toy.LightRange = light.Range;
         toy.LightIntensity = light.Intensity;
-        toy.Scale = transform.Scale;
+        toy.Scale = light.Transform.Scale;
         toy.MovementSmoothing = light.MovementSmoothing;
         return toy.gameObject;
     }

@@ -37,7 +37,7 @@ public static partial class API
         if (o == null)
         {
             if (throwOnError)
-                throw new ArgumentOutOfRangeException(nameof(obj.Type), obj.Type, "Unknown object type");
+                throw new ArgumentOutOfRangeException(nameof(obj), $"Failed to create object of type {obj.Type}");
             return null;
         }
 
