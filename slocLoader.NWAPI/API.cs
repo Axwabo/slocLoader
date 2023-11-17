@@ -13,7 +13,7 @@ namespace slocLoader;
 public static partial class API
 {
 
-    public const ushort slocVersion = 4;
+    public const ushort slocVersion = 5;
 
     public const float ColorDivisionMultiplier = 1f / 255f;
 

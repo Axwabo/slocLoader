@@ -122,12 +122,14 @@
         <Compile Include="Objects\slocTransform.cs"/>
         <Compile Include="ObjectCreation\ObjectsSource.cs"/>
         <Compile Include="ObjectCreation\CreateOptions.cs"/>
+        <Compile Include="Objects\StructureObject.cs"/>
         <Compile Include="Readers\IObjectReader.cs"/>
         <Compile Include="Readers\slocHeader.cs"/>
         <Compile Include="Readers\Ver1Reader.cs"/>
         <Compile Include="Readers\Ver2Reader.cs"/>
         <Compile Include="Readers\Ver3Reader.cs"/>
         <Compile Include="Readers\Ver4Reader.cs"/>
+        <Compile Include="Readers\Ver5Reader.cs"/>
         <Compile Include="SetPrimitiveTypePatch.cs"/>
         <Compile Include="slocAttributes.cs"/>
         <Compile Include="slocConfig.cs"/>
