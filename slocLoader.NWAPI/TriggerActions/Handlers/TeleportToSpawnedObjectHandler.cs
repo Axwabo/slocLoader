@@ -12,10 +12,6 @@ public sealed class TeleportToSpawnedObjectHandler : TeleportHandlerBase<Runtime
     protected override bool ValidateData(GameObject interactingObject, RuntimeTeleportToSpawnedObjectData data, TriggerListener listener)
         => data.Target != null && !TeleporterImmunityStorage.IsImmune(interactingObject, listener);
 
-    protected override bool TryCalculateTransform(RuntimeTeleportToSpawnedObjectData data, out Vector3 position, out Quaternion rotation)
-    {
-        data.ToWorldSpace(data.Target.transform, out position, out rotation);
-        return true;
-    }
+    protected override Transform GetReferenceTransform(Component component, RuntimeTeleportToSpawnedObjectData data) => data.Target.transform;
 
 }

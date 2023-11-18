@@ -13,7 +13,7 @@ public abstract class TeleportHandlerBase<TData> : UniversalTriggerActionHandler
 
     protected override void HandlePlayer(ReferenceHub player, TData data, TriggerListener listener)
     {
-        if (TryCalculateTransform(data, out var pos, out var rotation))
+        if (TryCalculateTransform(player, data, out var pos, out var rotation))
             player.OverridePosition(pos, data.Options, rotation.y);
     }
 
@@ -27,15 +27,34 @@ public abstract class TeleportHandlerBase<TData> : UniversalTriggerActionHandler
 
     protected override void HandleRagdoll(BasicRagdoll ragdoll, TData data, TriggerListener listener)
     {
-        if (TryCalculateTransform(data, out var pos, out var rotation))
+        if (TryCalculateTransform(ragdoll, data, out var pos, out var rotation))
             TriggerActionHelpers.SetRagdollPositionAndRotation(ragdoll, pos, rotation);
     }
 
-    protected abstract bool TryCalculateTransform(TData data, out Vector3 position, out Quaternion rotation);
+    protected abstract Transform GetReferenceTransform(Component component, TData data);
+
+    protected bool TryCalculateTransform(Component component, TData data, out Vector3 position, out Quaternion rotation)
+        => TryConvertToWorldSpace(GetReferenceTransform(component, data), data, out position, out rotation);
+
+    protected bool TryConvertToWorldSpace(Transform reference, TData data, out Vector3 position, out Quaternion rotation)
+    {
+        if (reference == null)
+        {
+            position = Vector3.zero;
+            rotation = Quaternion.identity;
+            return false;
+        }
+
+        data.ToWorldSpace(reference, out position, out var y);
+        var euler = reference.transform.rotation.eulerAngles;
+        euler.y = y;
+        rotation = Quaternion.Euler(euler);
+        return true;
+    }
 
     protected void HandleComponent(Component component, TData data)
     {
-        if (!TryCalculateTransform(data, out var pos, out var rotation))
+        if (!TryCalculateTransform(component, data, out var pos, out var rotation))
             return;
         var t = component.transform;
         t.position = pos;

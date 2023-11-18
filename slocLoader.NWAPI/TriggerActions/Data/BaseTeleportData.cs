@@ -31,14 +31,12 @@ public abstract class BaseTeleportData : BaseTriggerActionData
             ? reference.position + Position
             : reference.TransformPoint(Position);
 
-    public void ToWorldSpace(Transform reference, out Vector3 position, out Quaternion rotation)
+    public void ToWorldSpace(Transform reference, out Vector3 position, out float rotation)
     {
         position = ToWorldSpacePosition(reference);
-        rotation = Quaternion.Euler(0,
-            Options.HasFlag(TeleportOptions.UseDeltaPlayerRotation)
-                ? RotationY
-                : reference.rotation.eulerAngles.y + RotationY,
-            0);
+        rotation = Options.HasFlag(TeleportOptions.WorldSpaceTransform)
+            ? RotationY
+            : reference.rotation.eulerAngles.y + RotationY;
     }
 
 }

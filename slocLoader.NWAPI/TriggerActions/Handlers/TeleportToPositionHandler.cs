@@ -9,11 +9,6 @@ public sealed class TeleportToPositionHandler : TeleportHandlerBase<TeleportToPo
 
     public override TriggerActionType ActionType => TriggerActionType.TeleportToPosition;
 
-    protected override bool TryCalculateTransform(TeleportToPositionData data, out Vector3 position, out Quaternion rotation)
-    {
-        position = data.Position;
-        rotation = Quaternion.Euler(0, data.RotationY, 0);
-        return true;
-    }
+    protected override Transform GetReferenceTransform(Component component, TeleportToPositionData data) => component.transform;
 
 }
