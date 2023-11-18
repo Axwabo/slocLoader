@@ -46,7 +46,7 @@ public abstract class TeleportHandlerBase<TData> : UniversalTriggerActionHandler
             y = data.RotationY;
         }
 
-        var euler = component.transform.rotation.eulerAngles;
+        var euler = component.transform.eulerAngles;
         rotation = Quaternion.Euler(euler.x, data.Options.HasFlagFast(TeleportOptions.DeltaRotation) ? euler.y + data.RotationY : y, euler.z);
         return true;
     }

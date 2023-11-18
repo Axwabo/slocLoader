@@ -33,6 +33,7 @@ public static class TriggerActionHelpers
         {
             case PickupStandardPhysics physics:
                 physics.Rb.velocity = Vector3.zero;
+                physics.Rb.angularVelocity = Vector3.zero;
                 break;
             case Scp018Physics scp018:
                 scp018._lastVelocity = Vector3.zero;
@@ -61,10 +62,10 @@ public static class TriggerActionHelpers
             return;
         if (options.HasFlagFast(TeleportOptions.ResetFallDamage))
             module.Motor.ResetFallDamageCooldown();
-        var finalRotation = options.HasFlagFast(TeleportOptions.DeltaRotation)
+        var delta = options.HasFlagFast(TeleportOptions.DeltaRotation)
             ? rotation
             : rotation - module.MouseLook.CurrentHorizontal;
-        module.ServerOverridePosition(position, new Vector3(0, finalRotation, 0));
+        module.ServerOverridePosition(position, new Vector3(0, delta, 0));
     }
 
 }
