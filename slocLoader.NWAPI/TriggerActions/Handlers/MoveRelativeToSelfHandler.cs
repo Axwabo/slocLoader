@@ -9,7 +9,6 @@ public sealed class MoveRelativeToSelfHandler : TeleportHandlerBase<MoveRelative
 
     public override TriggerActionType ActionType => TriggerActionType.MoveRelativeToSelf;
 
-    protected override Transform GetReferenceTransform(Component component, MoveRelativeToSelfData data)
-        => component is ReferenceHub hub ? hub.PlayerCameraReference : component.transform;
+    protected override Transform GetReferenceTransform(Component component, MoveRelativeToSelfData data) => component.transform;
 
 }
