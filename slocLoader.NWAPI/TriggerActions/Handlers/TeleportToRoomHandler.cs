@@ -39,7 +39,7 @@ public sealed class TeleportToRoomHandler : UniversalTriggerActionHandler<Telepo
     private static bool TryCalculatePosition(TeleportToRoomData data, out Vector3 vector)
     {
         var point = new MapPointByName(data.Room, data.Position);
-        if (!data.Options.HasFlagFast(TeleportOptions.WorldSpaceTransform))
+        if (!data.Options.HasFlagFast(TeleportOptions.WorldSpacePosition))
             return point.TryGetWorldPose(out vector, out _);
         var transform = point.RoomTransform();
         if (!transform)

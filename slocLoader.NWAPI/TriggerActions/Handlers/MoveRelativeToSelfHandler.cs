@@ -19,7 +19,7 @@ public sealed class MoveRelativeToSelfHandler : UniversalTriggerActionHandler<Mo
     {
         if (!player.TryGetMovementModule(out var module))
             return;
-        var offset = !data.Options.HasFlagFast(TeleportOptions.WorldSpaceTransform) ? player.PlayerCameraReference.rotation * data.Position : data.Position;
+        var offset = !data.Options.HasFlagFast(TeleportOptions.WorldSpacePosition) ? player.PlayerCameraReference.rotation * data.Position : data.Position;
         if (data.Options.HasFlagFast(TeleportOptions.ResetFallDamage))
             module.Motor.ResetFallDamageCooldown();
         module.ServerOverridePosition(module.Position + offset, Vector3.zero);
