@@ -15,7 +15,7 @@ public abstract class TeleportHandlerBase<TData> : UniversalTriggerActionHandler
     protected override void HandlePlayer(ReferenceHub player, TData data, TriggerListener listener)
     {
         if (TryCalculateTransform(player, data, out var pos, out var rotation))
-            player.OverridePosition(pos, data.Options, data.Options.HasFlagFast(TeleportOptions.UseDeltaPlayerRotation) ? data.RotationY : rotation.y);
+            player.OverridePosition(pos, data.Options & ~TeleportOptions.DeltaRotation, rotation.eulerAngles.y);
     }
 
     protected override void HandleItem(ItemPickupBase pickup, TData data, TriggerListener listener)
@@ -35,21 +35,19 @@ public abstract class TeleportHandlerBase<TData> : UniversalTriggerActionHandler
     protected abstract Transform GetReferenceTransform(Component component, TData data);
 
     protected bool TryCalculateTransform(Component component, TData data, out Vector3 position, out Quaternion rotation)
-        => TryConvertToWorldSpace(GetReferenceTransform(component, data), data, out position, out rotation);
-
-    protected bool TryConvertToWorldSpace(Transform reference, TData data, out Vector3 position, out Quaternion rotation)
     {
-        if (reference == null)
+        Transform reference = GetReferenceTransform(component, data);
+        float y;
+        if (reference)
+            data.ToWorldSpace(reference, out position, out y);
+        else
         {
-            position = Vector3.zero;
-            rotation = Quaternion.identity;
-            return false;
+            position = data.Position;
+            y = data.RotationY;
         }
 
-        data.ToWorldSpace(reference, out position, out var y);
-        var euler = reference.transform.rotation.eulerAngles;
-        euler.y = y;
-        rotation = Quaternion.Euler(euler);
+        var euler = component.transform.rotation.eulerAngles;
+        rotation = Quaternion.Euler(euler.x, data.Options.HasFlagFast(TeleportOptions.DeltaRotation) ? euler.y + data.RotationY : y, euler.z);
         return true;
     }
 

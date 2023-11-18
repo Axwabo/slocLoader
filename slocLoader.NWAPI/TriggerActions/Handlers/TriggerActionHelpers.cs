@@ -53,7 +53,7 @@ public static class TriggerActionHelpers
     }
 
     public static void OverridePosition(this ReferenceHub hub, Vector3 position, TeleportOptions options = TeleportOptions.ResetFallDamage)
-        => hub.OverridePosition(position, options | TeleportOptions.UseDeltaPlayerRotation, 0);
+        => hub.OverridePosition(position, options | TeleportOptions.DeltaRotation, 0);
 
     public static void OverridePosition(this ReferenceHub hub, Vector3 position, TeleportOptions options, float rotation)
     {
@@ -61,7 +61,7 @@ public static class TriggerActionHelpers
             return;
         if (options.HasFlagFast(TeleportOptions.ResetFallDamage))
             module.Motor.ResetFallDamageCooldown();
-        var finalRotation = options.HasFlagFast(TeleportOptions.UseDeltaPlayerRotation)
+        var finalRotation = options.HasFlagFast(TeleportOptions.DeltaRotation)
             ? rotation
             : module.MouseLook.CurrentHorizontal - rotation;
         module.ServerOverridePosition(position, new Vector3(0, finalRotation, 0));

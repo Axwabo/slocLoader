@@ -9,6 +9,6 @@ public sealed class TeleportToPositionHandler : TeleportHandlerBase<TeleportToPo
 
     public override TriggerActionType ActionType => TriggerActionType.TeleportToPosition;
 
-    protected override Transform GetReferenceTransform(Component component, TeleportToPositionData data) => component.transform;
+    protected override Transform GetReferenceTransform(Component component, TeleportToPositionData data) => null;
 
 }
