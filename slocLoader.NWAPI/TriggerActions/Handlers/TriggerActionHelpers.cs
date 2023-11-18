@@ -63,7 +63,7 @@ public static class TriggerActionHelpers
             module.Motor.ResetFallDamageCooldown();
         var finalRotation = options.HasFlagFast(TeleportOptions.DeltaRotation)
             ? rotation
-            : module.MouseLook.CurrentHorizontal - rotation;
+            : rotation - module.MouseLook.CurrentHorizontal;
         module.ServerOverridePosition(position, new Vector3(0, finalRotation, 0));
     }
 

@@ -15,7 +15,7 @@ public abstract class TeleportHandlerBase<TData> : UniversalTriggerActionHandler
     protected override void HandlePlayer(ReferenceHub player, TData data, TriggerListener listener)
     {
         if (TryCalculateTransform(player, data, out var pos, out var rotation))
-            player.OverridePosition(pos, data.Options & ~TeleportOptions.DeltaRotation, rotation.eulerAngles.y);
+            player.OverridePosition(pos + Vector3.up, data.Options & ~TeleportOptions.DeltaRotation, rotation.eulerAngles.y);
     }
 
     protected override void HandleItem(ItemPickupBase pickup, TData data, TriggerListener listener)
