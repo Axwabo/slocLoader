@@ -5,6 +5,8 @@ namespace slocLoader.Objects;
 public sealed class StructureObject : slocGameObject
 {
 
+    public const int RemoveDefaultLootBit = 0b1000_0000;
+
     public StructureObject(StructureType structureType) : this(0, structureType)
     {
     }
@@ -17,9 +19,12 @@ public sealed class StructureObject : slocGameObject
 
     public StructureType Structure { get; set; }
 
+    public bool RemoveDefaultLoot { get; set; }
+
     public override bool IsValid => Structure != StructureType.None;
 
-    protected override void WriteData(BinaryWriter writer, slocHeader header) => writer.Write((byte) Structure);
+    protected override void WriteData(BinaryWriter writer, slocHeader header)
+        => writer.Write((byte) ((int) Structure | (RemoveDefaultLoot ? RemoveDefaultLootBit : 0)));
 
     public enum StructureType : byte
     {

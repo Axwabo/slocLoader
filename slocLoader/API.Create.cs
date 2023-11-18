@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using MapGeneration.Distributors;
+using Mirror;
 using slocLoader.ObjectCreation;
 using slocLoader.Objects;
 using slocLoader.TriggerActions;
@@ -63,10 +64,12 @@ public static partial class API
     {
         if (!StructurePrefabIds.TryGetValue(structure.Structure, out var id) || !NetworkClient.prefabs.TryGetValue(id, out var prefab))
             return null;
-        var gameObject = Object.Instantiate(prefab);
-        gameObject.SetAbsoluteTransformFrom(parent);
-        gameObject.SetLocalTransform(structure.Transform);
-        return gameObject;
+        var o = Object.Instantiate(prefab);
+        o.SetAbsoluteTransformFrom(parent);
+        o.SetLocalTransform(structure.Transform);
+        if (structure.RemoveDefaultLoot && o.TryGetComponent(out Locker locker))
+            locker.Loot = Array.Empty<LockerLoot>();
+        return o;
     }
 
     private static GameObject CreatePrimitive(GameObject parent, PrimitiveObject primitive)

@@ -31,11 +31,12 @@ namespace slocLoader.Readers
             var instanceId = stream.ReadInt32();
             var parentId = stream.ReadInt32();
             var transform = stream.ReadTransform();
-            var structureType = (StructureObject.StructureType) stream.ReadByte();
-            return new StructureObject(instanceId, structureType)
+            var typeData = stream.ReadByte();
+            return new StructureObject(instanceId, (StructureObject.StructureType) (typeData & ~StructureObject.RemoveDefaultLootBit))
             {
                 ParentId = parentId,
-                Transform = transform
+                Transform = transform,
+                RemoveDefaultLoot = (typeData & StructureObject.RemoveDefaultLootBit) != 0
             };
         }
 
