@@ -2,6 +2,7 @@
 using InventorySystem.Items.Pickups;
 using PlayerRoles.Ragdolls;
 using slocLoader.TriggerActions.Data;
+using slocLoader.TriggerActions.Enums;
 
 namespace slocLoader.TriggerActions.Handlers.Abstract;
 
@@ -14,7 +15,7 @@ public abstract class TeleportHandlerBase<TData> : UniversalTriggerActionHandler
     protected override void HandlePlayer(ReferenceHub player, TData data, TriggerListener listener)
     {
         if (TryCalculateTransform(player, data, out var pos, out var rotation))
-            player.OverridePosition(pos, data.Options, rotation.y);
+            player.OverridePosition(pos, data.Options, data.Options.HasFlagFast(TeleportOptions.UseDeltaPlayerRotation) ? data.RotationY : rotation.y);
     }
 
     protected override void HandleItem(ItemPickupBase pickup, TData data, TriggerListener listener)
