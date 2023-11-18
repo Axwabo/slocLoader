@@ -2,9 +2,8 @@
 using InventorySystem.Items.Pickups;
 using PlayerRoles.Ragdolls;
 using slocLoader.TriggerActions.Data;
-using slocLoader.TriggerActions.Handlers.Abstract;
 
-namespace slocLoader.TriggerActions.Handlers;
+namespace slocLoader.TriggerActions.Handlers.Abstract;
 
 public abstract class TeleportHandlerBase<TData> : UniversalTriggerActionHandler<TData> where TData : BaseTeleportData
 {
@@ -32,7 +31,7 @@ public abstract class TeleportHandlerBase<TData> : UniversalTriggerActionHandler
             TriggerActionHelpers.SetRagdollPositionAndRotation(ragdoll, pos, rotation);
     }
 
-    protected abstract bool TryCalculateTransform(TData data, out Vector3 vector, out Quaternion rotation);
+    protected abstract bool TryCalculateTransform(TData data, out Vector3 position, out Quaternion rotation);
 
     protected void HandleComponent(Component component, TData data)
     {

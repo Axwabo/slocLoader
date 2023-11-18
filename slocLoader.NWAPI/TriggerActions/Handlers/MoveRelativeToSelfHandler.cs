@@ -7,37 +7,44 @@ using slocLoader.TriggerActions.Handlers.Abstract;
 
 namespace slocLoader.TriggerActions.Handlers;
 
-public sealed class MoveRelativeToSelfHandler : UniversalTriggerActionHandler<MoveRelativeToSelfData>
+public sealed class MoveRelativeToSelfHandler : TeleportHandlerBase<MoveRelativeToSelfData>
 {
 
     public override TriggerActionType ActionType => TriggerActionType.MoveRelativeToSelf;
+
+    private Component _currentComponent;
 
     protected override bool ValidateData(GameObject interactingObject, MoveRelativeToSelfData data, TriggerListener listener)
         => !TeleporterImmunityStorage.IsImmune(interactingObject, listener);
 
     protected override void HandlePlayer(ReferenceHub player, MoveRelativeToSelfData data, TriggerListener listener)
-        => player.OverridePosition(data.Position, data.Options);
+    {
+        _currentComponent = player;
+        base.HandlePlayer(player, data, listener);
+    }
 
     protected override void HandleItem(ItemPickupBase pickup, MoveRelativeToSelfData data, TriggerListener listener)
     {
-        TriggerActionHelpers.ResetVelocityOfPickup(pickup, data.Options);
-        HandleComponent(pickup, data);
+        _currentComponent = pickup;
+        base.HandleItem(pickup, data, listener);
     }
 
-    protected override void HandleToy(AdminToyBase toy, MoveRelativeToSelfData data, TriggerListener listener) => HandleComponent(toy, data);
+    protected override void HandleToy(AdminToyBase toy, MoveRelativeToSelfData data, TriggerListener listener)
+    {
+        _currentComponent = toy;
+        base.HandleToy(toy, data, listener);
+    }
 
     protected override void HandleRagdoll(BasicRagdoll ragdoll, MoveRelativeToSelfData data, TriggerListener listener)
     {
-        data.ToWorldSpace(ragdoll.transform, out var position, out var rotation);
-        TriggerActionHelpers.SetRagdollPositionAndRotation(ragdoll, position, rotation);
+        _currentComponent = ragdoll;
+        base.HandleRagdoll(ragdoll, data, listener);
     }
 
-    private static void HandleComponent(Component component, MoveRelativeToSelfData data)
+    protected override bool TryCalculateTransform(MoveRelativeToSelfData data, out Vector3 position, out Quaternion rotation)
     {
-        var t = component.transform;
-        data.ToWorldSpace(t, out var position, out var rotation);
-        t.position = position;
-        t.rotation = rotation;
+        data.ToWorldSpace(_currentComponent.transform, out position, out rotation);
+        return true;
     }
 
 }

@@ -140,6 +140,7 @@
         <Compile Include="TriggerActions\Handlers\Abstract\PickupActionHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\Abstract\PlayerActionHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\Abstract\RagdollActionHandler.cs"/>
+        <Compile Include="TriggerActions\Handlers\Abstract\TeleportHandlerBase.cs"/>
         <Compile Include="TriggerActions\Handlers\Abstract\ToyActionHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\Abstract\UniversalTriggerActionHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\ITriggerActionHandler.cs"/>
@@ -148,7 +149,6 @@
         <Compile Include="TriggerActions\Handlers\TeleporterImmunityHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\TeleportToPositionHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\TeleportToRoomHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\TeleportHandlerBase.cs"/>
         <Compile Include="TriggerActions\Handlers\TeleportToSpawnedObjectHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\TriggerActionHelpers.cs"/>
         <Compile Include="TriggerActions\Readers\ITriggerActionDataReader.cs"/>
