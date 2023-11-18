@@ -10,11 +10,12 @@ public static class ActionManager
 
     public const ushort MinVersion = 4;
 
-    private static readonly ITriggerActionDataReader DefaultReader = new Ver4ActionDataReader();
+    private static readonly ITriggerActionDataReader DefaultReader = new Ver5ActionDataReader();
 
     private static readonly Dictionary<ushort, ITriggerActionDataReader> Readers = new()
     {
-        {4, new Ver4ActionDataReader()}
+        {4, new Ver4ActionDataReader()},
+        {5, DefaultReader}
     };
 
     public static readonly ICollection<TargetType> TargetTypeValues = new List<TargetType>
@@ -81,8 +82,7 @@ public static class ActionManager
                 actions.Add(action);
         }
 
-        var array = actions.ToArray();
-        return array;
+        return actions.ToArray();
     }
 
     public static void ReadTypes(BinaryReader reader, out TriggerActionType actionType, out TargetType targetType, out TriggerEventType eventType)
@@ -118,7 +118,7 @@ public static class ActionManager
 
     public static bool HasFlagFast(this TeleportOptions options, TeleportOptions flag) => (options & flag) == flag;
 
-    public static bool Is(this TeleportOptions type, TeleportOptions isType) => type is TeleportOptions.None || type.HasFlagFast(isType);
+    public static bool Is(this TeleportOptions type, TeleportOptions isType) => type is TeleportOptions.All || type.HasFlagFast(isType);
 
     public static bool ContainsAnyOf(this TargetType type, TargetType multiple) => type is TargetType.All || TargetTypeValues.Any(targetType => type.HasFlagFast(targetType) && multiple.HasFlagFast(targetType));
 

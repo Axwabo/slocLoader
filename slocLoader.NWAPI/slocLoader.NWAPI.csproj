@@ -152,6 +152,7 @@
         <Compile Include="TriggerActions\Handlers\TriggerActionHelpers.cs"/>
         <Compile Include="TriggerActions\Readers\ITriggerActionDataReader.cs"/>
         <Compile Include="TriggerActions\Readers\Ver4ActionDataReader.cs"/>
+        <Compile Include="TriggerActions\Readers\Ver5ActionDataReader.cs"/>
         <Compile Include="TriggerActions\TeleporterImmunityStorage.cs"/>
         <Compile Include="TriggerActions\TriggerListener.cs"/>
         <Compile Include="TriggerActions\TriggerListenerInvoker.cs"/>

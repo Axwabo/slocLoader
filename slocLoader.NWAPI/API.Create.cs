@@ -222,7 +222,8 @@ public static partial class API
                 kvp.Key.AddTriggerAction(new RuntimeTeleportToSpawnedObjectData(target, data.Offset)
                 {
                     SelectedTargets = data.SelectedTargets,
-                    Options = data.Options
+                    Options = data.Options,
+                    RotationY = data.RotationY
                 }, handler);
         }
     }
