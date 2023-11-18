@@ -37,8 +37,8 @@ public static class ActionManager
     {
         TeleportOptions.ResetFallDamage,
         TeleportOptions.ResetVelocity,
-        TeleportOptions.WorldSpacePosition,
-        TeleportOptions.WorldSpaceRotation
+        TeleportOptions.WorldSpaceTransform,
+        TeleportOptions.UseDeltaPlayerRotation
     }.AsReadOnly();
 
     private static readonly ITriggerActionHandler[] ActionHandlers =

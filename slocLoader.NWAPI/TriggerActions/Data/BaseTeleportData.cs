@@ -27,7 +27,7 @@ public abstract class BaseTeleportData : BaseTriggerActionData
     }
 
     public Vector3 ToWorldSpacePosition(Transform reference) =>
-        Options.HasFlag(TeleportOptions.WorldSpacePosition)
+        Options.HasFlag(TeleportOptions.WorldSpaceTransform)
             ? reference.position + Position
             : reference.TransformPoint(Position);
 
@@ -35,7 +35,7 @@ public abstract class BaseTeleportData : BaseTriggerActionData
     {
         position = ToWorldSpacePosition(reference);
         rotation = Quaternion.Euler(0,
-            Options.HasFlag(TeleportOptions.WorldSpaceRotation)
+            Options.HasFlag(TeleportOptions.UseDeltaPlayerRotation)
                 ? RotationY
                 : reference.rotation.eulerAngles.y + RotationY,
             0);
