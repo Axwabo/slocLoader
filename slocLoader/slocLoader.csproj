@@ -112,6 +112,7 @@
         <Compile Include="Commands\ReloadCommand.cs"/>
         <Compile Include="Commands\RotationCommand.cs"/>
         <Compile Include="Commands\SpawnCommand.cs"/>
+        <Compile Include="Commands\StructureCommand.cs"/>
         <Compile Include="GlobalUsings.cs"/>
         <Compile Include="InstanceDictionary.cs"/>
         <Compile Include="Objects\EmptyObject.cs"/>
