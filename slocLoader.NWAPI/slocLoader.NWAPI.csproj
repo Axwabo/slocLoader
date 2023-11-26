@@ -116,6 +116,7 @@
         <Compile Include="Readers\Ver3Reader.cs"/>
         <Compile Include="Readers\Ver4Reader.cs"/>
         <Compile Include="Readers\Ver5Reader.cs"/>
+        <Compile Include="SendSpawnMessagePatch.cs"/>
         <Compile Include="SetPrimitiveTypePatch.cs"/>
         <Compile Include="slocAttributes.cs"/>
         <Compile Include="slocConfig.cs"/>

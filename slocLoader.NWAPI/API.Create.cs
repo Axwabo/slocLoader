@@ -67,6 +67,7 @@ public static partial class API
         var o = Object.Instantiate(prefab);
         o.SetAbsoluteTransformFrom(parent);
         o.SetLocalTransform(structure.Transform);
+        o.AddComponent<slocObjectData>();
         if (structure.RemoveDefaultLoot && o.TryGetComponent(out Locker locker))
             locker.Loot = Array.Empty<LockerLoot>();
         return o;
