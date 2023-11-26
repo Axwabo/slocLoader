@@ -4,7 +4,7 @@ A plugin that allows for the loading of objects contained within **sloc** files 
 
 ![Logo](https://github.com/Axwabo/slocLoader/blob/main/logo%20small.png?raw=true)
 
-[Watch the tutorial](https://youtu.be/jYsduSyncSw)
+[Watch the tutorial](https://youtu.be/4_-viU0HBBU)
 
 [Set up the plugin](#setup)
 
