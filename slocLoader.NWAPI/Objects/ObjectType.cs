@@ -11,6 +11,7 @@ public enum ObjectType : byte
     Cylinder = 5,
     Plane = 6,
     Quad = 7,
-    Empty = 8
+    Empty = 8,
+    Structure = 9
 
 }

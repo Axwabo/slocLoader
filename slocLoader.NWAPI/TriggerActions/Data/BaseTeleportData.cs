@@ -9,12 +9,16 @@ public abstract class BaseTeleportData : BaseTriggerActionData
     public Vector3 Position { get; set; }
 
     [field: SerializeField]
-    public TeleportOptions Options { get; set; }
+    public TeleportOptions Options { get; set; } = TeleportOptions.ResetFallDamage | TeleportOptions.DeltaRotation;
+
+    [field: SerializeField]
+    public float RotationY { get; set; }
 
     protected sealed override void WriteData(BinaryWriter writer)
     {
         writer.WriteVector(Position);
         writer.Write((byte) Options);
+        writer.Write(RotationY);
         WriteAdditionalData(writer);
     }
 
@@ -26,5 +30,13 @@ public abstract class BaseTeleportData : BaseTriggerActionData
         Options.HasFlag(TeleportOptions.WorldSpaceTransform)
             ? reference.position + Position
             : reference.TransformPoint(Position);
+
+    public void ToWorldSpace(Transform reference, out Vector3 position, out float rotation)
+    {
+        position = ToWorldSpacePosition(reference);
+        rotation = Options.HasFlag(TeleportOptions.WorldSpaceTransform)
+            ? RotationY
+            : reference.rotation.eulerAngles.y + RotationY;
+    }
 
 }

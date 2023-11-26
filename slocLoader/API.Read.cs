@@ -8,14 +8,15 @@ public static partial class API
 
     #region Reader Declarations
 
-    public static readonly IObjectReader DefaultReader = new Ver4Reader();
+    public static readonly IObjectReader DefaultReader = new Ver5Reader();
 
     private static readonly Dictionary<ushort, IObjectReader> VersionReaders = new()
     {
         {1, new Ver1Reader()},
         {2, new Ver2Reader()},
         {3, new Ver3Reader()},
-        {4, new Ver4Reader()}
+        {4, new Ver4Reader()},
+        {5, DefaultReader}
     };
 
     public static bool TryGetReader(ushort version, out IObjectReader reader) => VersionReaders.TryGetValue(version, out reader);

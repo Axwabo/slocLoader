@@ -15,8 +15,8 @@ public sealed class slocPlugin : Plugin<slocConfig>
     public override string Name => "slocLoader";
     public override string Prefix => "sloc";
     public override string Author => "Axwabo";
-    public override PluginPriority Priority => PluginPriority.Lower;
-    public override Version Version { get; } = new(4, 2, 4);
+    public override PluginPriority Priority => PluginPriority.High;
+    public override Version Version { get; } = new(5, 0, 0);
     public override Version RequiredExiledVersion { get; } = new(8, 4, 0);
 
     private Harmony _harmony;

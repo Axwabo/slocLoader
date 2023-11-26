@@ -8,6 +8,7 @@ public enum TeleportOptions : byte
     ResetFallDamage = 1,
     ResetVelocity = 2,
     WorldSpaceTransform = 4,
-    All = ResetFallDamage | ResetVelocity | WorldSpaceTransform
+    DeltaRotation = 8,
+    All = ResetFallDamage | ResetVelocity | WorldSpaceTransform | DeltaRotation
 
 }

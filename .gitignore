@@ -1,6 +1,6 @@
 .git/
 .idea/
-slocLoader.sln.DotSettings.user
+*.user
 slocLoader/bin/
 slocLoader/obj/
 slocLoader.NWAPI/bin/

@@ -112,6 +112,7 @@
         <Compile Include="Commands\ReloadCommand.cs"/>
         <Compile Include="Commands\RotationCommand.cs"/>
         <Compile Include="Commands\SpawnCommand.cs"/>
+        <Compile Include="Commands\StructureCommand.cs"/>
         <Compile Include="GlobalUsings.cs"/>
         <Compile Include="InstanceDictionary.cs"/>
         <Compile Include="Objects\EmptyObject.cs"/>
@@ -122,12 +123,15 @@
         <Compile Include="Objects\slocTransform.cs"/>
         <Compile Include="ObjectCreation\ObjectsSource.cs"/>
         <Compile Include="ObjectCreation\CreateOptions.cs"/>
+        <Compile Include="Objects\StructureObject.cs"/>
         <Compile Include="Readers\IObjectReader.cs"/>
         <Compile Include="Readers\slocHeader.cs"/>
         <Compile Include="Readers\Ver1Reader.cs"/>
         <Compile Include="Readers\Ver2Reader.cs"/>
         <Compile Include="Readers\Ver3Reader.cs"/>
         <Compile Include="Readers\Ver4Reader.cs"/>
+        <Compile Include="Readers\Ver5Reader.cs"/>
+        <Compile Include="SendSpawnMessagePatch.cs"/>
         <Compile Include="SetPrimitiveTypePatch.cs"/>
         <Compile Include="slocAttributes.cs"/>
         <Compile Include="slocConfig.cs"/>
@@ -153,6 +157,7 @@
         <Compile Include="TriggerActions\Handlers\Abstract\PickupActionHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\Abstract\PlayerActionHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\Abstract\RagdollActionHandler.cs"/>
+        <Compile Include="TriggerActions\Handlers\Abstract\TeleportHandlerBase.cs"/>
         <Compile Include="TriggerActions\Handlers\Abstract\ToyActionHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\Abstract\UniversalTriggerActionHandler.cs"/>
         <Compile Include="TriggerActions\Handlers\ITriggerActionHandler.cs"/>
@@ -165,6 +170,7 @@
         <Compile Include="TriggerActions\Handlers\TriggerActionHelpers.cs"/>
         <Compile Include="TriggerActions\Readers\ITriggerActionDataReader.cs"/>
         <Compile Include="TriggerActions\Readers\Ver4ActionDataReader.cs"/>
+        <Compile Include="TriggerActions\Readers\Ver5ActionDataReader.cs"/>
         <Compile Include="TriggerActions\TeleporterImmunityStorage.cs"/>
         <Compile Include="TriggerActions\TriggerListener.cs"/>
         <Compile Include="TriggerActions\TriggerListenerInvoker.cs"/>
