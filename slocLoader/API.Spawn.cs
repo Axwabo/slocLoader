@@ -41,9 +41,29 @@ public static partial class API
             return null;
         }
 
-        if (!o.TryGetComponent(out slocObjectData data) || data.ShouldBeSpawnedOnClient)
+        var hasData = o.TryGetComponent(out slocObjectData data);
+        if (hasData && !data.ShouldBeSpawnedOnClient)
+            return o;
+        if (hasData)
+            SpawnObjectWithGlobalTransform(o);
+        else
             NetworkServer.Spawn(o);
         return o;
+    }
+
+    public static bool ShouldSpawnWithGlobalTransform;
+
+    public static void SpawnObjectWithGlobalTransform(GameObject gameObject)
+    {
+        ShouldSpawnWithGlobalTransform = true;
+        try
+        {
+            NetworkServer.Spawn(gameObject);
+        }
+        finally
+        {
+            ShouldSpawnWithGlobalTransform = false;
+        }
     }
 
     public static GameObject SpawnObjects(ObjectsSource source, CreateOptions options, out int spawnedAmount)

@@ -123,6 +123,7 @@
         <Compile Include="slocConfig.cs"/>
         <Compile Include="slocObjectData.cs"/>
         <Compile Include="slocPlugin.cs"/>
+        <Compile Include="SpawnObserversPatch.cs"/>
         <Compile Include="TriggerActions\ActionManager.cs"/>
         <Compile Include="TriggerActions\Data\BaseTeleportData.cs"/>
         <Compile Include="TriggerActions\Data\BaseTriggerActionData.cs"/>
@@ -161,7 +162,6 @@
         <Compile Include="TriggerActions\TriggerListenerInvoker.cs"/>
     </ItemGroup>
     <ItemGroup>
-        <None Include="App.config"/>
         <None Include="packages.config"/>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
