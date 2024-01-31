@@ -13,9 +13,14 @@ public static class AdminToyPatch
     private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         var transform = generator.Local<Transform>();
+        var label = generator.DefineLabel();
         return new[]
         {
             This,
+            Get<AdminToyBase>(nameof(AdminToyBase.IsStatic)),
+            label.False(),
+            Return,
+            This.WithLabels(label),
             Get<Component>(nameof(Component.transform)),
             transform.Set(),
             This,
