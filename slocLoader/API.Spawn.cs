@@ -45,7 +45,7 @@ public static partial class API
         if (hasData && !data.ShouldBeSpawnedOnClient)
             return o;
         if (hasData)
-            SpawnObjectWithGlobalTransform(o);
+            SpawnGameObjectWithGlobalTransform(o);
         else
             NetworkServer.Spawn(o);
         return o;
@@ -53,7 +53,7 @@ public static partial class API
 
     public static bool ShouldSpawnWithGlobalTransform;
 
-    public static void SpawnObjectWithGlobalTransform(GameObject gameObject)
+    public static void SpawnGameObjectWithGlobalTransform(GameObject gameObject)
     {
         ShouldSpawnWithGlobalTransform = true;
         try
