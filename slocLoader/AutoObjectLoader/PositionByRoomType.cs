@@ -12,10 +12,13 @@ public struct PositionByRoomType : IAssetLocation
 
     public IMapPoint Location() => Point;
 
+    public bool MakeObjectsStatic { get; set; }
+
     public PositionByRoomType(string assetName, MapPointByRoomType location)
     {
         AssetName = assetName;
         Point = location;
+        MakeObjectsStatic = false;
     }
 
 }

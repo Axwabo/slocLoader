@@ -12,10 +12,13 @@ public struct PositionByRoomName : IAssetLocation
 
     public IMapPoint Location() => Point;
 
+    public bool MakeObjectsStatic { get; set; }
+
     public PositionByRoomName(string assetName, MapPointByName location)
     {
         AssetName = assetName;
         Point = location;
+        MakeObjectsStatic = false;
     }
 
 }

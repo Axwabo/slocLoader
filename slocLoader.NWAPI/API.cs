@@ -174,6 +174,8 @@ public static partial class API
                 o.MovementSmoothing = previousSmoothing;
                 if (gameObject == null)
                     continue;
+                if (gameObject.TryGetComponent(out AdminToyBase toy))
+                    toy.IsStatic = options.IsStatic;
                 createdAmount++;
                 CreatedInstances[o.InstanceId] = gameObject;
             }

@@ -16,6 +16,7 @@ public abstract class slocGameObject
     public ObjectType Type { get; protected set; } = ObjectType.None;
 
     public slocTransform Transform = new();
+
     public byte MovementSmoothing;
 
     public virtual bool IsValid => Type != ObjectType.None;

@@ -9,4 +9,6 @@ public interface IAssetLocation
 
     public IMapPoint Location();
 
+    public bool MakeObjectsStatic { get; }
+
 }

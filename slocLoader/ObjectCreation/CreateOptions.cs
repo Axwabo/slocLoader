@@ -9,4 +9,6 @@ public struct CreateOptions
 
     public byte? MovementSmoothing;
 
+    public bool IsStatic;
+
 }

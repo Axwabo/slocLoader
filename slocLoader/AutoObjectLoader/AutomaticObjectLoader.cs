@@ -1,4 +1,5 @@
-﻿using slocLoader.Objects;
+﻿using slocLoader.ObjectCreation;
+using slocLoader.Objects;
 
 namespace slocLoader.AutoObjectLoader;
 
@@ -35,13 +36,18 @@ public static class AutomaticObjectLoader
         var totalAssetsToSpawn = 0;
         var spawnedAssets = 0;
         var spawnedObjects = 0;
-        foreach (var name in locations)
+        foreach (var asset in locations)
         {
             totalAssetsToSpawn++;
-            if (!TryGetObjects(name.AssetName, true, out var objects))
+            if (!TryGetObjects(asset.AssetName, true, out var objects))
                 continue;
-            var pose = name.Location().WorldPose();
-            API.SpawnObjects(objects, out var spawned, pose.position, pose.rotation);
+            var pose = asset.Location().WorldPose();
+            API.SpawnObjects(objects, new CreateOptions
+            {
+                Position = pose.position,
+                Rotation = pose.rotation,
+                IsStatic = asset.MakeObjectsStatic
+            }, out var spawned);
             spawnedAssets++;
             spawnedObjects += spawned;
         }

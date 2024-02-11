@@ -90,6 +90,7 @@ point:
     x: 0
     y: 0
     z: 0
+make_objects_static: false
 ```
 
 RoomType template:
@@ -106,6 +107,7 @@ point:
     x: 0
     y: 0
     z: 0
+make_objects_static: true
 ```
 
 StaticPosition template:
@@ -121,6 +123,7 @@ point:
     x: 0
     y: 90
     z: 0
+make_objects_static: false
 ```
 
 All assets that have been loaded by the AutomaticObjectLoader will be spawned in the room specified.
@@ -128,6 +131,8 @@ All assets that have been loaded by the AutomaticObjectLoader will be spawned in
 If an asset was not loaded, it will be ignored.
 
 Rotation offsets are specified using **Euler angles, _not Quaternions_.**
+
+The `make_objects_static` property defaults to false. Setting it to `true` will boost server performance as transform updates will not be sent to the client (can cause desync if plugins move the objects). 
 
 # Spawning objects in-game
 
