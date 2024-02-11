@@ -34,4 +34,7 @@ public sealed class slocConfig
     [Description("If set to false, teleporters will not be able to modify the positions of ragdolls. When enabled, can cause issues with networking and client-side ragdoll physics.")]
     public bool EnableRagdollPositionModification { get; set; } = true;
 
+    [Description("Whether the sl_spawn command should spawn objects as static objects.")]
+    public bool StaticSpawnCommand { get; set; } = true;
+
 }

@@ -1,6 +1,7 @@
 ﻿using CommandSystem;
 using Mirror;
 using slocLoader.AutoObjectLoader;
+using slocLoader.ObjectCreation;
 
 namespace slocLoader.Commands;
 
@@ -50,7 +51,12 @@ public sealed class SpawnCommand : ICommand, IUsageProvider
         var rotation = RotationCommand.Defined.TryGetValue(p.UserId, out var rot)
             ? rot
             : new Quaternion(0, p.ReferenceHub.PlayerCameraReference.rotation.y, 0, 1);
-        var go = API.SpawnObjects(objects, out var spawned, position, rotation);
+        var go = API.SpawnObjects(objects, new CreateOptions
+        {
+            Position = position,
+            Rotation = rotation,
+            IsStatic = slocPlugin.Instance.Config.StaticSpawnCommand
+        }, out var spawned);
         response = $"Spawned {spawned} GameObjects. NetID: {go.GetComponent<NetworkIdentity>().netId}";
         return true;
     }
