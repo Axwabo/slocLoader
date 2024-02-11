@@ -18,7 +18,7 @@ public struct StaticAssetPosition : IAssetLocation
     {
         AssetName = assetName;
         Point = location;
-        MakeObjectsStatic = true;
+        MakeObjectsStatic = false;
     }
 
 }
