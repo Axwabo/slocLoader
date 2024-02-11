@@ -137,7 +137,7 @@ public static partial class API
         AddActionDataPairToList(data, handler, listener.OnEnter, listener.OnStay, listener.OnExit);
     }
 
-    public static void AddTriggerAction(this GameObject gameObject, BaseTriggerActionData data, ITriggerActionHandler handler)
+    public static void AddTriggerAction(this GameObject gameObject, BaseTriggerActionData data, ITriggerActionHandler handler = null)
     {
         if (!gameObject.TryGetComponent(out PrimitiveObjectToy toy))
             throw new ArgumentException("The provided game object does not have a PrimitiveObjectToy component.", nameof(gameObject));

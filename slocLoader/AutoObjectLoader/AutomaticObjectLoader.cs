@@ -11,7 +11,11 @@ public static class AutomaticObjectLoader
     public static void LoadObjects()
     {
         LoadedObjects.Clear();
+#if EXILED
         var path = Path.Combine(Paths.Plugins, "sloc", "Objects");
+#else
+        var path = Path.Combine(PluginHandler.Get(slocPlugin.Instance).PluginDirectoryPath, "Objects");
+#endif
         Directory.CreateDirectory(path);
         var loaded = 0;
         foreach (var file in Directory.EnumerateFiles(path, "*.sloc"))
@@ -24,7 +28,11 @@ public static class AutomaticObjectLoader
             }
             catch (Exception e)
             {
+#if EXILED
                 Log.Warn($"Failed to parse object \"{name}\":\n{e}");
+#else
+                Log.Warning($"Failed to parse object \"{name}\":\n{e}");
+#endif
             }
         }
 

@@ -4,35 +4,31 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}</ProjectGuid>
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>slocLoader</RootNamespace>
-        <AssemblyName>slocLoader</AssemblyName>
         <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <LangVersion>10</LangVersion>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>x64</PlatformTarget>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>bin\Debug\</OutputPath>
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <PlatformTarget>x64</PlatformTarget>
         <DebugType>pdbonly</DebugType>
         <Optimize>true</Optimize>
-        <OutputPath>bin\Release\</OutputPath>
-        <DefineConstants>TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
-    <ItemGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'EXILED|AnyCPU' ">
+        <ProjectGuid>{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}</ProjectGuid>
+        <AssemblyName>slocLoader</AssemblyName>
+        <DefineConstants>EXILED;TRACE</DefineConstants>
+        <OutputPath>bin\EXILED\</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NW|AnyCPU' ">
+        <ProjectGuid>{41000E56-567E-4AF2-9951-8C9A43A3573D}</ProjectGuid>
+        <AssemblyName>slocLoader.NWAPI</AssemblyName>
+        <DefineConstants>TRACE</DefineConstants>
+        <OutputPath>bin\NW\</OutputPath>
+    </PropertyGroup>
+    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'EXILED|AnyCPU' ">
         <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
             <HintPath>..\packages\Lib.Harmony.2.2.2\lib\net48\0Harmony.dll</HintPath>
         </Reference>
@@ -92,6 +88,61 @@
             <HintPath>..\packages\EXILED.8.7.1\lib\net48\YamlDotNet.dll</HintPath>
         </Reference>
     </ItemGroup>
+    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'NW|AnyCPU' ">
+        <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>..\packages\Lib.Harmony.2.2.2\lib\net48\0Harmony.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp">
+            <HintPath>$(NW-ASSEMBLIES)\Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp-firstpass">
+            <HintPath>$(NW-ASSEMBLIES)\Assembly-CSharp-firstpass.dll</HintPath>
+        </Reference>
+        <Reference Include="Axwabo.Helpers">
+            <HintPath>$(NW-ASSEMBLIES)\Axwabo.Helpers.dll</HintPath>
+        </Reference>
+        <Reference Include="CommandSystem.Core">
+            <HintPath>$(NW-ASSEMBLIES)\CommandSystem.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="Mirror">
+            <HintPath>$(NW-ASSEMBLIES)\Mirror.dll</HintPath>
+        </Reference>
+        <Reference Include="Mirror.Components">
+            <HintPath>$(NW-ASSEMBLIES)\Mirror.Components.dll</HintPath>
+        </Reference>
+        <Reference Include="mscorlib"/>
+        <Reference Include="NorthwoodLib">
+            <HintPath>$(NW-ASSEMBLIES)\NorthwoodLib.dll</HintPath>
+        </Reference>
+        <Reference Include="PluginAPI">
+            <HintPath>$(NW-ASSEMBLIES)\PluginAPI.dll</HintPath>
+        </Reference>
+        <Reference Include="Pooling">
+            <HintPath>$(NW-ASSEMBLIES)\Pooling.dll</HintPath>
+        </Reference>
+        <Reference Include="System"/>
+        <Reference Include="UnityEngine">
+            <HintPath>$(NW-ASSEMBLIES)\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>$(NW-ASSEMBLIES)\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PhysicsModule">
+            <HintPath>$(NW-ASSEMBLIES)\UnityEngine.PhysicsModule.dll</HintPath>
+        </Reference>
+        <Reference Include="YamlDotNet, Version=12.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
+            <HintPath>..\packages\YamlDotNet.12.3.1\lib\net47\YamlDotNet.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'EXILED|AnyCPU' ">
+
+        <Compile Include="ExiledConfig.cs"/>
+        <Compile Include="ExiledPlugin.cs"/>
+    </ItemGroup>
+    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'NW|AnyCPU' ">
+        <Compile Include="NWConfig.cs"/>
+        <Compile Include="NWPlugin.cs"/>
+    </ItemGroup>
     <ItemGroup>
         <Compile Include="AdminToyPatch.cs"/>
         <Compile Include="API.BinaryExtensions.cs"/>
@@ -131,8 +182,6 @@
         <Compile Include="SendSpawnMessagePatch.cs"/>
         <Compile Include="SetPrimitiveTypePatch.cs"/>
         <Compile Include="slocAttributes.cs"/>
-        <Compile Include="slocConfig.cs"/>
-        <Compile Include="slocPlugin.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
         <Compile Include="slocObjectData.cs"/>
         <Compile Include="SpawnObserversPatch.cs"/>
@@ -177,12 +226,4 @@
         <None Include="packages.config"/>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-         Other similar extension points exist, see Microsoft.Common.targets.
-    <Target Name="BeforeBuild">
-    </Target>
-    <Target Name="AfterBuild">
-    </Target>
-    -->
-
 </Project>

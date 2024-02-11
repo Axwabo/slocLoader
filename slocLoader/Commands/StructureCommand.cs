@@ -1,5 +1,4 @@
 ﻿using CommandSystem;
-using Exiled.Permissions.Extensions;
 using Mirror;
 using slocLoader.Objects;
 
@@ -23,9 +22,15 @@ public sealed class StructureCommand : ICommand, IUsageProvider
             return false;
         }
 
+#if EXILED
         if (!p.CheckPermission("sloc.spawn"))
         {
             response = "You don't have permission to do that (sloc.spawn)!";
+#else
+        if (!sender.CheckPermission(PlayerPermissions.FacilityManagement))
+        {
+            response = "You don't have permission to do that (FacilityManagement)!";
+#endif
             return false;
         }
 

@@ -10,6 +10,7 @@ public static class AdminToyPatch
 {
 
     // we're optimizing the method by storing the transform in a local variable, so it doesn't take more Unity calls than needed
+    // ReSharper disable once UnusedParameter.Local
     private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         var transform = generator.Local<Transform>();
