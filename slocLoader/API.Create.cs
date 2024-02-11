@@ -1,4 +1,5 @@
-﻿using MapGeneration.Distributors;
+﻿using AdminToys;
+using MapGeneration.Distributors;
 using Mirror;
 using slocLoader.ObjectCreation;
 using slocLoader.Objects;
@@ -60,6 +61,20 @@ public static partial class API
         {StructureObject.StructureType.Workstation, 1783091262}
     };
 
+    public static void ApplyAdminToyTransform(GameObject gameObject)
+    {
+        if (gameObject.TryGetComponent(out AdminToyBase toy))
+            ApplyAdminToyTransform(toy);
+    }
+
+    public static void ApplyAdminToyTransform(AdminToyBase toy, bool hasCollider = true)
+    {
+        var t = toy.transform;
+        toy.Position = t.position;
+        toy.Rotation = new LowPrecisionQuaternion(t.rotation);
+        toy.Scale = AdminToyPatch.GetScale(t.lossyScale, hasCollider);
+    }
+
     private static GameObject CreateStructure(GameObject parent, StructureObject structure)
     {
         if (!StructurePrefabIds.TryGetValue(structure.Structure, out var id) || !NetworkClient.prefabs.TryGetValue(id, out var prefab))
@@ -70,6 +85,7 @@ public static partial class API
         o.AddComponent<slocObjectData>();
         if (structure.RemoveDefaultLoot && o.TryGetComponent(out Locker locker))
             locker.Loot = Array.Empty<LockerLoot>();
+        ApplyAdminToyTransform(o);
         return o;
     }
 
@@ -94,8 +110,8 @@ public static partial class API
         toy.MovementSmoothing = primitive.MovementSmoothing;
         toy.SetAbsoluteTransformFrom(parent);
         toy.SetLocalTransform(primitive.Transform);
-        toy.Scale = AdminToyPatch.GetScale(primitive.Transform.Scale, sloc.HasColliderOnClient);
         toy.MaterialColor = primitive.MaterialColor;
+        ApplyAdminToyTransform(toy, sloc.HasColliderOnClient);
         return o;
     }
 
@@ -110,9 +126,11 @@ public static partial class API
         toy.LightShadows = light.Shadows;
         toy.LightRange = light.Range;
         toy.LightIntensity = light.Intensity;
-        toy.Scale = light.Transform.Scale;
         toy.MovementSmoothing = light.MovementSmoothing;
-        return toy.gameObject;
+        ApplyAdminToyTransform(toy);
+        var go = toy.gameObject;
+        go.AddComponent<slocObjectData>();
+        return go;
     }
 
     private static GameObject CreateEmpty(GameObject parent, slocTransform transform)

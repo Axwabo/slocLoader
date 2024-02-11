@@ -8,6 +8,8 @@ namespace slocLoader;
 public static class SendSpawnMessagePatch
 {
 
+    public static bool ShouldUseGlobalTransform(NetworkIdentity identity) => identity.TryGetComponent(out slocObjectData _);
+
     [Obsolete("Deprecated in favor of API::SpawnWithGlobalTransform")]
     public delegate void SpawnDataModifier(NetworkIdentity identity, NetworkConnection connection, ref SpawnMessage message);
 

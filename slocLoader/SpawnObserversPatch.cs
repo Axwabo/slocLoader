@@ -6,21 +6,17 @@ using static Axwabo.Helpers.Harmony.InstructionHelper;
 namespace slocLoader;
 
 [HarmonyPatch(typeof(NetworkServer), nameof(NetworkServer.SpawnObserversForConnection))]
-internal static class SpawnObserversPatch
+public static class SpawnObserversPatch
 {
 
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
         var list = new List<CodeInstruction>(instructions);
-        var local = generator.Local<Component>();
         var loopStart = list.FindCode(OpCodes.Stloc_2) + 1;
         list.InsertRange(loopStart, new[]
         {
             Ldloc(2).WithBlocks(new ExceptionBlock(ExceptionBlockType.BeginExceptionBlock)),
-            LoadTypeToken<slocObjectData>(),
-            Call<Type>(nameof(Type.GetTypeFromHandle)),
-            local.LoadAddress(),
-            Call<Component>(nameof(Component.TryGetComponent), new[] {typeof(Type), typeof(slocObjectData).MakeByRefType()}),
+            Call(SendSpawnMessagePatch.ShouldUseGlobalTransform),
             Stfld(typeof(API), nameof(API.ShouldSpawnWithGlobalTransform))
         });
         var loopEnd = list.FindCall(nameof(IEnumerator<NetworkIdentity>.MoveNext)) - 1;

@@ -98,7 +98,7 @@
         <Reference Include="Assembly-CSharp-firstpass">
             <HintPath>$(NW-ASSEMBLIES)\Assembly-CSharp-firstpass.dll</HintPath>
         </Reference>
-        <Reference Include="Axwabo.Helpers">
+        <Reference Include="Axwabo.Helpers.NWAPI">
             <HintPath>$(NW-ASSEMBLIES)\Axwabo.Helpers.dll</HintPath>
         </Reference>
         <Reference Include="CommandSystem.Core">
@@ -135,7 +135,6 @@
         </Reference>
     </ItemGroup>
     <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'EXILED|AnyCPU' ">
-
         <Compile Include="ExiledConfig.cs"/>
         <Compile Include="ExiledPlugin.cs"/>
     </ItemGroup>
@@ -144,6 +143,7 @@
         <Compile Include="NWPlugin.cs"/>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="AddObserversPatch.cs"/>
         <Compile Include="AdminToyPatch.cs"/>
         <Compile Include="API.BinaryExtensions.cs"/>
         <Compile Include="API.Create.cs"/>

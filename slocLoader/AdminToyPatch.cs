@@ -5,7 +5,7 @@ using static Axwabo.Helpers.Harmony.InstructionHelper;
 
 namespace slocLoader;
 
-[HarmonyPatch(typeof(AdminToyBase), "UpdatePositionServer")]
+[HarmonyPatch(typeof(AdminToyBase), nameof(AdminToyBase.UpdatePositionServer))]
 public static class AdminToyPatch
 {
 
