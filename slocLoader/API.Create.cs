@@ -113,7 +113,8 @@ public static partial class API
         toy.MaterialColor = primitive.MaterialColor;
         ApplyAdminToyTransform(toy, sloc.HasColliderOnClient);
         if (!sloc.HasColliderOnClient)
-            toy.NetworkPrimitiveFlags &= ~PrimitiveFlags.Collidable;
+            toy.PrimitiveFlags &= ~PrimitiveFlags.Collidable;
+        toy.SetPrimitive(0, toy.PrimitiveType);
         return o;
     }
 
