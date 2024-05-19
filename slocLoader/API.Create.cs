@@ -72,7 +72,7 @@ public static partial class API
         var t = toy.transform;
         toy.Position = t.position;
         toy.Rotation = new LowPrecisionQuaternion(t.rotation);
-        toy.Scale = AdminToyPatch.GetScale(t.lossyScale, hasCollider);
+        toy.Scale = t.lossyScale;
     }
 
     private static GameObject CreateStructure(GameObject parent, StructureObject structure)
@@ -112,6 +112,8 @@ public static partial class API
         toy.SetLocalTransform(primitive.Transform);
         toy.MaterialColor = primitive.MaterialColor;
         ApplyAdminToyTransform(toy, sloc.HasColliderOnClient);
+        if (!sloc.HasColliderOnClient)
+            toy.NetworkPrimitiveFlags &= ~PrimitiveFlags.Collidable;
         return o;
     }
 

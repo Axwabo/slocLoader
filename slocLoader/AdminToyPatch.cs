@@ -18,7 +18,7 @@ public static class AdminToyPatch
         return new[]
         {
             This,
-            Get<AdminToyBase>(nameof(AdminToyBase.IsStatic)),
+            Ldfld<AdminToyBase>(nameof(AdminToyBase.IsStatic)),
             label.False(),
             Return,
             This.WithLabels(label),
@@ -35,12 +35,13 @@ public static class AdminToyPatch
             Set<AdminToyBase>(nameof(AdminToyBase.NetworkRotation)),
             This,
             transform.Load(),
-            Call(typeof(AdminToyPatch), nameof(GetScaleFromTransform)),
+            Get<Transform>(nameof(Transform.lossyScale)),
             Set<AdminToyBase>(nameof(AdminToyBase.NetworkScale)),
             Return
         };
     }
 
+    [Obsolete("Deprecated in favor of primitive flags, negative scaling is no longer required for the collider to be disabled.")]
     public static Vector3 GetScaleFromTransform(Transform transform)
     {
         var scale = transform.lossyScale;
@@ -49,6 +50,7 @@ public static class AdminToyPatch
             : GetScale(scale, data.HasColliderOnClient);
     }
 
+    [Obsolete("Deprecated in favor of primitive flags, negative scaling is no longer required for the collider to be disabled.")]
     public static Vector3 GetScale(Vector3 original, bool positive)
     {
         var absoluteScale = new Vector3(Mathf.Abs(original.x), Mathf.Abs(original.y), Mathf.Abs(original.z));

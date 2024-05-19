@@ -32,7 +32,6 @@ public sealed class PrimitiveObject : slocGameObject
             writer.Write(MaterialColor.ToLossyColor());
         else
             writer.WriteColor(MaterialColor);
-
         writer.Write((byte) ColliderMode);
         if (ColliderMode.IsTrigger() || header.HasAttribute(slocAttributes.ExportAllTriggerActions))
             ActionManager.WriteActions(writer, TriggerActions);
