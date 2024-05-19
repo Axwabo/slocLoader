@@ -15,6 +15,7 @@
         <Optimize>true</Optimize>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'EXILED|AnyCPU' ">
         <ProjectGuid>{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}</ProjectGuid>
