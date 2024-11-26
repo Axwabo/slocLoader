@@ -43,7 +43,7 @@ public sealed class slocPlugin
             }
 
         API.UnsetPrefabs();
-        SeedSynchronizer.OnMapGenerated += API.LoadPrefabs;
+        SeedSynchronizer.OnGenerationFinished += API.LoadPrefabs;
         API.PrefabsLoaded += SpawnDefault;
         if (SeedSynchronizer.MapGenerated)
             API.LoadPrefabs();
@@ -56,7 +56,7 @@ public sealed class slocPlugin
         _harmony.UnpatchAll();
         API.UnsetPrefabs();
         API.PrefabsLoaded -= SpawnDefault;
-        SeedSynchronizer.OnMapGenerated -= API.LoadPrefabs;
+        SeedSynchronizer.OnGenerationFinished -= API.LoadPrefabs;
         Log.Info("slocLoader has been disabled");
     }
 
