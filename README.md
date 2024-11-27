@@ -31,9 +31,12 @@ it's not meant to be interpreted as text. It is a sequence of **int**egers and *
 
 # Setup
 
-[Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/) **is required** as a dependency.
+[Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/) **is required** as a dependency. 
 
 ## For EXILED
+
+> [!WARNING]
+> EXILED no longer receives support. Use the Northwood Plugin API version instead.
 
 1. Download the **slocLoader.dll** file from the [latest release](https://github.com/Axwabo/slocLoader/releases/latest)
 2. Place the DLL into the **EXILED Plugins** folder (Windows: `%appdata%\EXILED\Plugins`)
