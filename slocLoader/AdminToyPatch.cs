@@ -31,7 +31,6 @@ public static class AdminToyPatch
             This,
             transform.Load(),
             Get<Transform>(nameof(Transform.rotation)),
-            New<LowPrecisionQuaternion>(new[] {typeof(Quaternion)}),
             Set<AdminToyBase>(nameof(AdminToyBase.NetworkRotation)),
             This,
             transform.Load(),
