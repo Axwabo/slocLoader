@@ -22,7 +22,8 @@ This is not meant to be a clone of MER, but a different approach to be able to l
 
 An **sloc** file can contain primitive Unity objects (spheres, cubes etc.) and also lights.
 
-Note: SCP:SL only supports spawning **point lights** remotely, therefore **it's not yet possible to create spot, directional or area lights.**
+> [!NOTE]
+> Currently, only point lights are supported. 
 
 To create an **sloc** file, use [slocExporter](https://github.com/Axwabo/slocExporter/)
 
@@ -31,22 +32,17 @@ it's not meant to be interpreted as text. It is a sequence of **int**egers and *
 
 # Setup
 
-[Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/) **is required** as a dependency.
+> [!IMPORTANT]
+> [Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/) **is required** as a dependency.
+> 
+> EXILED no longer receives support. Use the Northwood Plugin API version instead.
 
-## For EXILED
-
-1. Download the **slocLoader.dll** file from the [latest release](https://github.com/Axwabo/slocLoader/releases/latest)
-2. Place the DLL into the **EXILED Plugins** folder (Windows: `%appdata%\EXILED\Plugins`)
-3. Restart your server
-
-## For Northwood Plugin API
-
-### Automatically
+## Automatically
 
 1. Run the command `p install Axwabo/slocLoader` in the server console
 2. Restart your server
 
-### Manually
+## Manually
 
 1. Download the **slocLoader-nw.dll** file from the [latest release](https://github.com/Axwabo/slocLoader/releases/latest)
 2. Place the DLL into the **NW Plugins** folder (Windows: `%appdata%\SCP Secret Laboratory\PluginAPI\plugins\port`)
@@ -132,7 +128,7 @@ If an asset was not loaded, it will be ignored.
 
 Rotation offsets are specified using **Euler angles, _not Quaternions_.**
 
-The `make_objects_static` property defaults to false. Setting it to `true` will boost server performance as transform updates will not be sent to the client (can cause desync if plugins move the objects). 
+The `make_objects_static` property defaults to false. Setting it to `true` will boost server performance as transform updates will not be sent to the client (can cause desync if plugins move the objects).
 
 # Spawning objects in-game
 

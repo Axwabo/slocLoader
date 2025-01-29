@@ -71,7 +71,7 @@ public static partial class API
     {
         var t = toy.transform;
         toy.Position = t.position;
-        toy.Rotation = new LowPrecisionQuaternion(t.rotation);
+        toy.Rotation = t.rotation;
         toy.Scale = t.lossyScale;
     }
 
@@ -126,7 +126,7 @@ public static partial class API
         toy.SetAbsoluteTransformFrom(parent);
         toy.SetLocalTransform(light.Transform);
         toy.LightColor = light.LightColor;
-        toy.LightShadows = light.Shadows;
+        toy.ShadowType = light.Shadows ? LightShadows.Soft : LightShadows.None;
         toy.LightRange = light.Range;
         toy.LightIntensity = light.Intensity;
         toy.MovementSmoothing = light.MovementSmoothing;

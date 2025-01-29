@@ -2,6 +2,8 @@
 using HarmonyLib;
 using MapGeneration;
 using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
+using PluginAPI.Events;
 using slocLoader.AutoObjectLoader;
 
 namespace slocLoader;
@@ -16,7 +18,7 @@ public sealed class slocPlugin
     [PluginConfig]
     public slocConfig Config = new();
 
-    [PluginEntryPoint("slocLoader", "5.2.2", "A plugin that loads sloc files.", "Axwabo")]
+    [PluginEntryPoint("slocLoader", "5.2.4", "A plugin that loads sloc files.", "Axwabo")]
     public void OnEnabled()
     {
         Instance = this;
@@ -43,7 +45,7 @@ public sealed class slocPlugin
             }
 
         API.UnsetPrefabs();
-        SeedSynchronizer.OnMapGenerated += API.LoadPrefabs;
+        EventManager.RegisterEvents(this);
         API.PrefabsLoaded += SpawnDefault;
         if (SeedSynchronizer.MapGenerated)
             API.LoadPrefabs();
@@ -56,7 +58,7 @@ public sealed class slocPlugin
         _harmony.UnpatchAll();
         API.UnsetPrefabs();
         API.PrefabsLoaded -= SpawnDefault;
-        SeedSynchronizer.OnMapGenerated -= API.LoadPrefabs;
+        EventManager.UnregisterEvents(this);
         Log.Info("slocLoader has been disabled");
     }
 
@@ -98,5 +100,8 @@ public sealed class slocPlugin
                 .Concat((Config.AutoSpawnByLocation?.Cast<IAssetLocation>()).AsNonNullEnumerable())
             );
     }
+
+    [PluginEvent(ServerEventType.WaitingForPlayers)]
+    private void MapGenerated() => API.LoadPrefabs();
 
 }
