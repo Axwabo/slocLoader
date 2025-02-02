@@ -13,10 +13,10 @@ public sealed class slocPlugin : Plugin<slocConfig>
     internal static slocPlugin Instance;
 
     public override string Name => "slocLoader";
-    public override string Description { get; }
-    public override string Author { get; }
-    public override Version Version { get; }
-    public override Version RequiredApiVersion { get; }
+    public override string Description => "A plugin that loads sloc files.";
+    public override string Author => "Axwabo";
+    public override Version Version { get; } = new(5, 3, 0);
+    public override Version RequiredApiVersion { get; } = new(1, 0, 0);
 
     private Harmony _harmony;
 
