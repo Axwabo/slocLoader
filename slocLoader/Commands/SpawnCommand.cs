@@ -55,7 +55,7 @@ public sealed class SpawnCommand : ICommand, IUsageProvider
         {
             Position = position,
             Rotation = rotation,
-            IsStatic = slocPlugin.Instance.Config.StaticSpawnCommand
+            IsStatic = slocPlugin.Instance?.Config?.StaticSpawnCommand ?? true
         }, out var spawned);
         response = $"Spawned {spawned} GameObjects. NetID: {go.GetComponent<NetworkIdentity>().netId}";
         return true;

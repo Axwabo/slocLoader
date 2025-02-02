@@ -62,10 +62,20 @@ public static class TriggerActionHelpers
             return;
         if (options.HasFlagFast(TeleportOptions.ResetFallDamage))
             module.Motor.ResetFallDamageCooldown();
+#if NWAPI
         var delta = options.HasFlagFast(TeleportOptions.DeltaRotation)
             ? rotation
             : rotation - module.MouseLook.CurrentHorizontal;
         module.ServerOverridePosition(position, new Vector3(0, delta, 0));
+#else
+        var cameraRotation = hub.PlayerCameraReference.rotation.eulerAngles;
+        var finalRotation = options.HasFlagFast(TeleportOptions.DeltaRotation)
+            ? cameraRotation.y + rotation
+            : rotation;
+        module.ServerOverridePosition(position);
+        module.ServerOverrideRotation(new Vector2(cameraRotation.x, finalRotation));
+
+#endif
     }
 
 }

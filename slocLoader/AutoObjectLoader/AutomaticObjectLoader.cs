@@ -1,4 +1,9 @@
-﻿using slocLoader.ObjectCreation;
+﻿#if NWAPI
+using PluginAPI.Core;
+#else
+using LabApi.Loader.Features.Paths;
+#endif
+using slocLoader.ObjectCreation;
 using slocLoader.Objects;
 
 namespace slocLoader.AutoObjectLoader;
@@ -11,10 +16,10 @@ public static class AutomaticObjectLoader
     public static void LoadObjects()
     {
         LoadedObjects.Clear();
-#if EXILED
-        var path = Path.Combine(Paths.Plugins, "sloc", "Objects");
-#else
+#if NWAPI
         var path = Path.Combine(PluginHandler.Get(slocPlugin.Instance).PluginDirectoryPath, "Objects");
+#else
+        var path = Path.Combine(PathManager.Plugins.FullName, "sloc", "Objects");
 #endif
         Directory.CreateDirectory(path);
         var loaded = 0;
@@ -28,15 +33,15 @@ public static class AutomaticObjectLoader
             }
             catch (Exception e)
             {
-#if EXILED
-                Log.Warn($"Failed to parse object \"{name}\":\n{e}");
+#if NWAPI
+                Logger.Warning($"Failed to parse object \"{name}\":\n{e}");
 #else
-                Log.Warning($"Failed to parse object \"{name}\":\n{e}");
+                Logger.Warn($"Failed to parse object \"{name}\":\n{e}");
 #endif
             }
         }
 
-        Log.Info($"Loaded {loaded} object{(loaded == 1 ? "" : "s")} from AppData.");
+        Logger.Info($"Loaded {loaded} object{(loaded == 1 ? "" : "s")} from AppData.");
     }
 
     public static void SpawnObjects(IEnumerable<IAssetLocation> locations)
@@ -60,7 +65,7 @@ public static class AutomaticObjectLoader
             spawnedObjects += spawned;
         }
 
-        Log.Info($"Spawned {spawnedAssets} asset(s) out of {totalAssetsToSpawn} specified; {spawnedObjects} object(s) in total.");
+        Logger.Info($"Spawned {spawnedAssets} asset(s) out of {totalAssetsToSpawn} specified; {spawnedObjects} object(s) in total.");
     }
 
     public static bool TryGetObjects(string name, out List<slocGameObject> objects) => LoadedObjects.TryGetValue(name, out objects);

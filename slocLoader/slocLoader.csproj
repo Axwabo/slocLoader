@@ -1,231 +1,47 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>slocLoader</RootNamespace>
-        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
-        <LangVersion>10</LangVersion>
-        <PlatformTarget>x64</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
-        <Optimize>true</Optimize>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
+        <LangVersion>12</LangVersion>
+        <TargetFramework>net48</TargetFramework>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+        <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+        <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Optimize>true</Optimize>
+        <PlatformTarget>x64</PlatformTarget>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'EXILED|AnyCPU' ">
-        <ProjectGuid>{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}</ProjectGuid>
-        <AssemblyName>slocLoader</AssemblyName>
-        <DefineConstants>EXILED;TRACE</DefineConstants>
-        <OutputPath>bin\EXILED\</OutputPath>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NW|AnyCPU' ">
-        <ProjectGuid>{41000E56-567E-4AF2-9951-8C9A43A3573D}</ProjectGuid>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'NWAPI'">
         <AssemblyName>slocLoader.NWAPI</AssemblyName>
-        <DefineConstants>TRACE</DefineConstants>
-        <OutputPath>bin\NW\</OutputPath>
+        <DefineConstants>NWAPI</DefineConstants>
     </PropertyGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'EXILED|AnyCPU' ">
-        <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-            <HintPath>..\packages\Lib.Harmony.2.2.2\lib\net48\0Harmony.dll</HintPath>
-        </Reference>
-        <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(EXILED-ASSEMBLIES)\Assembly-CSharp.dll</HintPath>
-        </Reference>
-        <Reference Include="Assembly-CSharp-firstpass">
-            <HintPath>$(EXILED-ASSEMBLIES)\Assembly-CSharp-firstpass.dll</HintPath>
-        </Reference>
-        <Reference Include="Axwabo.Helpers">
-            <HintPath>$(EXILED-ASSEMBLIES)\Axwabo.Helpers.dll</HintPath>
-        </Reference>
-        <Reference Include="CommandSystem.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-            <HintPath>..\packages\EXILED.8.9.0\lib\net48\CommandSystem.Core.dll</HintPath>
-        </Reference>
-        <Reference Include="Exiled.API, Version=8.9.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.8.9.0\lib\net48\Exiled.API.dll</HintPath>
-        </Reference>
-        <Reference Include="Exiled.CreditTags, Version=8.9.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.8.9.0\lib\net48\Exiled.CreditTags.dll</HintPath>
-        </Reference>
-        <Reference Include="Exiled.CustomItems, Version=8.9.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.8.9.0\lib\net48\Exiled.CustomItems.dll</HintPath>
-        </Reference>
-        <Reference Include="Exiled.CustomRoles, Version=8.9.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.8.9.0\lib\net48\Exiled.CustomRoles.dll</HintPath>
-        </Reference>
-        <Reference Include="Exiled.Events, Version=8.9.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.8.9.0\lib\net48\Exiled.Events.dll</HintPath>
-        </Reference>
-        <Reference Include="Exiled.Loader, Version=8.9.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.8.9.0\lib\net48\Exiled.Loader.dll</HintPath>
-        </Reference>
-        <Reference Include="Exiled.Permissions, Version=8.9.0.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.8.9.0\lib\net48\Exiled.Permissions.dll</HintPath>
-        </Reference>
-        <Reference Include="Mirror, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(EXILED-ASSEMBLIES)\Mirror.dll</HintPath>
-        </Reference>
-        <Reference Include="NorthwoodLib, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-            <HintPath>..\packages\EXILED.8.9.0\lib\net48\NorthwoodLib.dll</HintPath>
-        </Reference>
-        <Reference Include="PluginAPI, Version=13.1.2.0, Culture=neutral, processorArchitecture=Amd64">
-            <HintPath>..\packages\EXILED.8.9.0\lib\net48\PluginAPI.dll</HintPath>
-        </Reference>
-        <Reference Include="Pooling">
-            <HintPath>$(EXILED-ASSEMBLIES)\Pooling.dll</HintPath>
-        </Reference>
-        <Reference Include="System"/>
-        <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(EXILED-ASSEMBLIES)\UnityEngine.CoreModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(EXILED-ASSEMBLIES)\UnityEngine.PhysicsModule.dll</HintPath>
-        </Reference>
-        <Reference Include="YamlDotNet, Version=11.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
-            <HintPath>..\packages\EXILED.8.9.0\lib\net48\YamlDotNet.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'NW|AnyCPU' ">
-        <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-            <HintPath>..\packages\Lib.Harmony.2.2.2\lib\net48\0Harmony.dll</HintPath>
-        </Reference>
-        <Reference Include="Assembly-CSharp">
-            <HintPath>$(NW-ASSEMBLIES)\Assembly-CSharp.dll</HintPath>
-        </Reference>
-        <Reference Include="Assembly-CSharp-firstpass">
-            <HintPath>$(NW-ASSEMBLIES)\Assembly-CSharp-firstpass.dll</HintPath>
-        </Reference>
-        <Reference Include="Axwabo.Helpers.NWAPI">
-            <HintPath>$(NW-ASSEMBLIES)\Axwabo.Helpers.dll</HintPath>
-        </Reference>
-        <Reference Include="CommandSystem.Core">
-            <HintPath>$(NW-ASSEMBLIES)\CommandSystem.Core.dll</HintPath>
-        </Reference>
-        <Reference Include="Mirror">
-            <HintPath>$(NW-ASSEMBLIES)\Mirror.dll</HintPath>
-        </Reference>
-        <Reference Include="Mirror.Components">
-            <HintPath>$(NW-ASSEMBLIES)\Mirror.Components.dll</HintPath>
-        </Reference>
-        <Reference Include="mscorlib"/>
-        <Reference Include="NorthwoodLib">
-            <HintPath>$(NW-ASSEMBLIES)\NorthwoodLib.dll</HintPath>
-        </Reference>
-        <Reference Include="PluginAPI">
-            <HintPath>$(NW-ASSEMBLIES)\PluginAPI.dll</HintPath>
-        </Reference>
-        <Reference Include="Pooling">
-            <HintPath>$(NW-ASSEMBLIES)\Pooling.dll</HintPath>
-        </Reference>
-        <Reference Include="System"/>
-        <Reference Include="UnityEngine">
-            <HintPath>$(NW-ASSEMBLIES)\UnityEngine.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.CoreModule">
-            <HintPath>$(NW-ASSEMBLIES)\UnityEngine.CoreModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.PhysicsModule">
-            <HintPath>$(NW-ASSEMBLIES)\UnityEngine.PhysicsModule.dll</HintPath>
-        </Reference>
-        <Reference Include="YamlDotNet, Version=12.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
-            <HintPath>..\packages\YamlDotNet.12.3.1\lib\net47\YamlDotNet.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'EXILED|AnyCPU' ">
-        <Compile Include="ExiledConfig.cs"/>
-        <Compile Include="ExiledPlugin.cs"/>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'NW|AnyCPU' ">
-        <Compile Include="NWConfig.cs"/>
-        <Compile Include="NWPlugin.cs"/>
-    </ItemGroup>
+
     <ItemGroup>
-        <Compile Include="AddObserversPatch.cs"/>
-        <Compile Include="AdminToyPatch.cs"/>
-        <Compile Include="API.BinaryExtensions.cs"/>
-        <Compile Include="API.Create.cs"/>
-        <Compile Include="API.cs"/>
-        <Compile Include="API.Read.cs"/>
-        <Compile Include="API.Spawn.cs"/>
-        <Compile Include="AutoObjectLoader\AutomaticObjectLoader.cs"/>
-        <Compile Include="AutoObjectLoader\IAssetLocation.cs"/>
-        <Compile Include="AutoObjectLoader\PositionByRoomName.cs"/>
-        <Compile Include="AutoObjectLoader\PositionByRoomType.cs"/>
-        <Compile Include="AutoObjectLoader\StaticAssetPosition.cs"/>
-        <Compile Include="Commands\DestroyCommand.cs"/>
-        <Compile Include="Commands\PositionCommand.cs"/>
-        <Compile Include="Commands\ReloadCommand.cs"/>
-        <Compile Include="Commands\RotationCommand.cs"/>
-        <Compile Include="Commands\SpawnCommand.cs"/>
-        <Compile Include="Commands\StructureCommand.cs"/>
-        <Compile Include="GlobalUsings.cs"/>
-        <Compile Include="InstanceDictionary.cs"/>
-        <Compile Include="Objects\EmptyObject.cs"/>
-        <Compile Include="Objects\LightObject.cs"/>
-        <Compile Include="Objects\ObjectType.cs"/>
-        <Compile Include="Objects\PrimitiveObject.cs"/>
-        <Compile Include="Objects\slocGameObject.cs"/>
-        <Compile Include="Objects\slocTransform.cs"/>
-        <Compile Include="ObjectCreation\ObjectsSource.cs"/>
-        <Compile Include="ObjectCreation\CreateOptions.cs"/>
-        <Compile Include="Objects\StructureObject.cs"/>
-        <Compile Include="Readers\IObjectReader.cs"/>
-        <Compile Include="Readers\slocHeader.cs"/>
-        <Compile Include="Readers\Ver1Reader.cs"/>
-        <Compile Include="Readers\Ver2Reader.cs"/>
-        <Compile Include="Readers\Ver3Reader.cs"/>
-        <Compile Include="Readers\Ver4Reader.cs"/>
-        <Compile Include="Readers\Ver5Reader.cs"/>
-        <Compile Include="SendSpawnMessagePatch.cs"/>
-        <Compile Include="SetPrimitiveFlagsPatch.cs"/>
-        <Compile Include="SetPrimitiveTypePatch.cs"/>
-        <Compile Include="slocAttributes.cs"/>
-        <Compile Include="Properties\AssemblyInfo.cs"/>
-        <Compile Include="slocObjectData.cs"/>
-        <Compile Include="SpawnObserversPatch.cs"/>
-        <Compile Include="TriggerActions\ActionManager.cs"/>
-        <Compile Include="TriggerActions\Data\BaseTeleportData.cs"/>
-        <Compile Include="TriggerActions\Data\BaseTriggerActionData.cs"/>
-        <Compile Include="TriggerActions\Data\KillPlayerData.cs"/>
-        <Compile Include="TriggerActions\Data\MoveRelativeToSelfData.cs"/>
-        <Compile Include="TriggerActions\Data\RuntimeTeleportToSpawnedObjectData.cs"/>
-        <Compile Include="TriggerActions\Data\SerializableTeleportToSpawnedObjectData.cs"/>
-        <Compile Include="TriggerActions\Data\TeleporterImmunityData.cs"/>
-        <Compile Include="TriggerActions\Data\TeleportToPositionData.cs"/>
-        <Compile Include="TriggerActions\Data\TeleportToRoomData.cs"/>
-        <Compile Include="TriggerActions\Enums\ImmunityDurationMode.cs"/>
-        <Compile Include="TriggerActions\Enums\TargetType.cs"/>
-        <Compile Include="TriggerActions\Enums\TeleportOptions.cs"/>
-        <Compile Include="TriggerActions\Enums\TriggerActionType.cs"/>
-        <Compile Include="TriggerActions\Enums\TriggerEventType.cs"/>
-        <Compile Include="TriggerActions\HandlerDataPair.cs"/>
-        <Compile Include="TriggerActions\Handlers\Abstract\PickupActionHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\Abstract\PlayerActionHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\Abstract\RagdollActionHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\Abstract\TeleportHandlerBase.cs"/>
-        <Compile Include="TriggerActions\Handlers\Abstract\ToyActionHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\Abstract\UniversalTriggerActionHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\ITriggerActionHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\KillPlayerHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\MoveRelativeToSelfHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\TeleporterImmunityHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\TeleportToPositionHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\TeleportToRoomHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\TeleportToSpawnedObjectHandler.cs"/>
-        <Compile Include="TriggerActions\Handlers\TriggerActionHelpers.cs"/>
-        <Compile Include="TriggerActions\Readers\ITriggerActionDataReader.cs"/>
-        <Compile Include="TriggerActions\Readers\Ver4ActionDataReader.cs"/>
-        <Compile Include="TriggerActions\Readers\Ver5ActionDataReader.cs"/>
-        <Compile Include="TriggerActions\TeleporterImmunityStorage.cs"/>
-        <Compile Include="TriggerActions\TriggerListener.cs"/>
-        <Compile Include="TriggerActions\TriggerListenerInvoker.cs"/>
+        <Reference Include="Assembly-CSharp"/>
+        <Reference Include="Assembly-CSharp-firstpass"/>
+        <Reference Include="Axwabo.Helpers"/>
+        <Reference Include="CommandSystem.Core"/>
+        <Reference Include="Mirror"/>
+        <Reference Include="LabApi" Condition="'$(Configuration)' == 'LabApi'"/>
+        <Reference Include="PluginAPI" Condition="'$(Configuration)' == 'NWAPI'"/>
+        <Reference Include="Pooling"/>
+        <Reference Include="UnityEngine.CoreModule"/>
+        <Reference Include="UnityEngine.PhysicsModule"/>
     </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'LabApi'">
+        <Compile Remove="NWPlugin.cs"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'NWAPI'">
+        <Compile Remove="LabApiPlugin.cs"/>
+    </ItemGroup>
+
     <ItemGroup>
-        <None Include="packages.config"/>
+        <PackageReference Include="Lib.Harmony" Version="2.2.2"/>
     </ItemGroup>
-    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>

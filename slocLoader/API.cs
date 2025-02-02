@@ -34,7 +34,7 @@ public static partial class API
 
         if (PrimitivePrefab == null || LightPrefab == null)
         {
-            Log.Error("Either the primitive or light prefab is null. This should not happen!");
+            Logger.Error("Either the primitive or light prefab is null. This should not happen!");
             return;
         }
 
@@ -55,7 +55,7 @@ public static partial class API
             {
                 var method = subscriber.Method;
                 var exception = e is TargetInvocationException {InnerException: { } inner} ? inner : e;
-                Log.Error($"An exception was thrown by {method.DeclaringType?.FullName}::{method.Name} upon the invocation of PrefabsLoaded:\n{exception}");
+                Logger.Error($"An exception was thrown by {method.DeclaringType?.FullName}::{method.Name} upon the invocation of PrefabsLoaded:\n{exception}");
             }
         }
     }

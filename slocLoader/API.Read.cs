@@ -46,10 +46,10 @@ public static partial class API
         var binaryReader = new BinaryReader(buffered);
         var version = ReadVersionSafe(buffered, binaryReader);
         if (!VersionReaders.ContainsKey(version))
-#if EXILED
-            Log.Warn($"Unknown sloc version: {version}\nAttempting to read it using the default reader.");
+#if NWAPI
+            Logger.Warning($"Unknown sloc version: {version}\nAttempting to read it using the default reader.");
 #else
-            Log.Warning($"Unknown sloc version: {version}\nAttempting to read it using the default reader.");
+            Logger.Warn($"Unknown sloc version: {version}\nAttempting to read it using the default reader.");
 #endif
         var reader = GetReader(version);
         var header = reader.ReadHeader(binaryReader);
