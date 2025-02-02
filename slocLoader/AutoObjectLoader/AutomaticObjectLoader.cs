@@ -19,7 +19,7 @@ public static class AutomaticObjectLoader
 #if NWAPI
         var path = Path.Combine(PluginHandler.Get(slocPlugin.Instance).PluginDirectoryPath, "Objects");
 #else
-        var path = Path.Combine(PathManager.Plugins.FullName, "sloc", "Objects");
+        var path = Path.Combine(PathManager.Configs.FullName, "slocLoader", "Objects");
 #endif
         Directory.CreateDirectory(path);
         var loaded = 0;
