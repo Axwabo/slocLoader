@@ -1,6 +1,7 @@
 ﻿using AdminToys;
 using MapGeneration.Distributors;
 using Mirror;
+using slocLoader.Extensions;
 using RelativePositioning;
 using slocLoader.ObjectCreation;
 using slocLoader.Objects;
@@ -83,6 +84,7 @@ public static partial class API
         var o = Object.Instantiate(prefab);
         o.SetAbsoluteTransformFrom(parent);
         o.SetLocalTransform(structure.Transform);
+        o.ApplyNameAndTag(structure.Name, structure.Tag);
         o.AddComponent<slocObjectData>().GlobalTransform = o.TryGetComponent(out WaypointBase _);
         if (structure.RemoveDefaultLoot && o.TryGetComponent(out Locker locker))
             locker.Loot = [];
@@ -95,23 +97,21 @@ public static partial class API
         if (PrimitivePrefab == null)
             throw new InvalidOperationException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
         var toy = Object.Instantiate(PrimitivePrefab);
-        var colliderMode = primitive.GetNonUnsetColliderMode();
+        var flags = primitive.Flags;
         var primitiveType = primitive.Type.ToPrimitiveType();
         var o = toy.gameObject;
+        o.ApplyNameAndTag(primitive.Name, primitive.Tag);
         var sloc = o.AddComponent<slocObjectData>();
-        sloc.HasColliderOnClient = colliderMode is PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.Both;
-        if (colliderMode is PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger or PrimitiveObject.ColliderCreationMode.ServerOnlyNonSpawned or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned)
-            sloc.ShouldBeSpawnedOnClient = false;
-        if (colliderMode is not (PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned))
-            sloc.IsTrigger = colliderMode.IsTrigger();
-        else
-            sloc.HasColliderOnServer = false;
-        AddActionHandlers(o, primitive.TriggerActions);
+        sloc.HasColliderOnClient = flags.HasFlagFast(PrimitiveObjectFlags.ClientCollider);
+        sloc.ShouldBeSpawnedOnClient = !flags.HasFlagFast(PrimitiveObjectFlags.NotSpawned);
+        sloc.IsTrigger = flags.IsTrigger();
+        sloc.HasColliderOnServer = flags.HasFlagFast(PrimitiveObjectFlags.ServerCollider) && !flags.IsTrigger();
         toy.PrimitiveType = primitiveType;
         toy.MovementSmoothing = primitive.MovementSmoothing;
         toy.SetAbsoluteTransformFrom(parent);
         toy.SetLocalTransform(primitive.Transform);
         toy.MaterialColor = primitive.MaterialColor;
+        AddActionHandlers(o, primitive.TriggerActions);
         ApplyAdminToyTransform(toy, sloc.HasColliderOnClient);
         if (!sloc.HasColliderOnClient)
             toy.PrimitiveFlags &= ~PrimitiveFlags.Collidable;
@@ -127,12 +127,16 @@ public static partial class API
         toy.SetAbsoluteTransformFrom(parent);
         toy.SetLocalTransform(light.Transform);
         toy.LightColor = light.LightColor;
-        toy.ShadowType = light.Shadows ? LightShadows.Soft : LightShadows.None;
-        toy.LightRange = light.Range;
         toy.LightIntensity = light.Intensity;
+        toy.LightRange = light.Range;
+        toy.LightType = light.LightType;
+        toy.LightShape = light.Shape;
+        toy.SpotAngle = light.SpotAngle;
+        toy.InnerSpotAngle = light.InnerSpotAngle;
         toy.MovementSmoothing = light.MovementSmoothing;
         ApplyAdminToyTransform(toy);
         var go = toy.gameObject;
+        go.ApplyNameAndTag(light.Name, light.Tag);
         go.AddComponent<slocObjectData>();
         return go;
     }
@@ -160,13 +164,10 @@ public static partial class API
         var stay = new List<HandlerDataPair>();
         var exit = new List<HandlerDataPair>();
         foreach (var action in data)
-        {
             if (action is SerializableTeleportToSpawnedObjectData tp)
                 TpToSpawnedCache.GetOrAdd(o, () => []).Add(tp);
             else if (ActionManager.TryGetHandler(action.ActionType, out var handler))
                 AddActionDataPairToList(action, handler, enter, stay, exit);
-        }
-
         if (enter.Count == 0 && stay.Count == 0 && exit.Count == 0)
             return;
         var component = o.GetOrAddComponent<TriggerListener>();
@@ -247,7 +248,6 @@ public static partial class API
             return;
         foreach (var kvp in TpToSpawnedCache)
         foreach (var data in kvp.Value)
-        {
             if (CreatedInstances.TryGetValue(data.ID, out var target))
                 kvp.Key.AddTriggerAction(new RuntimeTeleportToSpawnedObjectData(target, data.Offset)
                 {
@@ -255,7 +255,6 @@ public static partial class API
                     Options = data.Options,
                     RotationY = data.RotationY
                 }, handler);
-        }
     }
 
 }

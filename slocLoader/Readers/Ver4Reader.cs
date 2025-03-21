@@ -1,6 +1,8 @@
 ﻿using slocLoader.Objects;
 using slocLoader.TriggerActions;
 
+#pragma warning disable CS0618
+
 namespace slocLoader.Readers;
 
 public sealed class Ver4Reader : IObjectReader

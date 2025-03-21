@@ -125,6 +125,7 @@ public static partial class API
         return collider;
     }
 
+    [Obsolete("Collider modes have been replaced by primitive flags.")]
     public static bool IsTrigger(this PrimitiveObject.ColliderCreationMode colliderMode) => colliderMode is PrimitiveObject.ColliderCreationMode.Trigger or PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger;
 
     public static bool HasAttribute(this slocHeader header, slocAttributes attribute) => (header.Attributes & attribute) == attribute;

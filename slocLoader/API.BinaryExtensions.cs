@@ -79,9 +79,11 @@ public static partial class API
 
     #region Bit Math
 
+    [Obsolete("Collider modes have been replaced by primitive flags.")]
     public static PrimitiveObject.ColliderCreationMode CombineSafe(PrimitiveObject.ColliderCreationMode a, PrimitiveObject.ColliderCreationMode b) =>
         (PrimitiveObject.ColliderCreationMode) CombineSafe((byte) a, (byte) b);
 
+    [Obsolete("Collider modes have been replaced by primitive flags.")]
     public static void SplitSafe(PrimitiveObject.ColliderCreationMode combined, out PrimitiveObject.ColliderCreationMode a, out PrimitiveObject.ColliderCreationMode b)
     {
         SplitSafe((byte) combined, out var x, out var y);
