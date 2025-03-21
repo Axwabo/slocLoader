@@ -1,9 +1,5 @@
-﻿#if NWAPI
-using PluginAPI.Core;
-#else
-using LabApi.Features.Wrappers;
+﻿using LabApi.Features.Wrappers;
 using LabApi.Loader.Features.Paths;
-#endif
 using slocLoader.ObjectCreation;
 using slocLoader.Objects;
 
@@ -17,11 +13,7 @@ public static class AutomaticObjectLoader
     public static void LoadObjects()
     {
         LoadedObjects.Clear();
-#if NWAPI
-        var path = Path.Combine(PluginHandler.Get(slocPlugin.Instance).PluginDirectoryPath, "Objects");
-#else
         var path = Path.Combine(PathManager.Configs.FullName, Server.Port.ToString(), "slocLoader", "Objects");
-#endif
         Directory.CreateDirectory(path);
         var loaded = 0;
         foreach (var file in Directory.EnumerateFiles(path, "*.sloc"))
@@ -34,11 +26,7 @@ public static class AutomaticObjectLoader
             }
             catch (Exception e)
             {
-#if NWAPI
-                Logger.Warning($"Failed to parse object \"{name}\":\n{e}");
-#else
                 Logger.Warn($"Failed to parse object \"{name}\":\n{e}");
-#endif
             }
         }
 

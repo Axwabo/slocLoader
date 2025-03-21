@@ -5,12 +5,9 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		LabApi|Any CPU = LabApi|Any CPU
-		NWAPI|Any CPU = NWAPI|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}.LabApi|Any CPU.ActiveCfg = LabApi|Any CPU
 		{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}.LabApi|Any CPU.Build.0 = LabApi|Any CPU
-		{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}.NWAPI|Any CPU.ActiveCfg = NWAPI|Any CPU
-		{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}.NWAPI|Any CPU.Build.0 = NWAPI|Any CPU
 	EndGlobalSection
 EndGlobal

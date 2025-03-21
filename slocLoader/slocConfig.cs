@@ -14,22 +14,22 @@ public sealed class slocConfig
     public bool EnableAutoSpawn { get; set; } = true;
 
     [Description("A list of objects to be automatically spawned specified by room names.")]
-    public List<PositionByRoomName> AutoSpawnByRoomName { get; set; } = new()
-    {
-        new PositionByRoomName("example", new MapPointByName("none", Vector3.forward, new SerializedRotation(10)))
-    };
+    public List<PositionByRoomName> AutoSpawnByRoomName { get; set; } =
+    [
+        new("example", new MapPointByName("none", Vector3.forward, new SerializedRotation(10)))
+    ];
 
     [Description("A list of objects to be automatically spawned specified by RoomTypes.")]
-    public List<PositionByRoomType> AutoSpawnByRoomType { get; set; } = new()
-    {
-        new PositionByRoomType("example", new MapPointByRoomType(RoomType.Unknown, Vector3.up, new SerializedRotation(0, 30)))
-    };
+    public List<PositionByRoomType> AutoSpawnByRoomType { get; set; } =
+    [
+        new("example", new MapPointByRoomType(RoomType.Unknown, Vector3.up, new SerializedRotation(0, 30)))
+    ];
 
     [Description("A list of objects to be automatically spawned at specific locations.")]
-    public List<StaticAssetPosition> AutoSpawnByLocation { get; set; } = new()
-    {
-        new StaticAssetPosition("example", new StaticMapPoint(0, 1000, 5))
-    };
+    public List<StaticAssetPosition> AutoSpawnByLocation { get; set; } =
+    [
+        new("example", new StaticMapPoint(0, 1000, 5))
+    ];
 
     [Description("If set to false, teleporters will not be able to modify the positions of ragdolls. When enabled, can cause issues with networking and client-side ragdoll physics.")]
     public bool EnableRagdollPositionModification { get; set; } = true;

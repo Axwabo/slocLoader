@@ -15,30 +15,16 @@
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)' == 'NWAPI'">
-        <AssemblyName>slocLoader.NWAPI</AssemblyName>
-        <DefineConstants>NWAPI</DefineConstants>
-    </PropertyGroup>
-
     <ItemGroup>
         <Reference Include="Assembly-CSharp"/>
         <Reference Include="Assembly-CSharp-firstpass"/>
         <Reference Include="Axwabo.Helpers"/>
         <Reference Include="CommandSystem.Core"/>
         <Reference Include="Mirror"/>
-        <Reference Include="LabApi" Condition="'$(Configuration)' == 'LabApi'"/>
-        <Reference Include="PluginAPI" Condition="'$(Configuration)' == 'NWAPI'"/>
+        <Reference Include="LabApi"/>
         <Reference Include="Pooling"/>
         <Reference Include="UnityEngine.CoreModule"/>
         <Reference Include="UnityEngine.PhysicsModule"/>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(Configuration)' == 'LabApi'">
-        <Compile Remove="NWPlugin.cs"/>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(Configuration)' == 'NWAPI'">
-        <Compile Remove="LabApiPlugin.cs"/>
     </ItemGroup>
 
     <ItemGroup>
