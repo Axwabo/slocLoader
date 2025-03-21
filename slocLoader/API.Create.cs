@@ -105,7 +105,7 @@ public static partial class API
         sloc.HasColliderOnClient = flags.HasFlagFast(PrimitiveObjectFlags.ClientCollider);
         sloc.ShouldBeSpawnedOnClient = !flags.HasFlagFast(PrimitiveObjectFlags.NotSpawned);
         sloc.IsTrigger = flags.IsTrigger();
-        sloc.HasColliderOnServer = flags.HasFlagFast(PrimitiveObjectFlags.ServerCollider) && !flags.IsTrigger();
+        sloc.HasColliderOnServer = flags.HasFlagFast(PrimitiveObjectFlags.ServerCollider);
         toy.PrimitiveType = primitiveType;
         toy.MovementSmoothing = primitive.MovementSmoothing;
         toy.SetAbsoluteTransformFrom(parent);

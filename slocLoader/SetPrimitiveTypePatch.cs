@@ -42,11 +42,10 @@ public static class SetPrimitiveTypePatch
     private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
         var list = new List<CodeInstruction>(instructions);
-        list.InsertRange(list.Count - 2, new[]
-        {
+        list.InsertRange(list.Count - 2, [
             This,
             Call(UpdateColliderTriggerState)
-        });
+        ]);
         return list;
     }
 
