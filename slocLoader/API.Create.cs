@@ -34,7 +34,7 @@ public static partial class API
         StructureObject structure => CreateStructure(parent, structure),
         PrimitiveObject primitive => CreatePrimitive(parent, primitive),
         LightObject light => CreateLight(parent, light),
-        EmptyObject => CreateEmpty(parent, obj.Transform),
+        EmptyObject => CreateEmpty(parent, obj),
         _ => throwOnError ? throw new IndexOutOfRangeException($"Unknown object type {obj.Type}") : null
     };
 
@@ -130,7 +130,6 @@ public static partial class API
         toy.LightIntensity = light.Intensity;
         toy.LightRange = light.Range;
         toy.LightType = light.LightType;
-        toy.LightShape = light.Shape;
         toy.SpotAngle = light.SpotAngle;
         toy.InnerSpotAngle = light.InnerSpotAngle;
         toy.MovementSmoothing = light.MovementSmoothing;
@@ -141,19 +140,29 @@ public static partial class API
         return go;
     }
 
-    private static GameObject CreateEmpty(GameObject parent, slocTransform transform)
+    private static GameObject CreateEmpty(GameObject parent, Vector3 localPosition, Quaternion localRotation, Vector3 localScale)
     {
         if (PrimitivePrefab == null)
             throw new InvalidOperationException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
         var toy = Object.Instantiate(PrimitivePrefab);
         toy.SetAbsoluteTransformFrom(parent);
-        toy.SetLocalTransform(transform);
+        var t = toy.transform;
+        t.localPosition = localPosition;
+        t.localRotation = localRotation;
+        t.localScale = localScale;
         toy.PrimitiveFlags = PrimitiveFlags.None;
         ApplyAdminToyTransform(toy);
         var data = toy.gameObject.AddComponent<slocObjectData>();
         data.HasColliderOnClient = false;
         data.HasColliderOnServer = false;
         return toy.gameObject;
+    }
+
+    private static GameObject CreateEmpty(GameObject parent, slocGameObject obj)
+    {
+        var go = CreateEmpty(parent, obj.Transform.Position, obj.Transform.Rotation, obj.Transform.Scale);
+        go.ApplyNameAndTag(obj.Name, obj.Tag);
+        return go;
     }
 
     private static void AddActionHandlers(GameObject o, BaseTriggerActionData[] data)

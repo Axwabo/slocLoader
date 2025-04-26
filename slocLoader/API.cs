@@ -153,11 +153,7 @@ public static partial class API
         TpToSpawnedCache.Clear();
         try
         {
-            var go = CreateEmpty(null, new slocTransform
-            {
-                Position = options.Position,
-                Rotation = options.Rotation
-            });
+            var go = CreateEmpty(null, options.Position, options.Rotation, Vector3.one);
             if (spawnRoot)
                 NetworkServer.Spawn(go);
             createdAmount = 0;

@@ -5,21 +5,20 @@ namespace slocLoader.Objects;
 public sealed class LightObject : slocGameObject
 {
 
-    private const int TwoBitMask = 0b00000011;
+    private const int BitMask = 0b00001111;
+    private const int BitShift = 4;
 
-    public static byte LightEnumsToByte(LightShadows shadows, LightType type, LightShape shape)
+    public static byte LightEnumsToByte(LightShadows shadows, LightType type)
     {
-        var shadowsBits = (byte) shadows & TwoBitMask;
-        var typeBits = (byte) type & TwoBitMask;
-        var shapeBits = (byte) shape & TwoBitMask;
-        return (byte) (shadowsBits | typeBits << 2 | shapeBits << 4);
+        var shadowsBits = (byte) shadows & BitMask;
+        var typeBits = (byte) type & BitMask;
+        return (byte) (shadowsBits | typeBits << BitShift);
     }
 
-    public static void ByteToLightEnums(byte data, out LightShadows shadows, out LightType type, out LightShape shape)
+    public static void ByteToLightEnums(byte data, out LightShadows shadows, out LightType type)
     {
-        shadows = (LightShadows) (data & TwoBitMask);
-        type = (LightType) (data >> 2 & TwoBitMask);
-        shape = (LightShape) (data >> 4 & TwoBitMask);
+        shadows = (LightShadows) (data & BitMask);
+        type = (LightType) (data >> BitShift & BitMask);
     }
 
     public LightObject() : this(0)
@@ -43,8 +42,6 @@ public sealed class LightObject : slocGameObject
 
     public LightType LightType = LightType.Point;
 
-    public LightShape Shape;
-
     public float SpotAngle;
 
     public float InnerSpotAngle;
@@ -57,7 +54,7 @@ public sealed class LightObject : slocGameObject
             writer.WriteColor(LightColor);
         writer.Write(Range);
         writer.Write(Intensity);
-        writer.Write(LightEnumsToByte(ShadowType, LightType, Shape));
+        writer.Write(LightEnumsToByte(ShadowType, LightType));
         if (ShadowType != LightShadows.None)
             writer.WriteFloatAsShort(ShadowStrength);
         if (LightType != LightType.Spot)

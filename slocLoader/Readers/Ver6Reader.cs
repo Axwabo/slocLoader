@@ -42,15 +42,14 @@ public sealed class Ver6Reader : IObjectReader
         var range = stream.ReadSingle();
         var intensity = stream.ReadSingle();
         var lightData = stream.ReadByte();
-        LightObject.ByteToLightEnums(lightData, out var lightShadows, out var lightType, out var lightShape);
+        LightObject.ByteToLightEnums(lightData, out var lightShadows, out var lightType);
         var light = new LightObject(properties.InstanceId)
         {
             LightColor = color,
             Range = range,
             Intensity = intensity,
             ShadowType = lightShadows,
-            LightType = lightType,
-            Shape = lightShape
+            LightType = lightType
         }.ApplyProperties(properties);
         if (lightShadows != LightShadows.None)
             light.ShadowStrength = stream.ReadShortAsFloat();
