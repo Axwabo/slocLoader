@@ -152,16 +152,11 @@ public static partial class API
         TpToSpawnedCache.Clear();
         try
         {
-            var go = new GameObject
+            var go = CreateEmpty(null, new slocTransform
             {
-                transform =
-                {
-                    position = options.Position,
-                    rotation = options.Rotation,
-                }
-            };
-            go.AddComponent<NetworkIdentity>();
-            go.AddComponent<slocObjectData>();
+                Position = options.Position,
+                Rotation = options.Rotation
+            });
             if (spawnRoot)
                 NetworkServer.Spawn(go);
             createdAmount = 0;

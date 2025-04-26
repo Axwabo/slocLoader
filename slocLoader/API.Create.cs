@@ -139,10 +139,16 @@ public static partial class API
 
     private static GameObject CreateEmpty(GameObject parent, slocTransform transform)
     {
-        var emptyObject = new GameObject("Empty", typeof(NetworkIdentity));
-        emptyObject.SetAbsoluteTransformFrom(parent);
-        emptyObject.SetLocalTransform(transform);
-        return emptyObject;
+        if (PrimitivePrefab == null)
+            throw new InvalidOperationException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(PrimitivePrefab);
+        toy.SetAbsoluteTransformFrom(parent);
+        toy.SetLocalTransform(transform);
+        toy.PrimitiveFlags = PrimitiveFlags.None;
+        var data = toy.gameObject.AddComponent<slocObjectData>();
+        data.HasColliderOnClient = false;
+        data.HasColliderOnServer = false;
+        return toy.gameObject;
     }
 
     private static void AddActionHandlers(GameObject o, BaseTriggerActionData[] data)
@@ -155,7 +161,7 @@ public static partial class API
         foreach (var action in data)
         {
             if (action is SerializableTeleportToSpawnedObjectData tp)
-                TpToSpawnedCache.GetOrAdd(o, () => new List<SerializableTeleportToSpawnedObjectData>()).Add(tp);
+                TpToSpawnedCache.GetOrAdd(o, () => []).Add(tp);
             else if (ActionManager.TryGetHandler(action.ActionType, out var handler))
                 AddActionDataPairToList(action, handler, enter, stay, exit);
         }
