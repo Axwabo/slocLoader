@@ -44,7 +44,7 @@ public static partial class API
         var hasData = o.TryGetComponent(out slocObjectData data);
         if (hasData && !data.ShouldBeSpawnedOnClient)
             return o;
-        if (hasData)
+        if (hasData && data.GlobalTransform)
             SpawnGameObjectWithGlobalTransform(o);
         else
             NetworkServer.Spawn(o);

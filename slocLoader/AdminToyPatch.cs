@@ -15,8 +15,8 @@ public static class AdminToyPatch
     {
         var transform = generator.Local<Transform>();
         var label = generator.DefineLabel();
-        return new[]
-        {
+        return
+        [
             This,
             Ldfld<AdminToyBase>(nameof(AdminToyBase.IsStatic)),
             label.False(),
@@ -26,18 +26,18 @@ public static class AdminToyPatch
             transform.Set(),
             This,
             transform.Load(),
-            Get<Transform>(nameof(Transform.position)),
+            Get<Transform>(nameof(Transform.localPosition)),
             Set<AdminToyBase>(nameof(AdminToyBase.NetworkPosition)),
             This,
             transform.Load(),
-            Get<Transform>(nameof(Transform.rotation)),
+            Get<Transform>(nameof(Transform.localRotation)),
             Set<AdminToyBase>(nameof(AdminToyBase.NetworkRotation)),
             This,
             transform.Load(),
-            Get<Transform>(nameof(Transform.lossyScale)),
+            Get<Transform>(nameof(Transform.localScale)),
             Set<AdminToyBase>(nameof(AdminToyBase.NetworkScale)),
             Return
-        };
+        ];
     }
 
     [Obsolete("Deprecated in favor of primitive flags, negative scaling is no longer required for the collider to be disabled.")]

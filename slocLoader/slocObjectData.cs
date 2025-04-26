@@ -19,6 +19,8 @@ public sealed class slocObjectData : MonoBehaviour
 
     public bool IsTrigger { get; set; }
 
+    public bool GlobalTransform { get; internal set; }
+
     private void Awake() => networkIdentity = GetComponent<NetworkIdentity>();
 
 }

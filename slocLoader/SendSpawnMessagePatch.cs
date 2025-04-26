@@ -8,13 +8,13 @@ namespace slocLoader;
 public static class SendSpawnMessagePatch
 {
 
-    public static bool ShouldUseGlobalTransform(NetworkIdentity identity) => identity.TryGetComponent(out slocObjectData _);
+    public static bool ShouldUseGlobalTransform(NetworkIdentity identity) => identity.TryGetComponent(out slocObjectData data) && data.GlobalTransform;
 
     [Obsolete("Deprecated in favor of API::SpawnWithGlobalTransform")]
     public delegate void SpawnDataModifier(NetworkIdentity identity, NetworkConnection connection, ref SpawnMessage message);
 
     [Obsolete("Deprecated in favor of API::SpawnWithGlobalTransform")]
-    public static readonly List<SpawnDataModifier> SpawnDataModifiers = new List<SpawnDataModifier>();
+    public static readonly List<SpawnDataModifier> SpawnDataModifiers = [];
 
     [Obsolete("Deprecated in favor of API::SpawnWithGlobalTransform")]
     public static void ModifySpawnMessage(NetworkIdentity identity, NetworkConnection connection, ref SpawnMessage message)

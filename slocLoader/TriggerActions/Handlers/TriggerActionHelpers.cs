@@ -14,7 +14,7 @@ public static class TriggerActionHelpers
 
     public static void SetRagdollPositionAndRotation(BasicRagdoll ragdoll, Vector3 targetPosition, Quaternion targetRotation)
     {
-        if (!slocPlugin.Instance.Config.EnableRagdollPositionModification)
+        if (!slocPlugin.Instance.Config?.EnableRagdollPositionModification ?? false)
             return;
         var t = ragdoll.transform;
         t.position = targetPosition;
@@ -32,7 +32,7 @@ public static class TriggerActionHelpers
         switch (pickup.PhysicsModule)
         {
             case PickupStandardPhysics physics:
-                physics.Rb.velocity = Vector3.zero;
+                physics.Rb.linearVelocity = Vector3.zero;
                 physics.Rb.angularVelocity = Vector3.zero;
                 break;
             case Scp018Physics scp018:
