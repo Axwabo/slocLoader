@@ -71,9 +71,9 @@ public static partial class API
     public static void ApplyAdminToyTransform(AdminToyBase toy, bool hasCollider = true)
     {
         var t = toy.transform;
-        toy.Position = t.position;
-        toy.Rotation = t.rotation;
-        toy.Scale = t.lossyScale;
+        toy.Position = t.localPosition;
+        toy.Rotation = t.localRotation;
+        toy.Scale = t.localScale;
     }
 
     private static GameObject CreateStructure(GameObject parent, StructureObject structure)
@@ -145,6 +145,7 @@ public static partial class API
         toy.SetAbsoluteTransformFrom(parent);
         toy.SetLocalTransform(transform);
         toy.PrimitiveFlags = PrimitiveFlags.None;
+        ApplyAdminToyTransform(toy);
         var data = toy.gameObject.AddComponent<slocObjectData>();
         data.HasColliderOnClient = false;
         data.HasColliderOnServer = false;
