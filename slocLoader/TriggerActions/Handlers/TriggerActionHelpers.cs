@@ -68,12 +68,13 @@ public static class TriggerActionHelpers
             : rotation - module.MouseLook.CurrentHorizontal;
         module.ServerOverridePosition(position, new Vector3(0, delta, 0));
 #else
-        var cameraRotation = hub.PlayerCameraReference.rotation.eulerAngles;
+        var look = module.MouseLook;
         var finalRotation = options.HasFlagFast(TeleportOptions.DeltaRotation)
-            ? cameraRotation.y + rotation
+            ? look.CurrentHorizontal + rotation
             : rotation;
         module.ServerOverridePosition(position);
-        module.ServerOverrideRotation(new Vector2(cameraRotation.x, finalRotation));
+        if (!Mathf.Approximately(finalRotation, look.CurrentHorizontal))
+            module.ServerOverrideRotation(new Vector2(look.CurrentVertical, finalRotation));
 
 #endif
     }

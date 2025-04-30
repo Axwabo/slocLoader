@@ -1,7 +1,7 @@
 ﻿using AdminToys;
-using Interactables.Interobjects;
 using MapGeneration.Distributors;
 using Mirror;
+using RelativePositioning;
 using slocLoader.ObjectCreation;
 using slocLoader.Objects;
 using slocLoader.TriggerActions;
@@ -83,7 +83,7 @@ public static partial class API
         var o = Object.Instantiate(prefab);
         o.SetAbsoluteTransformFrom(parent);
         o.SetLocalTransform(structure.Transform);
-        o.AddComponent<slocObjectData>().GlobalTransform = o.TryGetComponent(out BasicDoor _);
+        o.AddComponent<slocObjectData>().GlobalTransform = o.TryGetComponent(out WaypointBase _);
         if (structure.RemoveDefaultLoot && o.TryGetComponent(out Locker locker))
             locker.Loot = [];
         ApplyAdminToyTransform(o);
