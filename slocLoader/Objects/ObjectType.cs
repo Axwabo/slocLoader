@@ -12,6 +12,7 @@ public enum ObjectType : byte
     Plane = 6,
     Quad = 7,
     Empty = 8,
-    Structure = 9
+    Structure = 9,
+    Capybara = 10
 
 }

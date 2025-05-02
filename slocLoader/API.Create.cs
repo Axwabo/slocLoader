@@ -1,8 +1,8 @@
 ﻿using AdminToys;
 using MapGeneration.Distributors;
 using Mirror;
-using slocLoader.Extensions;
 using RelativePositioning;
+using slocLoader.Extensions;
 using slocLoader.ObjectCreation;
 using slocLoader.Objects;
 using slocLoader.TriggerActions;
@@ -31,6 +31,7 @@ public static partial class API
 
     public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, bool throwOnError = true) => obj switch
     {
+        CapybaraObject capybara => CreateCapybara(parent, capybara),
         StructureObject structure => CreateStructure(parent, structure),
         PrimitiveObject primitive => CreatePrimitive(parent, primitive),
         LightObject light => CreateLight(parent, light),
@@ -63,12 +64,14 @@ public static partial class API
         {StructureObject.StructureType.Workstation, 1783091262}
     };
 
+    [Obsolete("Use AdminToyExtensions.ApplyTransform with an AdminToyBase argument instead.")]
     public static void ApplyAdminToyTransform(GameObject gameObject)
     {
         if (gameObject.TryGetComponent(out AdminToyBase toy))
             ApplyAdminToyTransform(toy);
     }
 
+    [Obsolete("Use AdminToyExtensions.ApplyTransform instead.")]
     public static void ApplyAdminToyTransform(AdminToyBase toy, bool hasCollider = true)
     {
         var t = toy.transform;
@@ -77,18 +80,25 @@ public static partial class API
         toy.Scale = t.localScale;
     }
 
+    private static GameObject CreateCapybara(GameObject parent, CapybaraObject capybara)
+    {
+        if (CapybaraPrefab == null)
+            throw new InvalidOperationException("Capybara prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(CapybaraPrefab);
+        toy.ApplyCommonData(capybara, parent, out var go, out _);
+        toy.CollisionsEnabled = capybara.Collidable;
+        return go;
+    }
+
     private static GameObject CreateStructure(GameObject parent, StructureObject structure)
     {
         if (!StructurePrefabIds.TryGetValue(structure.Structure, out var id) || !NetworkClient.prefabs.TryGetValue(id, out var prefab))
             return null;
         var o = Object.Instantiate(prefab);
-        o.SetAbsoluteTransformFrom(parent);
-        o.SetLocalTransform(structure.Transform);
-        o.ApplyNameAndTag(structure.Name, structure.Tag);
-        o.AddComponent<slocObjectData>().GlobalTransform = o.TryGetComponent(out WaypointBase _);
+        o.ApplyCommonData(structure, parent, out var data);
+        data.GlobalTransform = o.TryGetComponent(out WaypointBase _);
         if (structure.RemoveDefaultLoot && o.TryGetComponent(out Locker locker))
             locker.Loot = [];
-        ApplyAdminToyTransform(o);
         return o;
     }
 
@@ -99,20 +109,14 @@ public static partial class API
         var toy = Object.Instantiate(PrimitivePrefab);
         var flags = primitive.Flags;
         var primitiveType = primitive.Type.ToPrimitiveType();
-        var o = toy.gameObject;
-        o.ApplyNameAndTag(primitive.Name, primitive.Tag);
-        var sloc = o.AddComponent<slocObjectData>();
+        toy.ApplyCommonData(primitive, parent, out var o, out var sloc);
+        toy.PrimitiveType = primitiveType;
+        toy.MaterialColor = primitive.MaterialColor;
         sloc.HasColliderOnClient = flags.HasFlagFast(PrimitiveObjectFlags.ClientCollider);
         sloc.ShouldBeSpawnedOnClient = !flags.HasFlagFast(PrimitiveObjectFlags.NotSpawned);
         sloc.IsTrigger = flags.IsTrigger();
         sloc.HasColliderOnServer = flags.HasFlagFast(PrimitiveObjectFlags.ServerCollider);
-        toy.PrimitiveType = primitiveType;
-        toy.MovementSmoothing = primitive.MovementSmoothing;
-        toy.SetAbsoluteTransformFrom(parent);
-        toy.SetLocalTransform(primitive.Transform);
-        toy.MaterialColor = primitive.MaterialColor;
         AddActionHandlers(o, primitive.TriggerActions);
-        ApplyAdminToyTransform(toy, sloc.HasColliderOnClient);
         if (!sloc.HasColliderOnClient)
             toy.PrimitiveFlags &= ~PrimitiveFlags.Collidable;
         toy.SetPrimitive(0, toy.PrimitiveType);
@@ -124,19 +128,13 @@ public static partial class API
         if (LightPrefab == null)
             throw new InvalidOperationException("Light prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
         var toy = Object.Instantiate(LightPrefab);
-        toy.SetAbsoluteTransformFrom(parent);
-        toy.SetLocalTransform(light.Transform);
+        toy.ApplyCommonData(light, parent, out var go, out _);
         toy.LightColor = light.LightColor;
         toy.LightIntensity = light.Intensity;
         toy.LightRange = light.Range;
         toy.LightType = light.LightType;
         toy.SpotAngle = light.SpotAngle;
         toy.InnerSpotAngle = light.InnerSpotAngle;
-        toy.MovementSmoothing = light.MovementSmoothing;
-        ApplyAdminToyTransform(toy);
-        var go = toy.gameObject;
-        go.ApplyNameAndTag(light.Name, light.Tag);
-        go.AddComponent<slocObjectData>();
         return go;
     }
 
@@ -150,8 +148,8 @@ public static partial class API
         t.localPosition = localPosition;
         t.localRotation = localRotation;
         t.localScale = localScale;
+        toy.ApplyTransformNetworkProperties(localPosition, localRotation, localScale);
         toy.PrimitiveFlags = PrimitiveFlags.None;
-        ApplyAdminToyTransform(toy);
         var data = toy.gameObject.AddComponent<slocObjectData>();
         data.HasColliderOnClient = false;
         data.HasColliderOnServer = false;

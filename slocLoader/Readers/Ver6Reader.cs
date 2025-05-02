@@ -31,6 +31,7 @@ public sealed class Ver6Reader : IObjectReader
                 ObjectType.Cylinder or
                 ObjectType.Plane or
                 ObjectType.Quad => ReadPrimitive(stream, type, header),
+            ObjectType.Capybara => ReadCapybara(stream, header),
             _ => null
         };
     }
@@ -91,6 +92,13 @@ public sealed class Ver6Reader : IObjectReader
         var reader = ActionManager.GetReader(header.Version);
         primitive.TriggerActions = ActionManager.ReadActions(stream, reader);
         return primitive;
+    }
+
+    public static slocGameObject ReadCapybara(BinaryReader stream, slocHeader header)
+    {
+        var properties = CommonObjectProperties.FromStream(stream, header);
+        var collidable = stream.ReadBoolean();
+        return new CapybaraObject(properties.InstanceId) {Collidable = collidable}.ApplyProperties(properties);
     }
 
 }

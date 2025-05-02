@@ -21,6 +21,7 @@ public static partial class API
 
     public static PrimitiveObjectToy PrimitivePrefab { get; private set; }
     public static LightSourceToy LightPrefab { get; private set; }
+    public static CapybaraToy CapybaraPrefab { get; private set; }
 
     public static void LoadPrefabs()
     {
@@ -30,6 +31,8 @@ public static partial class API
                 PrimitivePrefab = primitive;
             if (prefab.TryGetComponent(out LightSourceToy light))
                 LightPrefab = light;
+            if (prefab.TryGetComponent(out CapybaraToy capybara))
+                CapybaraPrefab = capybara;
         }
 
         if (PrimitivePrefab == null || LightPrefab == null)
