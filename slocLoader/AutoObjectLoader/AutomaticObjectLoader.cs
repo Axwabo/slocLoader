@@ -1,5 +1,4 @@
-﻿using LabApi.Features.Wrappers;
-using LabApi.Loader.Features.Paths;
+﻿using LabApi.Loader;
 using slocLoader.ObjectCreation;
 using slocLoader.Objects;
 
@@ -13,8 +12,7 @@ public static class AutomaticObjectLoader
     public static void LoadObjects()
     {
         LoadedObjects.Clear();
-        var path = Path.Combine(PathManager.Configs.FullName, Server.Port.ToString(), "slocLoader", "Objects");
-        Directory.CreateDirectory(path);
+        var path = slocPlugin.Instance.GetConfigDirectory().CreateSubdirectory("Objects").FullName;
         var loaded = 0;
         foreach (var file in Directory.EnumerateFiles(path, "*.sloc"))
         {
