@@ -62,12 +62,6 @@ public static class TriggerActionHelpers
             return;
         if (options.HasFlagFast(TeleportOptions.ResetFallDamage))
             module.Motor.ResetFallDamageCooldown();
-#if NWAPI
-        var delta = options.HasFlagFast(TeleportOptions.DeltaRotation)
-            ? rotation
-            : rotation - module.MouseLook.CurrentHorizontal;
-        module.ServerOverridePosition(position, new Vector3(0, delta, 0));
-#else
         var look = module.MouseLook;
         var finalRotation = options.HasFlagFast(TeleportOptions.DeltaRotation)
             ? look.CurrentHorizontal + rotation
@@ -75,8 +69,6 @@ public static class TriggerActionHelpers
         module.ServerOverridePosition(position);
         if (!Mathf.Approximately(finalRotation, look.CurrentHorizontal))
             module.ServerOverrideRotation(new Vector2(look.CurrentVertical, finalRotation));
-
-#endif
     }
 
 }

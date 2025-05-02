@@ -15,7 +15,7 @@ public sealed class slocPlugin : Plugin<slocConfig>
     public override string Name => "slocLoader";
     public override string Description => "A plugin that loads sloc files.";
     public override string Author => "Axwabo";
-    public override Version Version { get; } = new(5, 3, 0);
+    public override Version Version => GetType().Assembly.GetName().Version;
     public override Version RequiredApiVersion { get; } = new(1, 0, 0);
 
     private Harmony _harmony;
