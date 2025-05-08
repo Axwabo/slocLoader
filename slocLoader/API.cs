@@ -156,7 +156,10 @@ public static partial class API
         TpToSpawnedCache.Clear();
         try
         {
-            var go = CreateEmpty(null, options.Position, options.Rotation, Vector3.one);
+            var go = CreateEmpty(options.Parent, options.Position, options.Rotation, options.Scale);
+            var root = go.GetComponent<AdminToyBase>();
+            root.IsStatic = options.StaticRoot;
+            root.MovementSmoothing = options.RootSmoothing;
             if (spawnRoot)
                 NetworkServer.Spawn(go);
             createdAmount = 0;

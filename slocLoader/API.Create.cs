@@ -117,6 +117,8 @@ public static partial class API
         sloc.IsTrigger = flags.IsTrigger();
         sloc.HasColliderOnServer = flags.HasFlagFast(PrimitiveObjectFlags.ServerCollider);
         AddActionHandlers(o, primitive.TriggerActions);
+        if (!flags.HasFlagFast(PrimitiveObjectFlags.Visible))
+            toy.PrimitiveFlags &= ~PrimitiveFlags.Visible;
         if (!sloc.HasColliderOnClient)
             toy.PrimitiveFlags &= ~PrimitiveFlags.Collidable;
         toy.SetPrimitive(0, toy.PrimitiveType);
