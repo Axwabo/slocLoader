@@ -107,18 +107,21 @@ public sealed class Ver6Reader : IObjectReader
         var properties = CommonObjectProperties.FromStream(stream, header);
         var label = stream.ReadNullableString();
         var type = (Scp079CameraType) stream.ReadByte();
-        var verticalX = stream.ReadShortAsFloat();
-        var verticalY = stream.ReadShortAsFloat();
-        var horizontalX = stream.ReadShortAsFloat();
-        var horizontalY = stream.ReadShortAsFloat();
-        var zoomX = stream.ReadShortAsFloat();
-        var zoomY = stream.ReadShortAsFloat();
+        var vMin = stream.ReadSingle();
+        var vMax = stream.ReadSingle();
+        var hMin = stream.ReadSingle();
+        var hMax = stream.ReadSingle();
+        var zoomMin = stream.ReadSingle();
+        var zoomMax = stream.ReadSingle();
         return new Scp079CameraObject(type, properties.InstanceId)
         {
             Label = label,
-            VerticalConstraint = new Vector2(verticalX, verticalY),
-            HorizontalConstraint = new Vector2(horizontalX, horizontalY),
-            ZoomConstraint = new Vector2(zoomX, zoomY)
+            VerticalMinimum = vMin,
+            VerticalMaximum = vMax,
+            HorizontalMinimum = hMin,
+            HorizontalMaximum = hMax,
+            ZoomMinimum = zoomMin,
+            ZoomMaximum = zoomMax
         }.ApplyProperties(properties);
     }
 

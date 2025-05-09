@@ -34,6 +34,7 @@ public static partial class API
         CapybaraObject capybara => CreateCapybara(parent, capybara),
         StructureObject structure => CreateStructure(parent, structure),
         PrimitiveObject primitive => CreatePrimitive(parent, primitive),
+        Scp079CameraObject camera => CreateCamera(parent, camera),
         LightObject light => CreateLight(parent, light),
         EmptyObject => CreateEmpty(parent, obj),
         _ => throwOnError ? throw new IndexOutOfRangeException($"Unknown object type {obj.Type}") : null
@@ -62,6 +63,15 @@ public static partial class API
         {StructureObject.StructureType.Scp2176Pedestal, 3578915554},
         {StructureObject.StructureType.SportTarget, 1704345398},
         {StructureObject.StructureType.Workstation, 1783091262}
+    };
+
+    public static readonly IReadOnlyDictionary<Scp079CameraType, uint> CameraTypeIds = new Dictionary<Scp079CameraType, uint>
+    {
+        {Scp079CameraType.LightContainmentZone, 2026969629},
+        {Scp079CameraType.HeavyContainmentZone, 144958943},
+        {Scp079CameraType.EntranceZone, 3375932423},
+        {Scp079CameraType.EntranceZoneArm, 1824808402},
+        {Scp079CameraType.SurfaceZone, 1734743361}
     };
 
     [Obsolete($"Use {nameof(AdminToyExtensions)}::{nameof(AdminToyExtensions.ApplyTransformNetworkProperties)} instead.")]
@@ -99,6 +109,22 @@ public static partial class API
         data.GlobalTransform = o.TryGetComponent(out WaypointBase _);
         if (structure.RemoveDefaultLoot && o.TryGetComponent(out Locker locker))
             locker.Loot = [];
+        return o;
+    }
+
+    private static GameObject CreateCamera(GameObject parent, Scp079CameraObject camera)
+    {
+        if (!CameraTypeIds.TryGetValue(camera.CameraType, out var id)
+            || !NetworkClient.prefabs.TryGetValue(id, out var prefab)
+            || !prefab.TryGetComponent(out Scp079CameraToy prefabToy))
+            return null;
+        var toy = Object.Instantiate(prefabToy);
+        toy.ApplyCommonData(camera, parent, out var o, out _);
+        toy.NetworkLabel = camera.Label;
+        toy.NetworkVerticalConstraint = new Vector2(camera.VerticalMinimum, camera.VerticalMaximum);
+        toy.NetworkHorizontalConstraint = new Vector2(camera.HorizontalMinimum, camera.HorizontalMaximum);
+        toy.NetworkZoomConstraint = new Vector2(camera.ZoomMinimum, camera.ZoomMaximum);
+        toy.ApplyTransformNetworkProperties(camera.Transform.Position, camera.Transform.Rotation, camera.Transform.Scale);
         return o;
     }
 
