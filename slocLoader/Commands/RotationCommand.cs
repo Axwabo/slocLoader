@@ -10,9 +10,9 @@ public sealed class RotationCommand : ICommand, IUsageProvider
     public static readonly Dictionary<string, Quaternion> Defined = new();
 
     public string Command => "sl_rotation";
-    public string[] Aliases { get; } = {"sl_rot"};
+    public string[] Aliases { get; } = ["sl_rot"];
     public string Description => "Sets the rotation to spawn objects with.";
-    public string[] Usage { get; } = {"x", "y", "z"};
+    public string[] Usage { get; } = ["x", "y", "z"];
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {

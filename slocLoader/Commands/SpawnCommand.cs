@@ -9,9 +9,9 @@ namespace slocLoader.Commands;
 public sealed class SpawnCommand : ICommand, IUsageProvider
 {
 
-    public string[] Usage { get; } = {"name"};
+    public string[] Usage { get; } = ["name"];
     public string Command => "sl_spawn";
-    public string[] Aliases { get; } = {"sl_s"};
+    public string[] Aliases { get; } = ["sl_s"];
     public string Description => "Spawns the objects from a loaded sloc file.";
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)

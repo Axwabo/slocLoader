@@ -8,9 +8,9 @@ namespace slocLoader.Commands;
 public sealed class StructureCommand : ICommand, IUsageProvider
 {
 
-    public string[] Usage { get; } = {"type"};
+    public string[] Usage { get; } = ["type"];
     public string Command => "sl_structure";
-    public string[] Aliases => Array.Empty<string>();
+    public string[] Aliases => [];
     public string Description => "Spawns the specified structure type.";
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)

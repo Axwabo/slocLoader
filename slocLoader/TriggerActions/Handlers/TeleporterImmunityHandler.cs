@@ -6,7 +6,7 @@ namespace slocLoader.TriggerActions.Handlers;
 public sealed class TeleporterImmunityHandler : ITriggerActionHandler
 {
 
-    private static readonly List<TeleporterImmunityData> Queued = new();
+    private static readonly List<TeleporterImmunityData> Queued = [];
 
     public TargetType Targets => TargetType.All;
     public TriggerActionType ActionType => TriggerActionType.TeleporterImmunity;
