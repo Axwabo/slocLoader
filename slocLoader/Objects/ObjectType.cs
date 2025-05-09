@@ -13,6 +13,8 @@ public enum ObjectType : byte
     Quad = 7,
     Empty = 8,
     Structure = 9,
-    Capybara = 10
+    Capybara = 10,
+    InvisibleInteractable = 11,
+    Scp079Camera = 12
 
 }

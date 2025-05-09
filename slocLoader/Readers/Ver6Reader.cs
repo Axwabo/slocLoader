@@ -32,6 +32,7 @@ public sealed class Ver6Reader : IObjectReader
                 ObjectType.Plane or
                 ObjectType.Quad => ReadPrimitive(stream, type, header),
             ObjectType.Capybara => ReadCapybara(stream, header),
+            ObjectType.Scp079Camera => ReadCamera(stream, header),
             _ => null
         };
     }
@@ -77,7 +78,7 @@ public sealed class Ver6Reader : IObjectReader
         return new EmptyObject(properties.InstanceId).ApplyProperties(properties);
     }
 
-    private static PrimitiveObject ReadPrimitive(BinaryReader stream, ObjectType type, slocHeader header)
+    public static PrimitiveObject ReadPrimitive(BinaryReader stream, ObjectType type, slocHeader header)
     {
         var properties = CommonObjectProperties.FromStream(stream, header);
         var color = Ver3Reader.ReadColor(stream, header.HasAttribute(slocAttributes.LossyColors));
@@ -94,11 +95,31 @@ public sealed class Ver6Reader : IObjectReader
         return primitive;
     }
 
-    public static slocGameObject ReadCapybara(BinaryReader stream, slocHeader header)
+    public static CapybaraObject ReadCapybara(BinaryReader stream, slocHeader header)
     {
         var properties = CommonObjectProperties.FromStream(stream, header);
         var collidable = stream.ReadBoolean();
         return new CapybaraObject(properties.InstanceId) {Collidable = collidable}.ApplyProperties(properties);
+    }
+
+    public static Scp079CameraObject ReadCamera(BinaryReader stream, slocHeader header)
+    {
+        var properties = CommonObjectProperties.FromStream(stream, header);
+        var label = stream.ReadNullableString();
+        var type = (Scp079CameraType) stream.ReadByte();
+        var verticalX = stream.ReadShortAsFloat();
+        var verticalY = stream.ReadShortAsFloat();
+        var horizontalX = stream.ReadShortAsFloat();
+        var horizontalY = stream.ReadShortAsFloat();
+        var zoomX = stream.ReadShortAsFloat();
+        var zoomY = stream.ReadShortAsFloat();
+        return new Scp079CameraObject(type, properties.InstanceId)
+        {
+            Label = label,
+            VerticalConstraint = new Vector2(verticalX, verticalY),
+            HorizontalConstraint = new Vector2(horizontalX, horizontalY),
+            ZoomConstraint = new Vector2(zoomX, zoomY)
+        }.ApplyProperties(properties);
     }
 
 }

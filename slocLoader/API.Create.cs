@@ -64,14 +64,14 @@ public static partial class API
         {StructureObject.StructureType.Workstation, 1783091262}
     };
 
-    [Obsolete("Use AdminToyExtensions.ApplyTransform with an AdminToyBase argument instead.")]
+    [Obsolete($"Use {nameof(AdminToyExtensions)}::{nameof(AdminToyExtensions.ApplyTransformNetworkProperties)} instead.")]
     public static void ApplyAdminToyTransform(GameObject gameObject)
     {
         if (gameObject.TryGetComponent(out AdminToyBase toy))
             ApplyAdminToyTransform(toy);
     }
 
-    [Obsolete("Use AdminToyExtensions.ApplyTransform instead.")]
+    [Obsolete($"Use {nameof(AdminToyExtensions)}::{nameof(AdminToyExtensions.ApplyTransformNetworkProperties)} instead.")]
     public static void ApplyAdminToyTransform(AdminToyBase toy, bool hasCollider = true)
     {
         var t = toy.transform;
