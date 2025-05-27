@@ -33,6 +33,7 @@ public sealed class Ver6Reader : IObjectReader
                 ObjectType.Quad => ReadPrimitive(stream, type, header),
             ObjectType.Capybara => ReadCapybara(stream, header),
             ObjectType.Scp079Camera => ReadCamera(stream, header),
+            ObjectType.Speaker => ReadSpeaker(stream, header),
             _ => null
         };
     }
@@ -107,12 +108,12 @@ public sealed class Ver6Reader : IObjectReader
         var properties = CommonObjectProperties.FromStream(stream, header);
         var label = stream.ReadNullableString();
         var type = (Scp079CameraType) stream.ReadByte();
-        var vMin = stream.ReadSingle();
-        var vMax = stream.ReadSingle();
-        var hMin = stream.ReadSingle();
-        var hMax = stream.ReadSingle();
-        var zoomMin = stream.ReadSingle();
-        var zoomMax = stream.ReadSingle();
+        var vMin = stream.ReadShortAsFloat();
+        var vMax = stream.ReadShortAsFloat();
+        var hMin = stream.ReadShortAsFloat();
+        var hMax = stream.ReadShortAsFloat();
+        var zoomMin = stream.ReadShortAsFloat();
+        var zoomMax = stream.ReadShortAsFloat();
         return new Scp079CameraObject(type, properties.InstanceId)
         {
             Label = label,
@@ -122,6 +123,24 @@ public sealed class Ver6Reader : IObjectReader
             HorizontalMaximum = hMax,
             ZoomMinimum = zoomMin,
             ZoomMaximum = zoomMax
+        }.ApplyProperties(properties);
+    }
+
+    public static SpeakerObject ReadSpeaker(BinaryReader stream, slocHeader header)
+    {
+        var properties = CommonObjectProperties.FromStream(stream, header);
+        var id = stream.ReadByte();
+        var spatial = stream.ReadBoolean();
+        var volume = stream.ReadSingle();
+        var minDistance = stream.ReadSingle();
+        var maxDistance = stream.ReadSingle();
+        return new SpeakerObject(properties.InstanceId)
+        {
+            ControllerId = id,
+            Spatial = spatial,
+            Volume = volume,
+            MinDistance = minDistance,
+            MaxDistance = maxDistance
         }.ApplyProperties(properties);
     }
 

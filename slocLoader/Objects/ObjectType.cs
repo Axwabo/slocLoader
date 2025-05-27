@@ -15,6 +15,7 @@ public enum ObjectType : byte
     Structure = 9,
     Capybara = 10,
     InvisibleInteractable = 11,
-    Scp079Camera = 12
+    Scp079Camera = 12,
+    Speaker = 13
 
 }

@@ -31,6 +31,7 @@ public static partial class API
 
     public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, bool throwOnError = true) => obj switch
     {
+        SpeakerObject speaker => CreateSpeaker(parent, speaker),
         CapybaraObject capybara => CreateCapybara(parent, capybara),
         StructureObject structure => CreateStructure(parent, structure),
         PrimitiveObject primitive => CreatePrimitive(parent, primitive),
@@ -88,6 +89,20 @@ public static partial class API
         toy.Position = t.localPosition;
         toy.Rotation = t.localRotation;
         toy.Scale = t.localScale;
+    }
+
+    private static GameObject CreateSpeaker(GameObject parent, SpeakerObject speaker)
+    {
+        if (SpeakerPrefab == null)
+            throw new InvalidOperationException("Speaker prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(SpeakerPrefab);
+        toy.ApplyCommonData(speaker, parent, out var go, out _);
+        toy.ControllerId = speaker.ControllerId;
+        toy.IsSpatial = speaker.Spatial;
+        toy.Volume = speaker.Volume;
+        toy.MinDistance = speaker.MinDistance;
+        toy.MaxDistance = speaker.MaxDistance;
+        return go;
     }
 
     private static GameObject CreateCapybara(GameObject parent, CapybaraObject capybara)

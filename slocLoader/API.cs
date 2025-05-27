@@ -22,26 +22,28 @@ public static partial class API
     public static PrimitiveObjectToy PrimitivePrefab { get; private set; }
     public static LightSourceToy LightPrefab { get; private set; }
     public static CapybaraToy CapybaraPrefab { get; private set; }
+    public static SpeakerToy SpeakerPrefab { get; private set; }
 
     public static void LoadPrefabs()
     {
         foreach (var prefab in NetworkClient.prefabs.Values)
-        {
             if (prefab.TryGetComponent(out PrimitiveObjectToy primitive))
                 PrimitivePrefab = primitive;
-            if (prefab.TryGetComponent(out LightSourceToy light))
+            else if (prefab.TryGetComponent(out LightSourceToy light))
                 LightPrefab = light;
-            if (prefab.TryGetComponent(out CapybaraToy capybara))
+            else if (prefab.TryGetComponent(out CapybaraToy capybara))
                 CapybaraPrefab = capybara;
-        }
+            else if (prefab.TryGetComponent(out SpeakerToy speaker))
+                SpeakerPrefab = speaker;
+        OnPrefabsProcessed();
+    }
 
-        if (PrimitivePrefab == null || LightPrefab == null)
-        {
-            Logger.Error("Either the primitive or light prefab is null. This should not happen!");
-            return;
-        }
-
-        InvokeEvent();
+    private static void OnPrefabsProcessed()
+    {
+        if (PrimitivePrefab && LightPrefab && CapybaraPrefab && SpeakerPrefab)
+            InvokeEvent();
+        else
+            Logger.Error("Either the primitive, light, capybara or speaker prefab is null. This should not happen!");
     }
 
     private static void InvokeEvent()
@@ -49,7 +51,6 @@ public static partial class API
         if (PrefabsLoaded == null)
             return;
         foreach (var subscriber in PrefabsLoaded.GetInvocationList())
-        {
             try
             {
                 subscriber.DynamicInvoke();
@@ -60,13 +61,14 @@ public static partial class API
                 var exception = e is TargetInvocationException {InnerException: { } inner} ? inner : e;
                 Logger.Error($"An exception was thrown by {method.DeclaringType?.FullName}::{method.Name} upon the invocation of PrefabsLoaded:\n{exception}");
             }
-        }
     }
 
     internal static void UnsetPrefabs()
     {
         PrimitivePrefab = null;
         LightPrefab = null;
+        CapybaraPrefab = null;
+        SpeakerPrefab = null;
     }
 
     public static event Action PrefabsLoaded;
