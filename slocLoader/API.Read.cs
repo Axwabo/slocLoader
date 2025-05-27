@@ -43,7 +43,7 @@ public static partial class API
     public static List<slocGameObject> ReadObjects(Stream stream, bool autoClose = true)
     {
         var objects = new List<slocGameObject>();
-        using var buffered = new BufferedStream(stream, 4);
+        var buffered = new BufferedStream(stream, 4);
         var binaryReader = new BinaryReader(buffered);
         var version = ReadVersionSafe(buffered, binaryReader);
         if (!VersionReaders.ContainsKey(version))
