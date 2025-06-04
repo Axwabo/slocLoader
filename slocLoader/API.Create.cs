@@ -124,6 +124,8 @@ public static partial class API
         data.GlobalTransform = o.TryGetComponent(out WaypointBase _);
         if (structure.RemoveDefaultLoot && o.TryGetComponent(out Locker locker))
             locker.Loot = [];
+        if (o.TryGetComponent(out StructurePositionSync sync))
+            sync.Start();
         return o;
     }
 
