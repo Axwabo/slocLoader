@@ -8,7 +8,13 @@ public sealed class TextObject : slocGameObject
 
     public static Vector2 DefaultDisplaySize => TextToy.DefaultDisplaySize;
 
-    public TextObject(string format, int instanceId = 0) : base(instanceId) => Format = format;
+    public const int FontSize = 18;
+
+    public TextObject(string format, int instanceId = 0) : base(instanceId)
+    {
+        Type = ObjectType.Text;
+        Format = format;
+    }
 
     public string Format;
 

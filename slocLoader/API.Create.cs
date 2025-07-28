@@ -34,6 +34,7 @@ public static partial class API
         SpeakerObject speaker => CreateSpeaker(parent, speaker),
         CapybaraObject capybara => CreateCapybara(parent, capybara),
         StructureObject structure => CreateStructure(parent, structure),
+        TextObject textObject => CreateText(parent, textObject),
         PrimitiveObject primitive => CreatePrimitive(parent, primitive),
         Scp079CameraObject camera => CreateCamera(parent, camera),
         LightObject light => CreateLight(parent, light),
@@ -112,6 +113,18 @@ public static partial class API
         var toy = Object.Instantiate(CapybaraPrefab);
         toy.ApplyCommonData(capybara, parent, out var go, out _);
         toy.CollisionsEnabled = capybara.Collidable;
+        return go;
+    }
+
+    private static GameObject CreateText(GameObject parent, TextObject textObject)
+    {
+        if (TextPrefab == null)
+            throw new InvalidOperationException("Text prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(TextPrefab);
+        toy.ApplyCommonData(textObject, parent, out var go, out _);
+        toy.TextFormat = textObject.Format;
+        toy.DisplaySize = textObject.DisplaySize * TextObject.FontSize;
+        toy.Arguments.AddRange(textObject.Arguments);
         return go;
     }
 

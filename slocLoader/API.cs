@@ -23,6 +23,7 @@ public static partial class API
     public static LightSourceToy LightPrefab { get; private set; }
     public static CapybaraToy CapybaraPrefab { get; private set; }
     public static SpeakerToy SpeakerPrefab { get; private set; }
+    public static TextToy TextPrefab { get; private set; }
 
     public static void LoadPrefabs()
     {
@@ -35,15 +36,17 @@ public static partial class API
                 CapybaraPrefab = capybara;
             else if (prefab.TryGetComponent(out SpeakerToy speaker))
                 SpeakerPrefab = speaker;
+            else if (prefab.TryGetComponent(out TextToy text))
+                TextPrefab = text;
         OnPrefabsProcessed();
     }
 
     private static void OnPrefabsProcessed()
     {
-        if (PrimitivePrefab && LightPrefab && CapybaraPrefab && SpeakerPrefab)
+        if (PrimitivePrefab && LightPrefab && CapybaraPrefab && SpeakerPrefab && TextPrefab)
             InvokeEvent();
         else
-            Logger.Error("Either the primitive, light, capybara or speaker prefab is null. This should not happen!");
+            Logger.Error("Either the primitive, light, capybara, speaker or text prefab is null. This should not happen!");
     }
 
     private static void InvokeEvent()
@@ -109,9 +112,8 @@ public static partial class API
         if (o == null)
             return;
         var t = o.transform;
+        t.SetLocalPositionAndRotation(transform.Position, transform.Rotation);
         t.localScale = transform.Scale;
-        t.localPosition = transform.Position;
-        t.localRotation = transform.Rotation;
     }
 
     public static IEnumerable<GameObject> WithAllChildren(this GameObject o) => o.GetComponentsInChildren<Transform>().Select(e => e.gameObject);
