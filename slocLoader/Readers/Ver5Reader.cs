@@ -1,4 +1,5 @@
-﻿using slocLoader.Objects;
+﻿using slocLoader.Extensions;
+using slocLoader.Objects;
 
 namespace slocLoader.Readers;
 
@@ -30,12 +31,12 @@ public sealed class Ver5Reader : IObjectReader
         var instanceId = stream.ReadInt32();
         var parentId = stream.ReadInt32();
         var transform = stream.ReadTransform();
-        var typeData = stream.ReadByte();
-        return new StructureObject(instanceId, (StructureObject.StructureType) (typeData & ~StructureObject.RemoveDefaultLootBit))
+        stream.ReadByteWithBool(out var type, out var removeDefaultLoot);
+        return new StructureObject(instanceId, (StructureObject.StructureType) type)
         {
             ParentId = parentId,
             Transform = transform,
-            RemoveDefaultLoot = (typeData & StructureObject.RemoveDefaultLootBit) != 0
+            RemoveDefaultLoot = removeDefaultLoot
         };
     }
 

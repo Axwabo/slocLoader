@@ -1,4 +1,5 @@
 ﻿using AdminToys;
+using slocLoader.Extensions;
 using slocLoader.Readers;
 
 namespace slocLoader.Objects;
@@ -15,13 +16,15 @@ public sealed class InvisibleInteractableObject : slocGameObject
 
     public InvisibleInteractableToy.ColliderShape Shape;
 
+    public bool Locked;
+
     public float InteractionDuration;
 
     public override bool IsValid => true;
 
     protected override void WriteData(BinaryWriter writer, slocHeader header)
     {
-        writer.Write((byte) Shape);
+        writer.WriteByteWithBool((byte) Shape, Locked);
         writer.Write(InteractionDuration);
     }
 
