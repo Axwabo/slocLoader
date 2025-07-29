@@ -8,7 +8,10 @@ public sealed class InvisibleInteractableObject : slocGameObject
 
     public InvisibleInteractableObject(InvisibleInteractableToy.ColliderShape shape, int instanceId = 0)
         : base(instanceId)
-        => Shape = shape;
+    {
+        Type = ObjectType.InvisibleInteractable;
+        Shape = shape;
+    }
 
     public InvisibleInteractableToy.ColliderShape Shape;
 
