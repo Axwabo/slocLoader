@@ -19,9 +19,8 @@ public static class GameObjectExtensions
         var t = o.transform;
         if (parent != null)
             t.SetParent(parent.transform, false);
+        t.SetLocalPositionAndRotation(sloc.Transform.Position, sloc.Transform.Rotation);
         t.localScale = sloc.Transform.Scale;
-        t.localPosition = sloc.Transform.Position;
-        t.localRotation = sloc.Transform.Rotation;
         data = o.AddComponent<slocObjectData>();
     }
 

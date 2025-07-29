@@ -110,8 +110,7 @@ public static partial class API
         var toy = Object.Instantiate(PrimitivePrefab);
         toy.SetAbsoluteTransformFrom(parent);
         var t = toy.transform;
-        t.localPosition = localPosition;
-        t.localRotation = localRotation;
+        t.SetLocalPositionAndRotation(localPosition, localRotation);
         t.localScale = localScale;
         toy.ApplyTransformNetworkProperties(localPosition, localRotation, localScale);
         toy.PrimitiveFlags = PrimitiveFlags.None;

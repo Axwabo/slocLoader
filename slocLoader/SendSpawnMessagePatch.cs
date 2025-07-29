@@ -10,13 +10,13 @@ public static class SendSpawnMessagePatch
 
     public static bool ShouldUseGlobalTransform(NetworkIdentity identity) => identity.TryGetComponent(out slocObjectData data) && data.GlobalTransform;
 
-    [Obsolete("Deprecated in favor of API::SpawnWithGlobalTransform")]
+    [Obsolete("Deprecated in favor of API::SpawnWithGlobalTransform", true)]
     public delegate void SpawnDataModifier(NetworkIdentity identity, NetworkConnection connection, ref SpawnMessage message);
 
-    [Obsolete("Deprecated in favor of API::SpawnWithGlobalTransform")]
+    [Obsolete("Deprecated in favor of API::SpawnWithGlobalTransform", true)]
     public static readonly List<SpawnDataModifier> SpawnDataModifiers = [];
 
-    [Obsolete("Deprecated in favor of API::SpawnWithGlobalTransform")]
+    [Obsolete("Deprecated in favor of API::SpawnWithGlobalTransform", true)]
     public static void ModifySpawnMessage(NetworkIdentity identity, NetworkConnection connection, ref SpawnMessage message)
     {
         foreach (var modifier in SpawnDataModifiers)
@@ -28,18 +28,20 @@ public static class SendSpawnMessagePatch
         var transform = identity.transform;
         if (API.ShouldSpawnWithGlobalTransform)
         {
-            message.position = transform.position;
-            message.rotation = transform.rotation;
+            transform.GetPositionAndRotation(out var position, out var rotation);
+            message.position = position;
+            message.rotation = rotation;
             message.scale = transform.lossyScale;
             return;
         }
 
-        message.position = transform.localPosition;
-        message.rotation = transform.localRotation;
+        transform.GetLocalPositionAndRotation(out var localPosition, out var localRotation);
+        message.position = localPosition;
+        message.rotation = localRotation;
         message.scale = transform.localScale;
     }
 
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
         var list = new List<CodeInstruction>(instructions);
         var start = list.FindField(nameof(SpawnMessage.position)) - 2;

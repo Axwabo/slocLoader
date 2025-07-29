@@ -29,7 +29,7 @@ public sealed class LightObject : slocGameObject
 
     public Color LightColor = Color.white;
 
-    [Obsolete("Use ShadowType instead.")]
+    [Obsolete("Use ShadowType instead.", true)]
     public bool Shadows = true;
 
     public float Range = 5;
