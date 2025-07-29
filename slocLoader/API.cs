@@ -23,6 +23,7 @@ public static partial class API
     public static LightSourceToy LightPrefab { get; private set; }
     public static CapybaraToy CapybaraPrefab { get; private set; }
     public static SpeakerToy SpeakerPrefab { get; private set; }
+    public static InvisibleInteractableToy InteractablePrefab { get; private set; }
     public static TextToy TextPrefab { get; private set; }
 
     public static void LoadPrefabs()
@@ -36,6 +37,8 @@ public static partial class API
                 CapybaraPrefab = capybara;
             else if (prefab.TryGetComponent(out SpeakerToy speaker))
                 SpeakerPrefab = speaker;
+            else if (prefab.TryGetComponent(out InvisibleInteractableToy interactable))
+                InteractablePrefab = interactable;
             else if (prefab.TryGetComponent(out TextToy text))
                 TextPrefab = text;
         OnPrefabsProcessed();
@@ -43,10 +46,10 @@ public static partial class API
 
     private static void OnPrefabsProcessed()
     {
-        if (PrimitivePrefab && LightPrefab && CapybaraPrefab && SpeakerPrefab && TextPrefab)
+        if (PrimitivePrefab && LightPrefab && CapybaraPrefab && SpeakerPrefab && InteractablePrefab && TextPrefab)
             InvokeEvent();
         else
-            Logger.Error("Either the primitive, light, capybara, speaker or text prefab is null. This should not happen!");
+            Logger.Error("Either the primitive, light, capybara, speaker, interactable or text prefab is null. This should not happen!");
     }
 
     private static void InvokeEvent()

@@ -33,6 +33,7 @@ public static partial class API
     {
         CapybaraObject capybara => CreateCapybara(parent, capybara),
         EmptyObject => CreateEmpty(parent, obj),
+        InvisibleInteractableObject interactable => CreateInteractable(parent, interactable),
         LightObject light => CreateLight(parent, light),
         PrimitiveObject primitive => CreatePrimitive(parent, primitive),
         Scp079CameraObject camera => CreateCamera(parent, camera),
@@ -124,6 +125,17 @@ public static partial class API
     {
         var go = CreateEmpty(parent, obj.Transform.Position, obj.Transform.Rotation, obj.Transform.Scale);
         go.ApplyNameAndTag(obj.Name, obj.Tag);
+        return go;
+    }
+
+    private static GameObject CreateInteractable(GameObject parent, InvisibleInteractableObject interactable)
+    {
+        if (InteractablePrefab == null)
+            throw new InvalidOperationException("Interactable prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(InteractablePrefab);
+        toy.ApplyCommonData(interactable, parent, out var go, out _);
+        toy.Shape = interactable.Shape;
+        toy.InteractionDuration = interactable.InteractionDuration;
         return go;
     }
 

@@ -1,4 +1,5 @@
-﻿using slocLoader.Extensions;
+﻿using AdminToys;
+using slocLoader.Extensions;
 using slocLoader.Objects;
 using slocLoader.TriggerActions;
 
@@ -32,6 +33,7 @@ public sealed class Ver6Reader : IObjectReader
                 ObjectType.Plane or
                 ObjectType.Quad => ReadPrimitive(stream, type, header),
             ObjectType.Capybara => ReadCapybara(stream, header),
+            ObjectType.InvisibleInteractable => ReadInteractable(stream, header),
             ObjectType.Scp079Camera => ReadCamera(stream, header),
             ObjectType.Speaker => ReadSpeaker(stream, header),
             ObjectType.Text => ReadText(stream, header),
@@ -102,6 +104,17 @@ public sealed class Ver6Reader : IObjectReader
         var properties = CommonObjectProperties.FromStream(stream, header);
         var collidable = stream.ReadBoolean();
         return new CapybaraObject(properties.InstanceId) {Collidable = collidable}.ApplyProperties(properties);
+    }
+
+    public static slocGameObject ReadInteractable(BinaryReader stream, slocHeader header)
+    {
+        var properties = CommonObjectProperties.FromStream(stream, header);
+        var shape = (InvisibleInteractableToy.ColliderShape) stream.ReadByte();
+        var duration = stream.ReadSingle();
+        return new InvisibleInteractableObject(shape, properties.InstanceId)
+        {
+            InteractionDuration = duration
+        }.ApplyProperties(properties);
     }
 
     public static Scp079CameraObject ReadCamera(BinaryReader stream, slocHeader header)
