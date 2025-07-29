@@ -111,8 +111,9 @@ public sealed class Ver6Reader : IObjectReader
         var properties = CommonObjectProperties.FromStream(stream, header);
         stream.ReadByteWithBool(out var shape, out var locked);
         var duration = stream.ReadSingle();
-        return new InvisibleInteractableObject((InvisibleInteractableToy.ColliderShape) shape, properties.InstanceId)
+        return new InvisibleInteractableObject(properties.InstanceId)
         {
+            Shape = (InvisibleInteractableToy.ColliderShape) shape,
             Locked = locked,
             InteractionDuration = duration
         }.ApplyProperties(properties);

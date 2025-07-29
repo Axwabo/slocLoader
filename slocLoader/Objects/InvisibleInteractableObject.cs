@@ -7,12 +7,9 @@ namespace slocLoader.Objects;
 public sealed class InvisibleInteractableObject : slocGameObject
 {
 
-    public InvisibleInteractableObject(InvisibleInteractableToy.ColliderShape shape, int instanceId = 0)
+    public InvisibleInteractableObject(int instanceId = 0)
         : base(instanceId)
-    {
-        Type = ObjectType.InvisibleInteractable;
-        Shape = shape;
-    }
+        => Type = ObjectType.InvisibleInteractable;
 
     public InvisibleInteractableToy.ColliderShape Shape;
 
