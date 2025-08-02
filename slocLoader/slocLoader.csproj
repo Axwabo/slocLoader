@@ -28,6 +28,6 @@
 
     <ItemGroup>
         <PackageReference Include="Lib.Harmony" Version="2.2.2" />
-        <PackageReference Include="Northwood.LabAPI" Version="1.1.0" />
+        <PackageReference Include="Northwood.LabAPI" Version="1.1.1" />
     </ItemGroup>
 </Project>
