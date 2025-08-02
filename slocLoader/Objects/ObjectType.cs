@@ -17,6 +17,8 @@ public enum ObjectType : byte
     InvisibleInteractable = 11,
     Scp079Camera = 12,
     Speaker = 13,
-    Text
+    Text = 14,
+    Waypoint = 15,
+    CullingParent = 16
 
 }

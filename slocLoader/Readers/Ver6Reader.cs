@@ -37,6 +37,8 @@ public sealed class Ver6Reader : IObjectReader
             ObjectType.Scp079Camera => ReadCamera(stream, header),
             ObjectType.Speaker => ReadSpeaker(stream, header),
             ObjectType.Text => ReadText(stream, header),
+            ObjectType.Waypoint => ReadWaypoint(stream, header),
+            ObjectType.CullingParent => ReadCullingParent(stream, header),
             _ => null
         };
     }
@@ -174,6 +176,28 @@ public sealed class Ver6Reader : IObjectReader
         {
             Arguments = arguments,
             DisplaySize = new Vector2(width, height)
+        }.ApplyProperties(properties);
+    }
+
+    public static WaypointObject ReadWaypoint(BinaryReader stream, slocHeader header)
+    {
+        var properties = CommonObjectProperties.FromStream(stream, header);
+        var priority = stream.ReadSingle();
+        var visualizeBounds = stream.ReadBoolean();
+        return new WaypointObject(properties.InstanceId)
+        {
+            Priority = priority,
+            VisualizeBounds = visualizeBounds
+        }.ApplyProperties(properties);
+    }
+
+    public static CullingParentObject ReadCullingParent(BinaryReader stream, slocHeader header)
+    {
+        var properties = CommonObjectProperties.FromStream(stream, header);
+        var boundsSize = stream.ReadVector();
+        return new CullingParentObject(properties.InstanceId)
+        {
+            BoundsSize = boundsSize
         }.ApplyProperties(properties);
     }
 
