@@ -77,14 +77,14 @@ public static partial class API
         {Scp079CameraType.SurfaceZone, 1734743361}
     };
 
-    [Obsolete($"Use {nameof(AdminToyExtensions)}::{nameof(AdminToyExtensions.ApplyTransformNetworkProperties)} instead.")]
+    [Obsolete($"Use {nameof(AdminToyExtensions)}::{nameof(AdminToyExtensions.ApplyNetworkTransformProperties)} instead.")]
     public static void ApplyAdminToyTransform(GameObject gameObject)
     {
         if (gameObject.TryGetComponent(out AdminToyBase toy))
             ApplyAdminToyTransform(toy);
     }
 
-    [Obsolete($"Use {nameof(AdminToyExtensions)}::{nameof(AdminToyExtensions.ApplyTransformNetworkProperties)} instead.")]
+    [Obsolete($"Use {nameof(AdminToyExtensions)}::{nameof(AdminToyExtensions.ApplyNetworkTransformProperties)} instead.")]
     public static void ApplyAdminToyTransform(AdminToyBase toy, bool hasCollider = true)
     {
         var t = toy.transform;
@@ -112,7 +112,7 @@ public static partial class API
         var t = toy.transform;
         t.SetLocalPositionAndRotation(localPosition, localRotation);
         t.localScale = localScale;
-        toy.ApplyTransformNetworkProperties(localPosition, localRotation, localScale);
+        toy.ApplyNetworkTransformProperties(localPosition, localRotation, localScale);
         toy.PrimitiveFlags = PrimitiveFlags.None;
         var data = toy.gameObject.AddComponent<slocObjectData>();
         data.HasColliderOnClient = false;
@@ -188,7 +188,7 @@ public static partial class API
         toy.NetworkVerticalConstraint = new Vector2(camera.VerticalMinimum, camera.VerticalMaximum);
         toy.NetworkHorizontalConstraint = new Vector2(camera.HorizontalMinimum, camera.HorizontalMaximum);
         toy.NetworkZoomConstraint = new Vector2(camera.ZoomMinimum, camera.ZoomMaximum);
-        toy.ApplyTransformNetworkProperties(camera.Transform.Position, camera.Transform.Rotation, camera.Transform.Scale);
+        toy.ApplyNetworkTransformProperties(camera.Transform.Position, camera.Transform.Rotation, camera.Transform.Scale);
         return o;
     }
 

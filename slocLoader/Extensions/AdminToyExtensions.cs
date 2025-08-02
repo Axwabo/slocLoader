@@ -11,13 +11,13 @@ public static class AdminToyExtensions
         gameObject = toy.gameObject;
         gameObject.ApplyCommonData(sloc, parent, out data);
         toy.MovementSmoothing = sloc.MovementSmoothing;
-        toy.ApplyTransformNetworkProperties(sloc.Transform);
+        toy.ApplyNetworkTransformProperties(sloc.Transform);
     }
 
-    public static void ApplyTransformNetworkProperties(this AdminToyBase toy, slocTransform localTransform)
-        => toy.ApplyTransformNetworkProperties(localTransform.Position, localTransform.Rotation, localTransform.Scale);
+    public static void ApplyNetworkTransformProperties(this AdminToyBase toy, slocTransform localTransform)
+        => toy.ApplyNetworkTransformProperties(localTransform.Position, localTransform.Rotation, localTransform.Scale);
 
-    public static void ApplyTransformNetworkProperties(this AdminToyBase toy, Vector3 localPosition, Quaternion localRotation, Vector3 localScale)
+    public static void ApplyNetworkTransformProperties(this AdminToyBase toy, Vector3 localPosition, Quaternion localRotation, Vector3 localScale)
     {
         toy.NetworkPosition = localPosition;
         toy.NetworkRotation = localRotation;
