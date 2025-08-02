@@ -118,7 +118,8 @@ public static partial class API
             throw new InvalidOperationException("Culling parent prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
         var toy = Object.Instantiate(CullingParentPrefab);
         var go = toy.gameObject;
-        go.ApplyCommonData(cullingParent, parent, out _);
+        go.ApplyCommonData(cullingParent, parent, out var data);
+        data.GlobalTransform = true;
         toy.BoundsPosition = toy.transform.position;
         toy.NetworkBoundsSize = cullingParent.BoundsSize;
         return go;
