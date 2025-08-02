@@ -183,10 +183,11 @@ public sealed class Ver6Reader : IObjectReader
     {
         var properties = CommonObjectProperties.FromStream(stream, header);
         var priority = stream.ReadSingle();
-        var visualizeBounds = stream.ReadBoolean();
+        stream.ReadTwoBools(out var isStatic, out var visualizeBounds);
         return new WaypointObject(properties.InstanceId)
         {
             Priority = priority,
+            IsStatic = isStatic,
             VisualizeBounds = visualizeBounds
         }.ApplyProperties(properties);
     }

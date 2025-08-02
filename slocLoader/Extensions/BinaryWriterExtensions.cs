@@ -28,4 +28,7 @@ public static class BinaryWriterExtensions
     public static void WriteByteWithBool(this BinaryWriter writer, byte value, bool boolean)
         => writer.Write((byte) (value | (boolean ? BoolBit : 0)));
 
+    public static void WriteTwoBools(this BinaryWriter writer, bool a, bool b)
+        => writer.Write(API.CombineSafe((byte) (a ? 1 : 0), (byte) (b ? 1 : 0)));
+
 }

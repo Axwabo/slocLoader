@@ -1,4 +1,5 @@
-﻿using slocLoader.Readers;
+﻿using slocLoader.Extensions;
+using slocLoader.Readers;
 
 namespace slocLoader.Objects;
 
@@ -11,12 +12,14 @@ public sealed class WaypointObject : slocGameObject
 
     public float Priority;
 
+    public bool IsStatic;
+
     public bool VisualizeBounds;
 
     protected override void WriteData(BinaryWriter writer, slocHeader header)
     {
         writer.Write(Priority);
-        writer.Write(VisualizeBounds);
+        writer.WriteTwoBools(IsStatic, VisualizeBounds);
     }
 
 }

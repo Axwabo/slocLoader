@@ -26,12 +26,20 @@ public static partial class API
         ObjectType.Light => new LightObject(),
         ObjectType.Empty => new EmptyObject(),
         ObjectType.Structure => new StructureObject(StructureObject.StructureType.None),
+        ObjectType.Capybara => new CapybaraObject(),
+        ObjectType.InvisibleInteractable => new InvisibleInteractableObject(),
+        ObjectType.Scp079Camera => new Scp079CameraObject(Scp079CameraType.None),
+        ObjectType.Speaker => new SpeakerObject(),
+        ObjectType.Text => new TextObject(""),
+        ObjectType.Waypoint => new WaypointObject(),
+        ObjectType.CullingParent => new CullingParentObject(),
         _ => null
     };
 
     public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, bool throwOnError = true) => obj switch
     {
         CapybaraObject capybara => CreateCapybara(parent, capybara),
+        CullingParentObject cullingParent => CreateCullingParent(parent, cullingParent),
         EmptyObject => CreateEmpty(parent, obj),
         InvisibleInteractableObject interactable => CreateInteractable(parent, interactable),
         LightObject light => CreateLight(parent, light),
@@ -40,6 +48,7 @@ public static partial class API
         SpeakerObject speaker => CreateSpeaker(parent, speaker),
         StructureObject structure => CreateStructure(parent, structure),
         TextObject textObject => CreateText(parent, textObject),
+        WaypointObject waypoint => CreateWaypoint(parent, waypoint),
         _ => throwOnError ? throw new IndexOutOfRangeException($"Unknown object type {obj.Type}") : null
     };
 
@@ -99,7 +108,19 @@ public static partial class API
             throw new InvalidOperationException("Capybara prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
         var toy = Object.Instantiate(CapybaraPrefab);
         toy.ApplyCommonData(capybara, parent, out var go, out _);
-        toy.CollisionsEnabled = capybara.Collidable;
+        toy.NetworkCollisionsEnabled = capybara.Collidable;
+        return go;
+    }
+
+    private static GameObject CreateCullingParent(GameObject parent, CullingParentObject cullingParent)
+    {
+        if (CullingParentPrefab == null)
+            throw new InvalidOperationException("Culling parent prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(CullingParentPrefab);
+        var go = toy.gameObject;
+        go.ApplyCommonData(cullingParent, parent, out _);
+        toy.BoundsPosition = toy.transform.position;
+        toy.NetworkBoundsSize = cullingParent.BoundsSize;
         return go;
     }
 
@@ -229,6 +250,17 @@ public static partial class API
         toy.TextFormat = text.Format;
         toy.DisplaySize = text.DisplaySize * TextObject.FontSize;
         toy.Arguments.AddRange(text.Arguments);
+        return go;
+    }
+
+    private static GameObject CreateWaypoint(GameObject parent, WaypointObject waypoint)
+    {
+        if (WaypointPrefab == null)
+            throw new InvalidOperationException("Waypoint prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(WaypointPrefab);
+        toy.ApplyCommonData(waypoint, parent, out var go, out _);
+        toy.Priority = waypoint.Priority;
+        toy.VisualizeBounds = waypoint.VisualizeBounds;
         return go;
     }
 

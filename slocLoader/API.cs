@@ -25,6 +25,8 @@ public static partial class API
     public static SpeakerToy SpeakerPrefab { get; private set; }
     public static InvisibleInteractableToy InteractablePrefab { get; private set; }
     public static TextToy TextPrefab { get; private set; }
+    public static WaypointToy WaypointPrefab { get; private set; }
+    public static SpawnableCullingParent CullingParentPrefab { get; private set; }
 
     public static void LoadPrefabs()
     {
@@ -41,15 +43,19 @@ public static partial class API
                 InteractablePrefab = interactable;
             else if (prefab.TryGetComponent(out TextToy text))
                 TextPrefab = text;
+            else if (prefab.TryGetComponent(out WaypointToy waypoint))
+                WaypointPrefab = waypoint;
+            else if (prefab.TryGetComponent(out SpawnableCullingParent cullingParent))
+                CullingParentPrefab = cullingParent;
         OnPrefabsProcessed();
     }
 
     private static void OnPrefabsProcessed()
     {
-        if (PrimitivePrefab && LightPrefab && CapybaraPrefab && SpeakerPrefab && InteractablePrefab && TextPrefab)
+        if (PrimitivePrefab && LightPrefab && CapybaraPrefab && SpeakerPrefab && InteractablePrefab && TextPrefab && WaypointPrefab && CullingParentPrefab)
             InvokeEvent();
         else
-            Logger.Error("Either the primitive, light, capybara, speaker, interactable or text prefab is null. This should not happen!");
+            Logger.Error("Either the primitive, light, capybara, speaker, interactable, text, waypoint or culling parent prefab is null. This should not happen!");
     }
 
     private static void InvokeEvent()
@@ -75,6 +81,10 @@ public static partial class API
         LightPrefab = null;
         CapybaraPrefab = null;
         SpeakerPrefab = null;
+        InteractablePrefab = null;
+        TextPrefab = null;
+        WaypointPrefab = null;
+        CullingParentPrefab = null;
     }
 
     public static event Action PrefabsLoaded;
@@ -179,7 +189,7 @@ public static partial class API
                 o.MovementSmoothing = previousSmoothing;
                 if (gameObject == null)
                     continue;
-                if (gameObject.TryGetComponent(out AdminToyBase toy))
+                if (gameObject.TryGetComponent(out AdminToyBase toy) && toy is not WaypointToy)
                     toy.IsStatic = options.IsStatic;
                 createdAmount++;
                 CreatedInstances[o.InstanceId] = gameObject;
