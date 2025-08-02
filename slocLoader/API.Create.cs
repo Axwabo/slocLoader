@@ -74,7 +74,18 @@ public static partial class API
         {StructureObject.StructureType.Scp1853Pedestal, 3962534659},
         {StructureObject.StructureType.Scp2176Pedestal, 3578915554},
         {StructureObject.StructureType.SportTarget, 1704345398},
-        {StructureObject.StructureType.Workstation, 1783091262}
+        {StructureObject.StructureType.Workstation, 1783091262},
+        {StructureObject.StructureType.SimpleBoxesOpenConnector, 1687661105},
+        {StructureObject.StructureType.PipesShortOpenConnector, 147203050},
+        {StructureObject.StructureType.BoxesLadderOpenConnector, 1102032353},
+        {StructureObject.StructureType.TankSupportedShelfOpenConnector, 2490430134},
+        {StructureObject.StructureType.AngledFencesOpenConnector, 2673083832},
+        {StructureObject.StructureType.HugeOrangePipesOpenConnector, 2536312960},
+        {StructureObject.StructureType.PipesLongOpenConnector, 38976586},
+        {StructureObject.StructureType.AntiScp207Pedestal, 2399831573},
+        {StructureObject.StructureType.Scp1344Pedestal, 1763950070},
+        {StructureObject.StructureType.ExperimentalWeaponLocker, 2372810204},
+        {StructureObject.StructureType.UnsecuredPryableGate, 4046276968}
     };
 
     public static readonly IReadOnlyDictionary<Scp079CameraType, uint> CameraTypeIds = new Dictionary<Scp079CameraType, uint>

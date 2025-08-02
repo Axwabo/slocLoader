@@ -49,7 +49,19 @@ public sealed class StructureObject : slocGameObject
         Scp1853Pedestal = 18,
         Scp2176Pedestal = 19,
         SportTarget = 20,
-        Workstation = 21
+        Workstation = 21,
+        HczBulkDoor = 22,
+        SimpleBoxesOpenConnector = 23,
+        PipesShortOpenConnector = 24,
+        BoxesLadderOpenConnector = 25,
+        TankSupportedShelfOpenConnector = 26,
+        AngledFencesOpenConnector = 27,
+        HugeOrangePipesOpenConnector = 28,
+        PipesLongOpenConnector = 29,
+        AntiScp207Pedestal = 30,
+        Scp1344Pedestal = 31,
+        ExperimentalWeaponLocker = 32,
+        UnsecuredPryableGate = 33
 
     }
 
