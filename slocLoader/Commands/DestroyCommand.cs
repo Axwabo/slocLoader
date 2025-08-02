@@ -15,15 +15,9 @@ public sealed class DestroyCommand : ICommand, IUsageProvider
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {
-#if EXILED
-        if (!sender.CheckPermission("sloc.destroy"))
-        {
-            response = "You don't have permission to do that (sloc.destroy)!";
-#else
         if (!sender.CheckPermission(PlayerPermissions.FacilityManagement))
         {
             response = "You don't have permission to do that (FacilityManagement)!";
-#endif
             return false;
         }
 
