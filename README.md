@@ -33,9 +33,9 @@ it's not meant to be interpreted as text. It is a sequence of **int**egers and *
 # Setup
 
 > [!IMPORTANT]
-> [Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/tree/labapi) **is required** as a dependency.
+> [Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/) **is required** as a dependency.
 
-1. Install [Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/tree/labapi)
+1. Install [Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/)
 2. Install [Harmony 2.2.2](https://github.com/pardeike/Harmony/releases/tag/v2.2.2.0) as a dependency, you need the **net4.8** version
     1. Download the `Harmony.2.2.2.0.zip` asset
     2. Extract the `net48/0Harmony.dll` file from the archive to the `dependencies` folder:
@@ -158,6 +158,41 @@ Use the methods in the **slocLoader.API** class to load objects.
 Make sure to do this **after the prefabs are loaded**; register a handler to the **PrefabsLoaded** event contained in
 the API class.
 
+```csharp
+using AdminToys;
+using LabApi.Loader;
+using slocLoader;
+using slocLoader.AutoObjectLoader;
+using slocLoader.ObjectCreation;
+
+var config = MyPlugin.Instance.GetConfigDirectory().FullName;
+
+var test = API.SpawnObjects(
+    Path.Combine(config, "test.sloc"),
+    Vector3.up * 300,
+    Quaternion.Euler(0, 180, 0)
+);
+// make primitives slightly transparent
+foreach (var primitive in test.GetComponentsInChildren<PrimitiveObjectToy>())
+    primitive.NetworkMaterialColor = primitive.NetworkMaterialColor with {a = 0.8f};
+
+if (AutomaticObjectLoader.TryGetObjects("test2", out var objects))
+    API.SpawnObjects(objects, new CreateOptions
+    {
+        Position = new Vector3(-5, 300, 0),
+        StaticRoot = true, // root object does not move
+        IsStatic = true, // children don't move
+        Scale = Vector3.one * 0.5f
+    });
+
+// ConstantMove component that moves the root object every frame
+API.SpawnObjects(Path.Combine(config, "moving.sloc"), new CreateOptions
+{
+    IsStatic = true, // children don't move, only the root does
+    RootSmoothing = 20
+}).AddComponent<ConstantMove>();
+```
+
 Example of spawning a singular object:
 
 ```csharp
@@ -173,7 +208,7 @@ new PrimitiveObject(ObjecType.Capsule)  // non-primitive type will throw an exce
         Rotation = Quaternion.Euler(0, 50, 0),
         Scale = new Vector3(2, 1, 2)
     },
-    ColliderMode = PrimitiveObject.ColliderCreationMode.Trigger,
+    Flags = PrimitiveObjectFlags.ServerCollider | PrimitiveObjectFlags.Trigger,
     MaterialColor = Color.red
 }.SpawnObject();
 ```
