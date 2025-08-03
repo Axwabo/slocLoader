@@ -126,12 +126,12 @@ public sealed class Ver6Reader : IObjectReader
         var properties = CommonObjectProperties.FromStream(stream, header);
         var label = stream.ReadNullableString();
         var type = (Scp079CameraType) stream.ReadByte();
-        var vMin = stream.ReadShortAsFloat();
-        var vMax = stream.ReadShortAsFloat();
-        var hMin = stream.ReadShortAsFloat();
-        var hMax = stream.ReadShortAsFloat();
-        var zoomMin = stream.ReadShortAsFloat();
-        var zoomMax = stream.ReadShortAsFloat();
+        var vMin = stream.ReadSingle();
+        var vMax = stream.ReadSingle();
+        var hMin = stream.ReadSingle();
+        var hMax = stream.ReadSingle();
+        var zoomMin = stream.ReadSingle();
+        var zoomMax = stream.ReadSingle();
         return new Scp079CameraObject(type, properties.InstanceId)
         {
             Label = label,
