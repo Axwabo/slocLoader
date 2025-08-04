@@ -75,6 +75,7 @@ public static partial class API
         {StructureObject.StructureType.Scp2176Pedestal, 3578915554},
         {StructureObject.StructureType.SportTarget, 1704345398},
         {StructureObject.StructureType.Workstation, 1783091262},
+        {StructureObject.StructureType.HczBulkDoor, 2176035362},
         {StructureObject.StructureType.SimpleBoxesOpenConnector, 1687661105},
         {StructureObject.StructureType.PipesShortOpenConnector, 147203050},
         {StructureObject.StructureType.BoxesLadderOpenConnector, 1102032353},
