@@ -1,4 +1,8 @@
-﻿using slocLoader.Objects;
+﻿using slocLoader.Extensions;
+using slocLoader.Objects;
+
+#pragma warning disable CS0612
+#pragma warning disable CS0618
 
 namespace slocLoader.Readers;
 
@@ -54,7 +58,11 @@ public sealed class Ver3Reader : IObjectReader
             ParentId = parentId,
             Transform = slocTransform,
             MaterialColor = color,
-            ColliderMode = creationMode
+            Flags = ColliderModeCompatibility.GetPrimitiveFlags(
+                creationMode == PrimitiveObject.ColliderCreationMode.Unset
+                    ? PrimitiveObject.ColliderCreationMode.Both
+                    : creationMode
+            )
         };
     }
 
@@ -72,7 +80,7 @@ public sealed class Ver3Reader : IObjectReader
             ParentId = parentId,
             Transform = transform,
             LightColor = lightColor,
-            Shadows = shadows,
+            ShadowType = shadows ? LightShadows.Soft : LightShadows.None,
             Range = range,
             Intensity = intensity,
         };

@@ -18,7 +18,7 @@ public static class ActionManager
         {5, DefaultReader}
     };
 
-    public static readonly ICollection<TargetType> TargetTypeValues = new List<TargetType>
+    public static readonly IReadOnlyCollection<TargetType> TargetTypeValues = new List<TargetType>
     {
         TargetType.Player,
         TargetType.Pickup,
@@ -26,14 +26,14 @@ public static class ActionManager
         TargetType.Ragdoll
     }.AsReadOnly();
 
-    public static readonly ICollection<TriggerEventType> EventTypeValues = new List<TriggerEventType>
+    public static readonly IReadOnlyCollection<TriggerEventType> EventTypeValues = new List<TriggerEventType>
     {
         TriggerEventType.Enter,
         TriggerEventType.Stay,
         TriggerEventType.Exit
     }.AsReadOnly();
 
-    public static readonly ICollection<TeleportOptions> TeleportOptionsValues = new List<TeleportOptions>
+    public static readonly IReadOnlyCollection<TeleportOptions> TeleportOptionsValues = new List<TeleportOptions>
     {
         TeleportOptions.ResetFallDamage,
         TeleportOptions.ResetVelocity,
@@ -42,14 +42,14 @@ public static class ActionManager
     }.AsReadOnly();
 
     private static readonly ITriggerActionHandler[] ActionHandlers =
-    {
+    [
         new TeleportToPositionHandler(),
         new MoveRelativeToSelfHandler(),
         new KillPlayerHandler(),
         new TeleportToRoomHandler(),
         new TeleportToSpawnedObjectHandler(),
         new TeleporterImmunityHandler()
-    };
+    ];
 
     public static bool TryGetReader(ushort version, out ITriggerActionDataReader reader)
     {
@@ -73,7 +73,7 @@ public static class ActionManager
     {
         var actionCount = stream.ReadInt32();
         if (actionCount < 1)
-            return Array.Empty<BaseTriggerActionData>();
+            return [];
         var actions = new List<BaseTriggerActionData>();
         for (var i = 0; i < actionCount; i++)
         {

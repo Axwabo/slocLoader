@@ -13,19 +13,17 @@ public static class SpawnObserversPatch
     {
         var list = new List<CodeInstruction>(instructions);
         var loopStart = list.FindCode(OpCodes.Stloc_2) + 1;
-        list.InsertRange(loopStart, new[]
-        {
-            Ldloc(2).WithBlocks(new ExceptionBlock(ExceptionBlockType.BeginExceptionBlock)),
+        list.InsertRange(loopStart, [
+            Ldloc(2).Try(),
             Call(SendSpawnMessagePatch.ShouldUseGlobalTransform),
             Stfld(typeof(API), nameof(API.ShouldSpawnWithGlobalTransform))
-        });
+        ]);
         var loopEnd = list.FindCall(nameof(IEnumerator<NetworkIdentity>.MoveNext)) - 1;
-        list.InsertRange(loopEnd, new[]
-        {
-            Int0.WithBlocks(new ExceptionBlock(ExceptionBlockType.BeginFinallyBlock)),
+        list.InsertRange(loopEnd, [
+            Int0.Finally(),
             Stfld(typeof(API), nameof(API.ShouldSpawnWithGlobalTransform)),
-            new CodeInstruction(OpCodes.Endfinally).WithBlocks(new ExceptionBlock(ExceptionBlockType.EndExceptionBlock))
-        });
+            EndFinally
+        ]);
         return list;
     }
 

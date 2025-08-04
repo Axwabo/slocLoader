@@ -8,22 +8,16 @@ namespace slocLoader.Commands;
 public sealed class DestroyCommand : ICommand, IUsageProvider
 {
 
-    public string[] Usage { get; } = {"netID"};
+    public string[] Usage { get; } = ["netID"];
     public string Command => "sl_destroy";
-    public string[] Aliases { get; } = {"sl_del", "sl_d", "sl_remove"};
+    public string[] Aliases { get; } = ["sl_del", "sl_d", "sl_remove"];
     public string Description => "Destroys a previously spawned object.";
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {
-#if EXILED
-        if (!sender.CheckPermission("sloc.destroy"))
-        {
-            response = "You don't have permission to do that (sloc.destroy)!";
-#else
         if (!sender.CheckPermission(PlayerPermissions.FacilityManagement))
         {
             response = "You don't have permission to do that (FacilityManagement)!";
-#endif
             return false;
         }
 

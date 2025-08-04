@@ -1,0 +1,35 @@
+﻿using System.Text;
+
+namespace slocLoader.Extensions;
+
+public static class BinaryWriterExtensions
+{
+
+    public const int BoolBit = 0b1000_0000;
+
+    public static void WriteNullableString(this BinaryWriter writer, string value)
+    {
+        if (value == null)
+        {
+            writer.Write((ushort) 0);
+            return;
+        }
+
+        if (value.Length == 0)
+        {
+            writer.Write((ushort) 1);
+            return;
+        }
+
+        var bytes = Encoding.UTF8.GetBytes(value);
+        writer.Write((ushort) (bytes.Length + 1));
+        writer.Write(bytes);
+    }
+
+    public static void WriteByteWithBool(this BinaryWriter writer, byte value, bool boolean)
+        => writer.Write((byte) (value | (boolean ? BoolBit : 0)));
+
+    public static void WriteTwoBools(this BinaryWriter writer, bool a, bool b)
+        => writer.Write(API.CombineSafe((byte) (a ? 1 : 0), (byte) (b ? 1 : 0)));
+
+}

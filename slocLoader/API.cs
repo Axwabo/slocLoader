@@ -13,7 +13,7 @@ namespace slocLoader;
 public static partial class API
 {
 
-    public const ushort slocVersion = 5;
+    public const ushort slocVersion = 6;
 
     public const float ColorDivisionMultiplier = 1f / 255f;
 
@@ -21,24 +21,41 @@ public static partial class API
 
     public static PrimitiveObjectToy PrimitivePrefab { get; private set; }
     public static LightSourceToy LightPrefab { get; private set; }
+    public static CapybaraToy CapybaraPrefab { get; private set; }
+    public static SpeakerToy SpeakerPrefab { get; private set; }
+    public static InvisibleInteractableToy InteractablePrefab { get; private set; }
+    public static TextToy TextPrefab { get; private set; }
+    public static WaypointToy WaypointPrefab { get; private set; }
+    public static SpawnableCullingParent CullingParentPrefab { get; private set; }
 
     public static void LoadPrefabs()
     {
         foreach (var prefab in NetworkClient.prefabs.Values)
-        {
             if (prefab.TryGetComponent(out PrimitiveObjectToy primitive))
                 PrimitivePrefab = primitive;
-            if (prefab.TryGetComponent(out LightSourceToy light))
+            else if (prefab.TryGetComponent(out LightSourceToy light))
                 LightPrefab = light;
-        }
+            else if (prefab.TryGetComponent(out CapybaraToy capybara))
+                CapybaraPrefab = capybara;
+            else if (prefab.TryGetComponent(out SpeakerToy speaker))
+                SpeakerPrefab = speaker;
+            else if (prefab.TryGetComponent(out InvisibleInteractableToy interactable))
+                InteractablePrefab = interactable;
+            else if (prefab.TryGetComponent(out TextToy text))
+                TextPrefab = text;
+            else if (prefab.TryGetComponent(out WaypointToy waypoint))
+                WaypointPrefab = waypoint;
+            else if (prefab.TryGetComponent(out SpawnableCullingParent cullingParent))
+                CullingParentPrefab = cullingParent;
+        OnPrefabsProcessed();
+    }
 
-        if (PrimitivePrefab == null || LightPrefab == null)
-        {
-            Log.Error("Either the primitive or light prefab is null. This should not happen!");
-            return;
-        }
-
-        InvokeEvent();
+    private static void OnPrefabsProcessed()
+    {
+        if (PrimitivePrefab && LightPrefab && CapybaraPrefab && SpeakerPrefab && InteractablePrefab && TextPrefab && WaypointPrefab && CullingParentPrefab)
+            InvokeEvent();
+        else
+            Logger.Error("Either the primitive, light, capybara, speaker, interactable, text, waypoint or culling parent prefab is null. This should not happen!");
     }
 
     private static void InvokeEvent()
@@ -46,7 +63,6 @@ public static partial class API
         if (PrefabsLoaded == null)
             return;
         foreach (var subscriber in PrefabsLoaded.GetInvocationList())
-        {
             try
             {
                 subscriber.DynamicInvoke();
@@ -55,15 +71,20 @@ public static partial class API
             {
                 var method = subscriber.Method;
                 var exception = e is TargetInvocationException {InnerException: { } inner} ? inner : e;
-                Log.Error($"An exception was thrown by {method.DeclaringType?.FullName}::{method.Name} upon the invocation of PrefabsLoaded:\n{exception}");
+                Logger.Error($"An exception was thrown by {method.DeclaringType?.FullName}::{method.Name} upon the invocation of PrefabsLoaded:\n{exception}");
             }
-        }
     }
 
     internal static void UnsetPrefabs()
     {
         PrimitivePrefab = null;
         LightPrefab = null;
+        CapybaraPrefab = null;
+        SpeakerPrefab = null;
+        InteractablePrefab = null;
+        TextPrefab = null;
+        WaypointPrefab = null;
+        CullingParentPrefab = null;
     }
 
     public static event Action PrefabsLoaded;
@@ -104,9 +125,8 @@ public static partial class API
         if (o == null)
             return;
         var t = o.transform;
+        t.SetLocalPositionAndRotation(transform.Position, transform.Rotation);
         t.localScale = transform.Scale;
-        t.localPosition = transform.Position;
-        t.localRotation = transform.Rotation;
     }
 
     public static IEnumerable<GameObject> WithAllChildren(this GameObject o) => o.GetComponentsInChildren<Transform>().Select(e => e.gameObject);
@@ -125,6 +145,7 @@ public static partial class API
         return collider;
     }
 
+    [Obsolete("Collider modes have been replaced by primitive flags.")]
     public static bool IsTrigger(this PrimitiveObject.ColliderCreationMode colliderMode) => colliderMode is PrimitiveObject.ColliderCreationMode.Trigger or PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger;
 
     public static bool HasAttribute(this slocHeader header, slocAttributes attribute) => (header.Attributes & attribute) == attribute;
@@ -152,16 +173,10 @@ public static partial class API
         TpToSpawnedCache.Clear();
         try
         {
-            var go = new GameObject
-            {
-                transform =
-                {
-                    position = options.Position,
-                    rotation = options.Rotation,
-                }
-            };
-            go.AddComponent<NetworkIdentity>();
-            go.AddComponent<slocObjectData>();
+            var go = CreateEmpty(options.Parent, options.Position, options.Rotation, options.Scale);
+            var root = go.GetComponent<AdminToyBase>();
+            root.IsStatic = options.StaticRoot;
+            root.MovementSmoothing = options.RootSmoothing;
             if (spawnRoot)
                 NetworkServer.Spawn(go);
             createdAmount = 0;
@@ -175,7 +190,7 @@ public static partial class API
                 if (gameObject == null)
                     continue;
                 if (gameObject.TryGetComponent(out AdminToyBase toy))
-                    toy.IsStatic = options.IsStatic;
+                    toy.IsStatic = (o as WaypointObject)?.IsStatic ?? options.IsStatic;
                 createdAmount++;
                 CreatedInstances[o.InstanceId] = gameObject;
             }

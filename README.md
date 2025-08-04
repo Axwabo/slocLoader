@@ -23,7 +23,7 @@ This is not meant to be a clone of MER, but a different approach to be able to l
 An **sloc** file can contain primitive Unity objects (spheres, cubes etc.) and also lights.
 
 > [!NOTE]
-> Currently, only point lights are supported. 
+> Currently, only point lights are supported.
 
 To create an **sloc** file, use [slocExporter](https://github.com/Axwabo/slocExporter/)
 
@@ -34,25 +34,25 @@ it's not meant to be interpreted as text. It is a sequence of **int**egers and *
 
 > [!IMPORTANT]
 > [Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/) **is required** as a dependency.
-> 
-> EXILED no longer receives support. Use the Northwood Plugin API version instead.
 
-## Automatically
-
-1. Run the command `p install Axwabo/slocLoader` in the server console
-2. Restart your server
-
-## Manually
-
-1. Download the **slocLoader-nw.dll** file from the [latest release](https://github.com/Axwabo/slocLoader/releases/latest)
-2. Place the DLL into the **NW Plugins** folder (Windows: `%appdata%\SCP Secret Laboratory\PluginAPI\plugins\port`)
-3. Download the latest [Harmony](https://github.com/pardeike/Harmony/releases) release (**Harmony.x.x.x.x.zip**, not the source code)
-4. From the zip file, put the **net4.8\0Harmony.dll** into the **NW Dependencies** folder (Windows: `%appdata%\SCP Secret Laboratory\PluginAPI\plugins\port\dependencies`)
+1. Install [Axwabo.Helpers](https://github.com/Axwabo/SCPSL-Helpers/)
+2. Install [Harmony 2.2.2](https://github.com/pardeike/Harmony/releases/tag/v2.2.2.0) as a dependency, you need the **net4.8** version
+    1. Download the `Harmony.2.2.2.0.zip` asset
+    2. Extract the `net48/0Harmony.dll` file from the archive to the `dependencies` folder:
+        - Windows: `%appdata%\SCP Secret Laboratory\LabAPI-Beta\dependencies\<port>`
+        - Linux: `.config/SCP Secret Laboratory/LabAPI-Beta/dependencies/<port>`
+3. Download the `slocLoader.dll` file from the [latest release](https://github.com/Axwabo/slocLoader/releases/)
+4. Place the DLL into the `plugins` folder:
+    - Windows: `%appdata%\SCP Secret Laboratory\LabAPI-Beta\plugins\<port>`
+    - Linux: `.config/SCP Secret Laboratory/LabAPI-Beta/plugins/<port>`
 5. Restart your server
 
 # Adding objects
 
-To load objects automatically, put your **sloc** file into `%appdata%\EXILED\Plugins\sloc\Objects` or `%appdata%\SCP Secret Laboratory\PluginAPI\plugins\port\sloc\Objects`
+To load objects automatically, put your **sloc** file into:
+
+- Windows: `%appdata%\SCP Secret Laboratory\LabAPI-Beta\configs\<port>\slocLoader\Objects`
+- Linux: `.config/SCP Secret Laboratory/LabAPI-Beta/configs/<port>/slocLoader/Objects`
 
 Make sure the **auto_load** property in the plugin config is set to true.
 
@@ -68,7 +68,7 @@ command outputs.
 
 Make sure the **enable_auto_spawn** property in the plugin config is set to true.
 
-View the list of room names and types [here](https://github.com/Axwabo/SCPSL-Helpers/blob/main/Axwabo.Helpers.NWAPI/Config/RoomType.cs)
+View the list of room names and types [here](https://github.com/Axwabo/SCPSL-Helpers/blob/main/Axwabo.Helpers/Config/RoomType.cs)
 
 In the plugin config, add an item to the `auto_spawn_by_room_name`, `auto_spawn_by_room_type` or `auto_spawn_by_location` list. There are examples provider for ease of use.
 
@@ -77,7 +77,7 @@ Room name template:
 ```yaml
 asset_name: example
 point:
-  room_name: HCZ_106
+  room_name: HCZ_079
   position_offset:
     x: 0
     y: 0
@@ -158,6 +158,41 @@ Use the methods in the **slocLoader.API** class to load objects.
 Make sure to do this **after the prefabs are loaded**; register a handler to the **PrefabsLoaded** event contained in
 the API class.
 
+```csharp
+using AdminToys;
+using LabApi.Loader;
+using slocLoader;
+using slocLoader.AutoObjectLoader;
+using slocLoader.ObjectCreation;
+
+var config = MyPlugin.Instance.GetConfigDirectory().FullName;
+
+var test = API.SpawnObjects(
+    Path.Combine(config, "test.sloc"),
+    Vector3.up * 300,
+    Quaternion.Euler(0, 180, 0)
+);
+// make primitives slightly transparent
+foreach (var primitive in test.GetComponentsInChildren<PrimitiveObjectToy>())
+    primitive.NetworkMaterialColor = primitive.NetworkMaterialColor with {a = 0.8f};
+
+if (AutomaticObjectLoader.TryGetObjects("test2", out var objects))
+    API.SpawnObjects(objects, new CreateOptions
+    {
+        Position = new Vector3(-5, 300, 0),
+        StaticRoot = true, // root object does not move
+        IsStatic = true, // children don't move
+        Scale = Vector3.one * 0.5f
+    });
+
+// ConstantMove component that moves the root object every frame
+API.SpawnObjects(Path.Combine(config, "moving.sloc"), new CreateOptions
+{
+    IsStatic = true, // children don't move, only the root does
+    RootSmoothing = 20
+}).AddComponent<ConstantMove>();
+```
+
 Example of spawning a singular object:
 
 ```csharp
@@ -173,7 +208,7 @@ new PrimitiveObject(ObjecType.Capsule)  // non-primitive type will throw an exce
         Rotation = Quaternion.Euler(0, 50, 0),
         Scale = new Vector3(2, 1, 2)
     },
-    ColliderMode = PrimitiveObject.ColliderCreationMode.Trigger,
+    Flags = PrimitiveObjectFlags.ServerCollider | PrimitiveObjectFlags.Trigger,
     MaterialColor = Color.red
 }.SpawnObject();
 ```

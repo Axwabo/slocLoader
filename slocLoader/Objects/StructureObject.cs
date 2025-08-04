@@ -1,11 +1,10 @@
-﻿using slocLoader.Readers;
+﻿using slocLoader.Extensions;
+using slocLoader.Readers;
 
 namespace slocLoader.Objects;
 
 public sealed class StructureObject : slocGameObject
 {
-
-    public const int RemoveDefaultLootBit = 0b1000_0000;
 
     public StructureObject(StructureType structureType) : this(0, structureType)
     {
@@ -24,7 +23,7 @@ public sealed class StructureObject : slocGameObject
     public override bool IsValid => Structure != StructureType.None;
 
     protected override void WriteData(BinaryWriter writer, slocHeader header)
-        => writer.Write((byte) ((int) Structure | (RemoveDefaultLoot ? RemoveDefaultLootBit : 0)));
+        => writer.WriteByteWithBool((byte) Structure, RemoveDefaultLoot);
 
     public enum StructureType : byte
     {
@@ -50,7 +49,19 @@ public sealed class StructureObject : slocGameObject
         Scp1853Pedestal = 18,
         Scp2176Pedestal = 19,
         SportTarget = 20,
-        Workstation = 21
+        Workstation = 21,
+        HczBulkDoor = 22,
+        SimpleBoxesOpenConnector = 23,
+        PipesShortOpenConnector = 24,
+        BoxesLadderOpenConnector = 25,
+        TankSupportedShelfOpenConnector = 26,
+        AngledFencesOpenConnector = 27,
+        HugeOrangePipesOpenConnector = 28,
+        PipesLongOpenConnector = 29,
+        AntiScp207Pedestal = 30,
+        Scp1344Pedestal = 31,
+        ExperimentalWeaponLocker = 32,
+        UnsecuredPryableGate = 33
 
     }
 

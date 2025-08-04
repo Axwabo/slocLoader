@@ -7,9 +7,9 @@ namespace slocLoader.TriggerActions;
 public sealed class TriggerListener : MonoBehaviour
 {
 
-    public readonly List<HandlerDataPair> OnEnter = new();
-    public readonly List<HandlerDataPair> OnStay = new();
-    public readonly List<HandlerDataPair> OnExit = new();
+    public readonly List<HandlerDataPair> OnEnter = [];
+    public readonly List<HandlerDataPair> OnStay = [];
+    public readonly List<HandlerDataPair> OnExit = [];
 
     public void InvokeOnEnter(Collider other) => ExecuteAll(other, OnEnter);
 

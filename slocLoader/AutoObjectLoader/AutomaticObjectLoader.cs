@@ -1,4 +1,5 @@
-﻿using slocLoader.ObjectCreation;
+﻿using LabApi.Loader;
+using slocLoader.ObjectCreation;
 using slocLoader.Objects;
 
 namespace slocLoader.AutoObjectLoader;
@@ -11,12 +12,7 @@ public static class AutomaticObjectLoader
     public static void LoadObjects()
     {
         LoadedObjects.Clear();
-#if EXILED
-        var path = Path.Combine(Paths.Plugins, "sloc", "Objects");
-#else
-        var path = Path.Combine(PluginHandler.Get(slocPlugin.Instance).PluginDirectoryPath, "Objects");
-#endif
-        Directory.CreateDirectory(path);
+        var path = slocPlugin.Instance.GetConfigDirectory().CreateSubdirectory("Objects").FullName;
         var loaded = 0;
         foreach (var file in Directory.EnumerateFiles(path, "*.sloc"))
         {
@@ -28,15 +24,11 @@ public static class AutomaticObjectLoader
             }
             catch (Exception e)
             {
-#if EXILED
-                Log.Warn($"Failed to parse object \"{name}\":\n{e}");
-#else
-                Log.Warning($"Failed to parse object \"{name}\":\n{e}");
-#endif
+                Logger.Warn($"Failed to parse object \"{name}\":\n{e}");
             }
         }
 
-        Log.Info($"Loaded {loaded} object{(loaded == 1 ? "" : "s")} from AppData.");
+        Logger.Info($"Loaded {loaded} object{(loaded == 1 ? "" : "s")} from AppData.");
     }
 
     public static void SpawnObjects(IEnumerable<IAssetLocation> locations)
@@ -60,7 +52,7 @@ public static class AutomaticObjectLoader
             spawnedObjects += spawned;
         }
 
-        Log.Info($"Spawned {spawnedAssets} asset(s) out of {totalAssetsToSpawn} specified; {spawnedObjects} object(s) in total.");
+        Logger.Info($"Spawned {spawnedAssets} asset(s) out of {totalAssetsToSpawn} specified; {spawnedObjects} object(s) in total.");
     }
 
     public static bool TryGetObjects(string name, out List<slocGameObject> objects) => LoadedObjects.TryGetValue(name, out objects);

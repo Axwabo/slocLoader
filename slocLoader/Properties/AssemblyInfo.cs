@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Axwabo")]
 [assembly: AssemblyProduct("slocLoader")]
-[assembly: AssemblyCopyright("Copyright © 2024")]
+[assembly: AssemblyCopyright("Copyright © 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,11 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-#if EXILED
-[assembly: Guid("5877B985-1E58-4AFD-82C9-8C55BE8D9F26")]
-#else
 [assembly: Guid("41000E56-567E-4AF2-9951-8C9A43A3573D")]
-#endif
 
 // Version information for an assembly consists of the following four values:
 //
@@ -35,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("5.2.4.0")]
-[assembly: AssemblyFileVersion("5.2.4.0")]
+[assembly: AssemblyVersion("6.0.3.0")]
+[assembly: AssemblyFileVersion("6.0.3.0")]

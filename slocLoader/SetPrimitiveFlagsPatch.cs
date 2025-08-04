@@ -15,11 +15,10 @@ internal static class SetPrimitiveFlagsPatch
         var start = list.FindCode(OpCodes.Ldarg_2);
         var end = list.FindCall("set_enabled");
         list.RemoveRange(start, end - start);
-        list.InsertRange(start, new[]
-        {
+        list.InsertRange(start, [
             This,
             Call(SetPrimitiveTypePatch.ShouldAddCollider)
-        });
+        ]);
         return list;
     }
 

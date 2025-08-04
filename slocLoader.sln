@@ -4,13 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slocLoader", "slocLoader\sl
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		EXILED|Any CPU = EXILED|Any CPU
-		NW|Any CPU = NW|Any CPU
+		LabApi|Any CPU = LabApi|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}.EXILED|Any CPU.ActiveCfg = EXILED|Any CPU
-		{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}.EXILED|Any CPU.Build.0 = EXILED|Any CPU
-		{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}.NW|Any CPU.ActiveCfg = NW|Any CPU
-		{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}.NW|Any CPU.Build.0 = NW|Any CPU
+		{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}.LabApi|Any CPU.ActiveCfg = LabApi|Any CPU
+		{5877B985-1E58-4AFD-82C9-8C55BE8D9F26}.LabApi|Any CPU.Build.0 = LabApi|Any CPU
 	EndGlobalSection
 EndGlobal

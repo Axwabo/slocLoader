@@ -1,9 +1,9 @@
 ﻿using AdminToys;
-using Exiled.API.Enums;
 using HarmonyLib;
+using LabApi.Events.Handlers;
+using LabApi.Loader.Features.Plugins;
 using MapGeneration;
 using slocLoader.AutoObjectLoader;
-using Map = Exiled.Events.Handlers.Map;
 
 namespace slocLoader;
 
@@ -13,15 +13,14 @@ public sealed class slocPlugin : Plugin<slocConfig>
     internal static slocPlugin Instance;
 
     public override string Name => "slocLoader";
-    public override string Prefix => "sloc";
+    public override string Description => "A plugin that loads sloc files.";
     public override string Author => "Axwabo";
-    public override PluginPriority Priority => PluginPriority.High;
-    public override Version Version { get; } = new(5, 2, 2);
-    public override Version RequiredExiledVersion { get; } = new(8, 4, 0);
+    public override Version Version => GetType().Assembly.GetName().Version;
+    public override Version RequiredApiVersion { get; } = new(1, 0, 0);
 
     private Harmony _harmony;
 
-    public override void OnEnabled()
+    public override void Enable()
     {
         Instance = this;
         _harmony = new Harmony("Axwabo.slocLoader");
@@ -29,38 +28,38 @@ public sealed class slocPlugin : Plugin<slocConfig>
         {
             _harmony.PatchAll();
             RemoveMapEditorRebornPatch();
-            Log.Info("Patching succeeded.");
+            Logger.Info("Patching succeeded.");
         }
         catch (Exception e)
         {
-            Log.Error("Patching failed! Nested object scaling will behave weirdly!\n" + e);
+            Logger.Error("Patching failed! Nested object scaling will behave weirdly!\n" + e);
         }
 
-        if (Config.AutoLoad)
+        if (Config?.AutoLoad ?? true)
             try
             {
                 AutomaticObjectLoader.LoadObjects();
             }
             catch (Exception e)
             {
-                Log.Error("Failed to load objects automatically:\n" + e);
+                Logger.Error("Failed to load objects automatically:\n" + e);
             }
 
         API.UnsetPrefabs();
-        Map.Generated += API.LoadPrefabs;
         API.PrefabsLoaded += SpawnDefault;
+        ServerEvents.WaitingForPlayers += API.LoadPrefabs;
         if (SeedSynchronizer.MapGenerated)
             API.LoadPrefabs();
-        base.OnEnabled();
+        Logger.Info("slocLoader has been enabled");
     }
 
-    public override void OnDisabled()
+    public override void Disable()
     {
-        _harmony.UnpatchAll();
+        _harmony.UnpatchAll(_harmony.Id);
         API.UnsetPrefabs();
-        Map.Generated -= API.LoadPrefabs;
         API.PrefabsLoaded -= SpawnDefault;
-        base.OnDisabled();
+        ServerEvents.WaitingForPlayers -= API.LoadPrefabs;
+        Logger.Info("slocLoader has been disabled");
     }
 
     private static void RemoveMapEditorRebornPatch()
@@ -71,30 +70,30 @@ public sealed class slocPlugin : Plugin<slocConfig>
         var patch = AccessTools.Method("MapEditorReborn.Patches.UpdatePositionServerPatch:Prefix");
         if (patch == null)
         {
-            Log.Warn("Failed to find MapEditorReborn.Patches.UpdatePositionServerPatch type! Nested object scaling will behave weirdly!");
+            Logger.Warn("Failed to find MapEditorReborn.Patches.UpdatePositionServerPatch type! Nested object scaling will behave weirdly!");
             return;
         }
 
         var instance = AccessTools.Property("MapEditorReborn.MapEditorReborn:Singleton")?.GetValue(null);
         if (instance == null)
         {
-            Log.Warn("Failed to find MapEditorReborn.MapEditorReborn.Singleton property! Nested object scaling will behave weirdly!");
+            Logger.Warn("Failed to find MapEditorReborn.MapEditorReborn.Singleton property! Nested object scaling will behave weirdly!");
             return;
         }
 
         if (AccessTools.Field("MapEditorReborn.MapEditorReborn:_harmony")?.GetValue(instance) is not Harmony harmony)
         {
-            Log.Warn("Failed to find MapEditorReborn.MapEditorReborn._harmony field! Nested object scaling will behave weirdly!");
+            Logger.Warn("Failed to find MapEditorReborn.MapEditorReborn._harmony field! Nested object scaling will behave weirdly!");
             return;
         }
 
         harmony.Unpatch(AccessTools.Method(typeof(AdminToyBase), nameof(AdminToyBase.UpdatePositionServer)), patch);
-        Log.Info("Removed MapEditorReborn patch.");
+        Logger.Info("Removed MapEditorReborn patch.");
     }
 
     private void SpawnDefault()
     {
-        if (Config.EnableAutoSpawn)
+        if (Config is {EnableAutoSpawn: true})
             AutomaticObjectLoader.SpawnObjects(
                 (Config.AutoSpawnByRoomName?.Cast<IAssetLocation>()).AsNonNullEnumerable()
                 .Concat((Config.AutoSpawnByRoomType?.Cast<IAssetLocation>()).AsNonNullEnumerable())

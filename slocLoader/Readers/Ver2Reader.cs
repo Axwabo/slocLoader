@@ -1,5 +1,7 @@
 ﻿using slocLoader.Objects;
 
+#pragma warning disable CS0612
+
 namespace slocLoader.Readers;
 
 public sealed class Ver2Reader : IObjectReader
@@ -52,7 +54,7 @@ public sealed class Ver2Reader : IObjectReader
             ParentId = parentId,
             Transform = transform,
             LightColor = lightColor,
-            Shadows = shadows,
+            ShadowType = shadows ? LightShadows.Soft : LightShadows.None,
             Range = range,
             Intensity = intensity,
         };

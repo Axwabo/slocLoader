@@ -10,9 +10,9 @@ public sealed class PositionCommand : ICommand, IUsageProvider
     public static readonly Dictionary<string, Vector3> Defined = new();
 
     public string Command => "sl_position";
-    public string[] Aliases { get; } = {"sl_pos", "sl_p"};
+    public string[] Aliases { get; } = ["sl_pos", "sl_p"];
     public string Description => "Sets the position to spawn objects at.";
-    public string[] Usage { get; } = {"x", "y", "z"};
+    public string[] Usage { get; } = ["x", "y", "z"];
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {

@@ -1,4 +1,5 @@
-﻿using slocLoader.Readers;
+﻿using slocLoader.Extensions;
+using slocLoader.Readers;
 
 namespace slocLoader.Objects;
 
@@ -19,6 +20,10 @@ public abstract class slocGameObject
 
     public byte MovementSmoothing;
 
+    public string Name;
+
+    public string Tag;
+
     public virtual bool IsValid => Type != ObjectType.None;
 
     public void WriteTo(BinaryWriter writer, slocHeader header)
@@ -27,6 +32,12 @@ public abstract class slocGameObject
         writer.Write(InstanceId);
         writer.Write(ParentId);
         Transform.WriteTo(writer);
+        if (header.HasAttribute(slocAttributes.NamesAndTags))
+        {
+            writer.WriteNullableString(Name);
+            writer.WriteNullableString(Tag);
+        }
+
         WriteData(writer, header);
     }
 

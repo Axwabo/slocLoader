@@ -14,7 +14,7 @@ public static class TriggerActionHelpers
 
     public static void SetRagdollPositionAndRotation(BasicRagdoll ragdoll, Vector3 targetPosition, Quaternion targetRotation)
     {
-        if (!slocPlugin.Instance.Config.EnableRagdollPositionModification)
+        if (!slocPlugin.Instance.Config?.EnableRagdollPositionModification ?? false)
             return;
         var t = ragdoll.transform;
         t.position = targetPosition;
@@ -32,7 +32,7 @@ public static class TriggerActionHelpers
         switch (pickup.PhysicsModule)
         {
             case PickupStandardPhysics physics:
-                physics.Rb.velocity = Vector3.zero;
+                physics.Rb.linearVelocity = Vector3.zero;
                 physics.Rb.angularVelocity = Vector3.zero;
                 break;
             case Scp018Physics scp018:
@@ -62,10 +62,13 @@ public static class TriggerActionHelpers
             return;
         if (options.HasFlagFast(TeleportOptions.ResetFallDamage))
             module.Motor.ResetFallDamageCooldown();
-        var delta = options.HasFlagFast(TeleportOptions.DeltaRotation)
-            ? rotation
-            : rotation - module.MouseLook.CurrentHorizontal;
-        module.ServerOverridePosition(position, new Vector3(0, delta, 0));
+        var look = module.MouseLook;
+        var finalRotation = options.HasFlagFast(TeleportOptions.DeltaRotation)
+            ? look.CurrentHorizontal + rotation
+            : rotation;
+        module.ServerOverridePosition(position);
+        if (!Mathf.Approximately(finalRotation, look.CurrentHorizontal))
+            module.ServerOverrideRotation(new Vector2(look.CurrentVertical, finalRotation));
     }
 
 }

@@ -8,9 +8,9 @@ namespace slocLoader.Commands;
 public sealed class StructureCommand : ICommand, IUsageProvider
 {
 
-    public string[] Usage { get; } = {"type"};
+    public string[] Usage { get; } = ["type"];
     public string Command => "sl_structure";
-    public string[] Aliases => Array.Empty<string>();
+    public string[] Aliases => [];
     public string Description => "Spawns the specified structure type.";
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
@@ -22,15 +22,9 @@ public sealed class StructureCommand : ICommand, IUsageProvider
             return false;
         }
 
-#if EXILED
-        if (!p.CheckPermission("sloc.spawn"))
-        {
-            response = "You don't have permission to do that (sloc.spawn)!";
-#else
         if (!sender.CheckPermission(PlayerPermissions.FacilityManagement))
         {
             response = "You don't have permission to do that (FacilityManagement)!";
-#endif
             return false;
         }
 

@@ -1,6 +1,8 @@
 ﻿using AdminToys;
 using MapGeneration.Distributors;
 using Mirror;
+using RelativePositioning;
+using slocLoader.Extensions;
 using slocLoader.ObjectCreation;
 using slocLoader.Objects;
 using slocLoader.TriggerActions;
@@ -24,15 +26,29 @@ public static partial class API
         ObjectType.Light => new LightObject(),
         ObjectType.Empty => new EmptyObject(),
         ObjectType.Structure => new StructureObject(StructureObject.StructureType.None),
+        ObjectType.Capybara => new CapybaraObject(),
+        ObjectType.InvisibleInteractable => new InvisibleInteractableObject(),
+        ObjectType.Scp079Camera => new Scp079CameraObject(Scp079CameraType.None),
+        ObjectType.Speaker => new SpeakerObject(),
+        ObjectType.Text => new TextObject(""),
+        ObjectType.Waypoint => new WaypointObject(),
+        ObjectType.CullingParent => new CullingParentObject(),
         _ => null
     };
 
     public static GameObject CreateObject(this slocGameObject obj, GameObject parent = null, bool throwOnError = true) => obj switch
     {
-        StructureObject structure => CreateStructure(parent, structure),
-        PrimitiveObject primitive => CreatePrimitive(parent, primitive),
+        CapybaraObject capybara => CreateCapybara(parent, capybara),
+        CullingParentObject cullingParent => CreateCullingParent(parent, cullingParent),
+        EmptyObject => CreateEmpty(parent, obj),
+        InvisibleInteractableObject interactable => CreateInteractable(parent, interactable),
         LightObject light => CreateLight(parent, light),
-        EmptyObject => CreateEmpty(parent, obj.Transform),
+        PrimitiveObject primitive => CreatePrimitive(parent, primitive),
+        Scp079CameraObject camera => CreateCamera(parent, camera),
+        SpeakerObject speaker => CreateSpeaker(parent, speaker),
+        StructureObject structure => CreateStructure(parent, structure),
+        TextObject textObject => CreateText(parent, textObject),
+        WaypointObject waypoint => CreateWaypoint(parent, waypoint),
         _ => throwOnError ? throw new IndexOutOfRangeException($"Unknown object type {obj.Type}") : null
     };
 
@@ -58,64 +74,102 @@ public static partial class API
         {StructureObject.StructureType.Scp1853Pedestal, 3962534659},
         {StructureObject.StructureType.Scp2176Pedestal, 3578915554},
         {StructureObject.StructureType.SportTarget, 1704345398},
-        {StructureObject.StructureType.Workstation, 1783091262}
+        {StructureObject.StructureType.Workstation, 1783091262},
+        {StructureObject.StructureType.HczBulkDoor, 2176035362},
+        {StructureObject.StructureType.SimpleBoxesOpenConnector, 1687661105},
+        {StructureObject.StructureType.PipesShortOpenConnector, 147203050},
+        {StructureObject.StructureType.BoxesLadderOpenConnector, 1102032353},
+        {StructureObject.StructureType.TankSupportedShelfOpenConnector, 2490430134},
+        {StructureObject.StructureType.AngledFencesOpenConnector, 2673083832},
+        {StructureObject.StructureType.HugeOrangePipesOpenConnector, 2536312960},
+        {StructureObject.StructureType.PipesLongOpenConnector, 38976586},
+        {StructureObject.StructureType.AntiScp207Pedestal, 2399831573},
+        {StructureObject.StructureType.Scp1344Pedestal, 1763950070},
+        {StructureObject.StructureType.ExperimentalWeaponLocker, 2372810204},
+        {StructureObject.StructureType.UnsecuredPryableGate, 4046276968}
     };
 
+    public static readonly IReadOnlyDictionary<Scp079CameraType, uint> CameraTypeIds = new Dictionary<Scp079CameraType, uint>
+    {
+        {Scp079CameraType.LightContainmentZone, 2026969629},
+        {Scp079CameraType.HeavyContainmentZone, 144958943},
+        {Scp079CameraType.EntranceZone, 3375932423},
+        {Scp079CameraType.EntranceZoneArm, 1824808402},
+        {Scp079CameraType.SurfaceZone, 1734743361}
+    };
+
+    [Obsolete($"Use {nameof(AdminToyExtensions)}::{nameof(AdminToyExtensions.ApplyNetworkTransformProperties)} instead.")]
     public static void ApplyAdminToyTransform(GameObject gameObject)
     {
         if (gameObject.TryGetComponent(out AdminToyBase toy))
             ApplyAdminToyTransform(toy);
     }
 
+    [Obsolete($"Use {nameof(AdminToyExtensions)}::{nameof(AdminToyExtensions.ApplyNetworkTransformProperties)} instead.")]
     public static void ApplyAdminToyTransform(AdminToyBase toy, bool hasCollider = true)
     {
         var t = toy.transform;
-        toy.Position = t.position;
-        toy.Rotation = t.rotation;
-        toy.Scale = t.lossyScale;
+        toy.Position = t.localPosition;
+        toy.Rotation = t.localRotation;
+        toy.Scale = t.localScale;
     }
 
-    private static GameObject CreateStructure(GameObject parent, StructureObject structure)
+    private static GameObject CreateCapybara(GameObject parent, CapybaraObject capybara)
     {
-        if (!StructurePrefabIds.TryGetValue(structure.Structure, out var id) || !NetworkClient.prefabs.TryGetValue(id, out var prefab))
-            return null;
-        var o = Object.Instantiate(prefab);
-        o.SetAbsoluteTransformFrom(parent);
-        o.SetLocalTransform(structure.Transform);
-        o.AddComponent<slocObjectData>();
-        if (structure.RemoveDefaultLoot && o.TryGetComponent(out Locker locker))
-            locker.Loot = Array.Empty<LockerLoot>();
-        ApplyAdminToyTransform(o);
-        return o;
+        if (CapybaraPrefab == null)
+            throw new InvalidOperationException("Capybara prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(CapybaraPrefab);
+        toy.ApplyCommonData(capybara, parent, out var go, out _);
+        toy.NetworkCollisionsEnabled = capybara.Collidable;
+        return go;
     }
 
-    private static GameObject CreatePrimitive(GameObject parent, PrimitiveObject primitive)
+    private static GameObject CreateCullingParent(GameObject parent, CullingParentObject cullingParent)
+    {
+        if (CullingParentPrefab == null)
+            throw new InvalidOperationException("Culling parent prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(CullingParentPrefab);
+        var go = toy.gameObject;
+        go.ApplyCommonData(cullingParent, parent, out var data);
+        data.GlobalTransform = true;
+        toy.BoundsPosition = toy.transform.position;
+        toy.NetworkBoundsSize = cullingParent.BoundsSize;
+        return go;
+    }
+
+    private static GameObject CreateEmpty(GameObject parent, Vector3 localPosition, Quaternion localRotation, Vector3 localScale)
     {
         if (PrimitivePrefab == null)
             throw new InvalidOperationException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
         var toy = Object.Instantiate(PrimitivePrefab);
-        var colliderMode = primitive.GetNonUnsetColliderMode();
-        var primitiveType = primitive.Type.ToPrimitiveType();
-        var o = toy.gameObject;
-        var sloc = o.AddComponent<slocObjectData>();
-        sloc.HasColliderOnClient = colliderMode is PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.Both;
-        if (colliderMode is PrimitiveObject.ColliderCreationMode.NonSpawnedTrigger or PrimitiveObject.ColliderCreationMode.ServerOnlyNonSpawned or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned)
-            sloc.ShouldBeSpawnedOnClient = false;
-        if (colliderMode is not (PrimitiveObject.ColliderCreationMode.NoCollider or PrimitiveObject.ColliderCreationMode.ClientOnly or PrimitiveObject.ColliderCreationMode.NoColliderNonSpawned))
-            sloc.IsTrigger = colliderMode.IsTrigger();
-        else
-            sloc.HasColliderOnServer = false;
-        AddActionHandlers(o, primitive.TriggerActions);
-        toy.PrimitiveType = primitiveType;
-        toy.MovementSmoothing = primitive.MovementSmoothing;
         toy.SetAbsoluteTransformFrom(parent);
-        toy.SetLocalTransform(primitive.Transform);
-        toy.MaterialColor = primitive.MaterialColor;
-        ApplyAdminToyTransform(toy, sloc.HasColliderOnClient);
-        if (!sloc.HasColliderOnClient)
-            toy.PrimitiveFlags &= ~PrimitiveFlags.Collidable;
-        toy.SetPrimitive(0, toy.PrimitiveType);
-        return o;
+        var t = toy.transform;
+        t.SetLocalPositionAndRotation(localPosition, localRotation);
+        t.localScale = localScale;
+        toy.ApplyNetworkTransformProperties(localPosition, localRotation, localScale);
+        toy.PrimitiveFlags = PrimitiveFlags.None;
+        var data = toy.gameObject.AddComponent<slocObjectData>();
+        data.HasColliderOnClient = false;
+        data.HasColliderOnServer = false;
+        return toy.gameObject;
+    }
+
+    private static GameObject CreateEmpty(GameObject parent, slocGameObject obj)
+    {
+        var go = CreateEmpty(parent, obj.Transform.Position, obj.Transform.Rotation, obj.Transform.Scale);
+        go.ApplyNameAndTag(obj.Name, obj.Tag);
+        return go;
+    }
+
+    private static GameObject CreateInteractable(GameObject parent, InvisibleInteractableObject interactable)
+    {
+        if (InteractablePrefab == null)
+            throw new InvalidOperationException("Interactable prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(InteractablePrefab);
+        toy.ApplyCommonData(interactable, parent, out var go, out _);
+        toy.Shape = interactable.Shape;
+        toy.InteractionDuration = interactable.InteractionDuration;
+        return go;
     }
 
     private static GameObject CreateLight(GameObject parent, LightObject light)
@@ -123,25 +177,104 @@ public static partial class API
         if (LightPrefab == null)
             throw new InvalidOperationException("Light prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
         var toy = Object.Instantiate(LightPrefab);
-        toy.SetAbsoluteTransformFrom(parent);
-        toy.SetLocalTransform(light.Transform);
+        toy.ApplyCommonData(light, parent, out var go, out _);
         toy.LightColor = light.LightColor;
-        toy.ShadowType = light.Shadows ? LightShadows.Soft : LightShadows.None;
-        toy.LightRange = light.Range;
         toy.LightIntensity = light.Intensity;
-        toy.MovementSmoothing = light.MovementSmoothing;
-        ApplyAdminToyTransform(toy);
-        var go = toy.gameObject;
-        go.AddComponent<slocObjectData>();
+        toy.LightRange = light.Range;
+        toy.LightType = light.LightType;
+        toy.SpotAngle = light.SpotAngle;
+        toy.InnerSpotAngle = light.InnerSpotAngle;
         return go;
     }
 
-    private static GameObject CreateEmpty(GameObject parent, slocTransform transform)
+    private static GameObject CreatePrimitive(GameObject parent, PrimitiveObject primitive)
     {
-        var emptyObject = new GameObject("Empty", typeof(NetworkIdentity));
-        emptyObject.SetAbsoluteTransformFrom(parent);
-        emptyObject.SetLocalTransform(transform);
-        return emptyObject;
+        if (PrimitivePrefab == null)
+            throw new InvalidOperationException("Primitive prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(PrimitivePrefab);
+        var flags = primitive.Flags;
+        var primitiveType = primitive.Type.ToPrimitiveType();
+        toy.ApplyCommonData(primitive, parent, out var o, out var sloc);
+        toy.PrimitiveType = primitiveType;
+        toy.MaterialColor = primitive.MaterialColor;
+        sloc.HasColliderOnClient = flags.HasFlagFast(PrimitiveObjectFlags.ClientCollider);
+        sloc.ShouldBeSpawnedOnClient = !flags.HasFlagFast(PrimitiveObjectFlags.NotSpawned);
+        sloc.IsTrigger = flags.IsTrigger();
+        sloc.HasColliderOnServer = flags.HasFlagFast(PrimitiveObjectFlags.ServerCollider);
+        AddActionHandlers(o, primitive.TriggerActions);
+        if (!flags.HasFlagFast(PrimitiveObjectFlags.Visible))
+            toy.PrimitiveFlags &= ~PrimitiveFlags.Visible;
+        if (!sloc.HasColliderOnClient)
+            toy.PrimitiveFlags &= ~PrimitiveFlags.Collidable;
+        toy.SetPrimitive(0, toy.PrimitiveType);
+        return o;
+    }
+
+    private static GameObject CreateCamera(GameObject parent, Scp079CameraObject camera)
+    {
+        if (!CameraTypeIds.TryGetValue(camera.CameraType, out var id)
+            || !NetworkClient.prefabs.TryGetValue(id, out var prefab)
+            || !prefab.TryGetComponent(out Scp079CameraToy prefabToy))
+            return null;
+        var toy = Object.Instantiate(prefabToy);
+        toy.ApplyCommonData(camera, parent, out var o, out _);
+        toy.NetworkLabel = camera.Label;
+        toy.NetworkVerticalConstraint = new Vector2(camera.VerticalMinimum, camera.VerticalMaximum);
+        toy.NetworkHorizontalConstraint = new Vector2(camera.HorizontalMinimum, camera.HorizontalMaximum);
+        toy.NetworkZoomConstraint = new Vector2(camera.ZoomMinimum, camera.ZoomMaximum);
+        toy.ApplyNetworkTransformProperties(camera.Transform.Position, camera.Transform.Rotation, camera.Transform.Scale);
+        return o;
+    }
+
+    private static GameObject CreateSpeaker(GameObject parent, SpeakerObject speaker)
+    {
+        if (SpeakerPrefab == null)
+            throw new InvalidOperationException("Speaker prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(SpeakerPrefab);
+        toy.ApplyCommonData(speaker, parent, out var go, out _);
+        toy.ControllerId = speaker.ControllerId;
+        toy.IsSpatial = speaker.Spatial;
+        toy.Volume = speaker.Volume;
+        toy.MinDistance = speaker.MinDistance;
+        toy.MaxDistance = speaker.MaxDistance;
+        return go;
+    }
+
+    private static GameObject CreateStructure(GameObject parent, StructureObject structure)
+    {
+        if (!StructurePrefabIds.TryGetValue(structure.Structure, out var id) || !NetworkClient.prefabs.TryGetValue(id, out var prefab))
+            return null;
+        var o = Object.Instantiate(prefab);
+        o.ApplyCommonData(structure, parent, out var data);
+        data.GlobalTransform = o.TryGetComponent(out WaypointBase _);
+        if (structure.RemoveDefaultLoot && o.TryGetComponent(out Locker locker))
+            locker.Loot = [];
+        if (o.TryGetComponent(out StructurePositionSync sync))
+            sync.Start();
+        return o;
+    }
+
+    private static GameObject CreateText(GameObject parent, TextObject text)
+    {
+        if (TextPrefab == null)
+            throw new InvalidOperationException("Text prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(TextPrefab);
+        toy.ApplyCommonData(text, parent, out var go, out _);
+        toy.TextFormat = text.Format;
+        toy.DisplaySize = text.DisplaySize * TextObject.FontSize;
+        toy.Arguments.AddRange(text.Arguments);
+        return go;
+    }
+
+    private static GameObject CreateWaypoint(GameObject parent, WaypointObject waypoint)
+    {
+        if (WaypointPrefab == null)
+            throw new InvalidOperationException("Waypoint prefab is not set! Make sure to spawn objects after the prefabs have been loaded.");
+        var toy = Object.Instantiate(WaypointPrefab);
+        toy.ApplyCommonData(waypoint, parent, out var go, out _);
+        toy.Priority = waypoint.Priority;
+        toy.VisualizeBounds = waypoint.VisualizeBounds;
+        return go;
     }
 
     private static void AddActionHandlers(GameObject o, BaseTriggerActionData[] data)
@@ -152,13 +285,10 @@ public static partial class API
         var stay = new List<HandlerDataPair>();
         var exit = new List<HandlerDataPair>();
         foreach (var action in data)
-        {
             if (action is SerializableTeleportToSpawnedObjectData tp)
-                TpToSpawnedCache.GetOrAdd(o, () => new List<SerializableTeleportToSpawnedObjectData>()).Add(tp);
+                TpToSpawnedCache.GetOrAdd(o, () => []).Add(tp);
             else if (ActionManager.TryGetHandler(action.ActionType, out var handler))
                 AddActionDataPairToList(action, handler, enter, stay, exit);
-        }
-
         if (enter.Count == 0 && stay.Count == 0 && exit.Count == 0)
             return;
         var component = o.GetOrAddComponent<TriggerListener>();
@@ -239,7 +369,6 @@ public static partial class API
             return;
         foreach (var kvp in TpToSpawnedCache)
         foreach (var data in kvp.Value)
-        {
             if (CreatedInstances.TryGetValue(data.ID, out var target))
                 kvp.Key.AddTriggerAction(new RuntimeTeleportToSpawnedObjectData(target, data.Offset)
                 {
@@ -247,7 +376,6 @@ public static partial class API
                     Options = data.Options,
                     RotationY = data.RotationY
                 }, handler);
-        }
     }
 
 }
