@@ -4,7 +4,7 @@ A plugin that allows for the loading of objects contained within **sloc** files 
 
 ![Logo](https://github.com/Axwabo/slocLoader/blob/main/logo%20small.png?raw=true)
 
-[Watch the tutorial](https://youtu.be/4_-viU0HBBU)
+[Watch the tutorial](https://youtu.be/wPOQStkr4Zk)
 
 [Set up the plugin](#setup)
 
@@ -22,14 +22,13 @@ This is not meant to be a clone of MER, but a different approach to be able to l
 
 An **sloc** file can contain primitive Unity objects (spheres, cubes etc.) and also lights.
 
-> [!NOTE]
-> Currently, only point lights are supported.
-
 To create an **sloc** file, use [slocExporter](https://github.com/Axwabo/slocExporter/)
 
 **_sloc files are not text_**, but raw bytes. This means that opening one in a text editor will produce gibberish, since
 it's not meant to be interpreted as text. It is a sequence of **int**egers and **float**s.
 
+**sloc** aims to retain the object hierarchy exactly as is in the Unity editor, meaning
+you can use GetComponent(s)InChildren on the server to find child objects.
 # Setup
 
 > [!IMPORTANT]
@@ -43,16 +42,16 @@ it's not meant to be interpreted as text. It is a sequence of **int**egers and *
         - Linux: `.config/SCP Secret Laboratory/LabAPI-Beta/dependencies/<port>`
 3. Download the `slocLoader.dll` file from the [latest release](https://github.com/Axwabo/slocLoader/releases/)
 4. Place the DLL into the `plugins` folder:
-    - Windows: `%appdata%\SCP Secret Laboratory\LabAPI-Beta\plugins\<port>`
-    - Linux: `.config/SCP Secret Laboratory/LabAPI-Beta/plugins/<port>`
+    - Windows: `%appdata%\SCP Secret Laboratory\LabAPI\plugins\<port>`
+    - Linux: `.config/SCP Secret Laboratory/LabAPI/plugins/<port>`
 5. Restart your server
 
 # Adding objects
 
 To load objects automatically, put your **sloc** file into:
 
-- Windows: `%appdata%\SCP Secret Laboratory\LabAPI-Beta\configs\<port>\slocLoader\Objects`
-- Linux: `.config/SCP Secret Laboratory/LabAPI-Beta/configs/<port>/slocLoader/Objects`
+- Windows: `%appdata%\SCP Secret Laboratory\LabAPI\configs\<port>\slocLoader\Objects`
+- Linux: `.config/SCP Secret Laboratory/LabAPI/configs/<port>/slocLoader/Objects`
 
 Make sure the **auto_load** property in the plugin config is set to true.
 
